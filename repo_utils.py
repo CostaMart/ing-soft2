@@ -3,7 +3,7 @@ import pandas as pd
 import json
 from pydriller import Repository
 import subprocess
-
+import shutil
 
 
 setting = open("settings.json")
@@ -88,3 +88,10 @@ def delete_garbage(keep):
         df = pd.read_csv("output/"+filename, sep=",")
         if df.empty:
             os.remove("output/"+filename)
+
+
+
+def killProcess():
+    shutil.rmtree(os.path.abspath("Repository"))
+    shutil.rmtree(os.path.abspath("output"))
+
