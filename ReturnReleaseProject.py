@@ -65,22 +65,22 @@ def get_github_release_commits(repo_url, release_tag):
 
 
 # Esempio di utilizzo della funzione per tutte le release fornite
-repo_url = "https://github.com/owner/repository"
-
-# Lista delle release fornite
-release_tags = ["v1.4.16", "v1.4.14", "v1.4.13", "v1.4.12", "v1.4.11", "v1.4.10", "v1.4.5", "v1.3.7", "v1.3.5",
-                "v1.3.4", "v1.3.3", "v1.2.8", "v1.2.7", "v1.1.16", "v1.1.15", "v1.1.9", "v1.1.8-E21",
-                "v1.1.8", "v1.0.3", "v1.0.0", "v0.15.9", "v0.15.8", "v0.15.6", "v0.14.15", "v0.14.6",
-                "v0.14.5", "v0.14.2", "v0.13.33", "v0.13.31", "v0.13.30"]
-
-for release_tag in release_tags:
-    commits = get_github_release_commits(repo_url, release_tag)
-
-    if commits:
-        print(f"Commits per la release {release_tag}:")
-        for commit in commits:
-            print(f"- SHA: {commit['sha']}, Messaggio: {commit['commit']['message']}")
-    else:
-        print(f"Nessun commit trovato per la release {release_tag}")
-    print("----")
+# repo_url = "https://github.com/owner/repository"
+#
+# # Lista delle release fornite
+# release_tags = ["v1.4.16", "v1.4.14", "v1.4.13", "v1.4.12", "v1.4.11", "v1.4.10", "v1.4.5", "v1.3.7", "v1.3.5",
+#                 "v1.3.4", "v1.3.3", "v1.2.8", "v1.2.7", "v1.1.16", "v1.1.15", "v1.1.9", "v1.1.8-E21",
+#                 "v1.1.8", "v1.0.3", "v1.0.0", "v0.15.9", "v0.15.8", "v0.15.6", "v0.14.15", "v0.14.6",
+#                 "v0.14.5", "v0.14.2", "v0.13.33", "v0.13.31", "v0.13.30"]
+#
+# for release_tag in release_tags:
+#     commits = get_github_release_commits(repo_url, release_tag)
+#
+#     if commits:
+#         print(f"Commits per la release {release_tag}:")
+#         for commit in commits:
+#             print(f"- SHA: {commit['sha']}, Messaggio: {commit['commit']['message']}")
+#     else:
+#         print(f"Nessun commit trovato per la release {release_tag}")
+#     print("----")
 
