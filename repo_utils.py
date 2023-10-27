@@ -91,7 +91,14 @@ def delete_garbage(keep):
 
 
 
-def killProcess():
-    shutil.rmtree(os.path.abspath("Repository"))
-    shutil.rmtree(os.path.abspath("output"))
+def refresh():
+    directory = os.path.abspath("output")
+    for root, dirs, files in os.walk(directory, topdown=False):
+        for file in files:
+            file_path = os.path.join(root, file)
+            os.remove(file_path)
+
+        for dir in dirs:
+            dir_path = os.path.join(root, dir)
+            os.rmdir(dir_path)
 
