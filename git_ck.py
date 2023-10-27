@@ -82,9 +82,8 @@ def commit_measure_avg(measure, commit_hash):
 def commit_for_year(year):
     # Questo metodo estrae le metriche dei commit per l'anno inserito
     repo_to_analyze = os.path.abspath('Repository')
-    output_dir = os.path.abspath('output')
-
     selected_commits = []
+    
     for commit in Repo(repo_to_analyze).iter_commits():
         if commit.committed_datetime.year == year:
             selected_commits.append(commit)
@@ -92,7 +91,6 @@ def commit_for_year(year):
     # Itera sui commit selezionati e calcola le metriche
     for commit in selected_commits:
         commit_hash = commit.hexsha
-        file_name = os.path.join(output_dir, f"{year}_{commit_hash}.csv")
         ck_metrics_for_single_commit(commit_hash)
         ru.delete_garbage("class")
 
@@ -100,7 +98,7 @@ def commit_for_year(year):
 
 
 def commit_measure_year(year, measure):
-    # commit_for_year(year)
+    commit_for_yearConc(year)
     result_data = []
     path = os.path.abspath("output")
     element_names = os.listdir(path)
@@ -125,6 +123,23 @@ def commit_for_yearConc(year):
     selected_commits = []
     for commit in Repo(repo_to_analyze).iter_commits():
         if commit.committed_datetime.year == year:
+            selected_commits.append(commit)
+
+    # Create a Pool of worker processes
+    with Pool() as pool:
+        pool.map(process_commit, selected_commits)
+    ru.delete_garbage("class")
+
+
+
+def commit_for_MonthYearConc(start_year, start_month, end_year, end_month):
+    repo_to_analyze = os.path.abspath('Repository')
+    repo = Repo(repo_to_analyze)
+    
+    selected_commits = []
+    for commit in repo.iter_commits():
+        commit_date = commit.committed_datetime
+        if start_year <= commit_date.year <= end_year and start_month <= commit_date.month <= end_month:
             selected_commits.append(commit)
 
     # Create a Pool of worker processes
