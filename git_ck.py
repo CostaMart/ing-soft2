@@ -3,7 +3,7 @@ import os
 from git import Repo 
 import repo_utils as ru
 import pandas as pd
-
+from multiprocessing import Pool
 
 def ck_metrics_for_single_commit(commit_hash):
     # Questo metodo estrae le metriche del commit scelto
@@ -24,8 +24,8 @@ def ck_metrics_for_single_commit(commit_hash):
     # Effettua il checkout del commit
     subprocess.call(['git', 'checkout', '-f', commit_hash])
     os.chdir(os.path.dirname(ck_tool))
-    subprocess.call(['java', '-jar', 'ck.jar', repo_to_analyze, 'false', '0', 'true', f"{output_dir}/{commit_hash}"])
-    ru.delete_garbage("class")
+    subprocess.call(['java', '-jar', 'ck.jar', repo_to_analyze, 'true', '0', 'true', f"{output_dir}/{commit_hash}"])
+    # ru.delete_garbage("class")
     # Non ritorna nulla ma crea il file csv con metriche per il commit richiesto
 
 
@@ -61,6 +61,9 @@ def commit_measure_avg(measure, commit_hash):
 
 
 
+######   DEPRECATO  ######
+
+
 # def commit_measure_avg_year(year, measure, commit_hash): 
 #     # Questo metodo estrae la media della metrica desiderata dal commit
 #     dir = os.path.abspath("output")+"\\"+str(year)+"\\"+commit_hash
@@ -74,10 +77,6 @@ def commit_measure_avg(measure, commit_hash):
 
 #     return mean_value
 
-
-
-
-    
 
 
 def commit_for_year(year):
@@ -95,17 +94,8 @@ def commit_for_year(year):
         commit_hash = commit.hexsha
         file_name = os.path.join(output_dir, f"{year}_{commit_hash}.csv")
         ck_metrics_for_single_commit(commit_hash)
+        ru.delete_garbage("class")
 
-
-    #     # Effettua il checkout del commit
-    #     subprocess.call(['git', 'checkout', '-f', commit_hash])
-    #     os.chdir(os.path.dirname(ck_tool))
-        
-    #     # Calcola le metriche
-    #     subprocess.call(['java', '-jar', 'ck.jar', repo_to_analyze, 'false', '0', 'true', f"{year_folder}/{commit_hash}"])
-    
-    # direct = os.path.abspath("output")+"\\"+str(year)
-    # ru.delete_garbageDir(keep="class", dir=direct)
 
 
 
@@ -118,3 +108,26 @@ def commit_measure_year(year, measure):
         result_data.append({"name": name, "avg": commit_measure_avg(measure, name)})
     result_df = pd.DataFrame(result_data)
     return result_df
+
+
+
+def process_commit(commit):
+    # Metodo che serve solo per dividere i processi
+    commit_hash = commit.hexsha
+    ck_metrics_for_single_commit(commit_hash)
+
+
+
+def commit_for_yearConc(year):
+    # Metodo che serve a calcolare le metriche per commit annuali in maiera concorrente su tutti i core
+    repo_to_analyze = os.path.abspath('Repository')
+    
+    selected_commits = []
+    for commit in Repo(repo_to_analyze).iter_commits():
+        if commit.committed_datetime.year == year:
+            selected_commits.append(commit)
+
+    # Create a Pool of worker processes
+    with Pool() as pool:
+        pool.map(process_commit, selected_commits)
+    ru.delete_garbage("class")
