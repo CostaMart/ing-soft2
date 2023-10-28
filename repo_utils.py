@@ -103,4 +103,3 @@ def refresh():
             os.rmdir(dir_path)
 
 
-ciao angelone
