@@ -102,5 +102,4 @@ def refresh():
             dir_path = os.path.join(root, dir)
             os.rmdir(dir_path)
 
-
-caioc omes tai
+gist ciao
