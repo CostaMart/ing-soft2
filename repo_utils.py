@@ -103,3 +103,5 @@ def refresh():
             os.rmdir(dir_path)
 
 gist ciao
+
+come stai tutto ok?
