@@ -1,12 +1,10 @@
+from model.Domain import Repository
 import requests
 
-class Repository:
-    def __init__(self, name, html_url, description):
-        self.name = name
-        self.url = html_url
-        self.description = description
 
-def ricerca_e_restituzione_repositories(nome_progetto):
+
+def search_repo(nome_progetto):
+    
     # Effettua la ricerca dei repository su GitHub basati sul nome del progetto
     url = f"https://api.github.com/search/repositories?q={nome_progetto}"
     response = requests.get(url)
