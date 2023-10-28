@@ -107,3 +107,12 @@ def refresh():
             dir_path = os.path.join(root, dir)
             os.rmdir(dir_path)
 
+
+
+def trova_file_classe(classe_filename):
+    repository_path = os.path.abspath("Repository")
+    for root, dirs, files in os.walk(repository_path):
+        if classe_filename in files:
+            return os.path.join(root, classe_filename)
+    return None
+
