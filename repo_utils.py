@@ -78,16 +78,21 @@ def dataCommitLink(rep):
 
 
 
-def delete_garbage(keep):
+def delete_garbage(keep, output=None):
+
     # Elimina i file non utilizzabili creati con le metriche della classe
-    for filename in os.listdir("output"):
+    if(output is None):
+        output_dir = os.path.abspath("output")
+    else:
+        output_dir = os.path.abspath("output")+"\\"+str(output)
+    for filename in os.listdir(output_dir):
         if not keep in filename:
-            os.remove("output/"+filename)
+            os.remove(output_dir+"\\"+filename)
     
-    for filename in os.listdir("output"):
-        df = pd.read_csv("output/"+filename, sep=",")
-        if df.empty:
-            os.remove("output/"+filename)
+    # for filename in os.listdir(output):
+    #     df = pd.read_csv(filename, sep=",")
+    #     if df.empty:
+    #         os.remove(filename)
 
 
 
