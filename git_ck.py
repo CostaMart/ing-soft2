@@ -159,11 +159,10 @@ def commit_for_MonthYear(start_year, start_month, end_year, end_month):
 
 
 
-def analyze_commits_for_release(repo_owner, repo_name, release_tag, access_token):
+def analyze_commits_for_release(repo_owner, repo_name, release_tag):
     """Metodo per analizzare le metriche dei commit per release ipotizziamo che il repository
     è già scaricato"""
-    commits = ReturnReleaseProject.get_commits_for_release(repo_owner, repo_name, release_tag,
-                                                           access_token)
+    commits = ReturnReleaseProject.get_commits_for_release(repo_owner, repo_name, release_tag)
 
     if commits:
         for commit in commits:

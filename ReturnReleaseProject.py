@@ -3,14 +3,11 @@ import requests
 from model.Domain import Commit
 
 
-def get_commits_for_release(repo_owner, repo_name, release_tag, access_token):
+def get_commits_for_release(repo_owner, repo_name, release_tag):
     url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits?sha={release_tag}"
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Accept": "application/vnd.github.v3+json"
-    }
 
-    response = requests.get(url, headers=headers)
+
+    response = requests.get(url)
 
     if response.status_code == 200:
         commits = response.json()
@@ -42,8 +39,7 @@ def get_commits_for_release(repo_owner, repo_name, release_tag, access_token):
 # repo_owner = "R2Northstar"
 # repo_name = "Northstar"
 # release_tag = "v1.19.9"
-# access_token = "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"
-# commits = get_commits_for_release(repo_owner,repo_name, release_tag, access_token)
+# commits = get_commits_for_release(repo_owner,repo_name, release_tag)
 #
 # if isinstance(commits, list):
 #     for commit in commits:
