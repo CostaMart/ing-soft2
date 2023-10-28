@@ -26,7 +26,7 @@ class IngSoftApp(ctk.CTk):
         self.listBox = ListBox(self)
         self.listBox.pack( padx = 10, fill = ctk.X, expand = True)
         
-        self.initRepoList()
+        self.updateRepoList()
         
         # Avvia il ciclo principale dell'applicazione
         self.mainloop()
@@ -46,15 +46,17 @@ class IngSoftApp(ctk.CTk):
         searchBut = ctk.CTkButton(self, text= "Search", command= self.start_request)
         searchBut.pack(pady = 10)
     
-    def initRepoList(self, newList = None):
+    def updateRepoList(self, newList = None):
+        self.listBox.cleanList()
+        
         if (newList != None):
             self.testRepoList = newList
             
         for repo in self.testRepoList:
-            repo : Repository
             self.listBox.addBox(repo.name)
 
     def start_request(self):
-        self.testRepoList = get_repo_list("java", self.initRepoList)
+        print(self.entry.get())
+        self.testRepoList = get_repo_list(self.entry.get(), self.updateRepoList)
        
         

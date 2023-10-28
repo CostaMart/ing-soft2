@@ -7,14 +7,19 @@ class ListBox(ctk.CTkScrollableFrame):
     
     def __init__(self, master):
         super().__init__(master= master)
-        self.row = 0
+        self.childList = []
         
     def addBox(self, text: str):
         """  aggiunge un elemento alla lista """
         newbox = self._ListItem(self, text)
+        self.childList.append(newbox)
         newbox.pack(fill = ctk.X, expand = True, pady = 1)
     
-    
+    def cleanList(self):
+        """ rimuove tutti gli elementi dalla lista """
+
+        for child in self.childList:
+            child.destroy()
     
     
     
