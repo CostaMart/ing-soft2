@@ -51,7 +51,8 @@ class IngSoftApp(ctk.CTk):
         
         self.text = tk.StringVar()
         font = ("Arial black", 12)  # Sostituisci con il font e la grandezza desiderati
-        self.message = tk.Label(self, textvariable= self.text, background="#1d1e1e", foreground= "#FFFFFF" )
+        
+        self.message = tk.Label(self, textvariable= self.text, background="#1d1e1e", foreground= "#FFFFFF", width= 80 )
         self.message.config(font= font)
         self.message.pack()
         
