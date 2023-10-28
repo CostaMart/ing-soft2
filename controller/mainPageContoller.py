@@ -1,5 +1,5 @@
 from model.Domain import Repository
-from model import FilterProject
+from model import RepositoryRequest
 import threading
 
 

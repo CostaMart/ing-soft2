@@ -1,32 +1,7 @@
 import requests
 
-class CommitInfo:
-    def __init__(self, sha, node_id, author_name, author_email, author_date, committer_name, committer_email, committer_date, message, tree_sha, tree_url, commit_url, html_url, comments_url, author_login, author_id, author_avatar_url):
-        self.sha = sha
-        self.node_id = node_id
-        self.author = {
-            "name": author_name,
-            "email": author_email,
-            "date": author_date
-        }
-        self.committer = {
-            "name": committer_name,
-            "email": committer_email,
-            "date": committer_date
-        }
-        self.message = message
-        self.tree = {
-            "sha": tree_sha,
-            "url": tree_url
-        }
-        self.url = commit_url
-        self.html_url = html_url
-        self.comments_url = comments_url
-        self.author_info = {
-            "login": author_login,
-            "id": author_id,
-            "avatar_url": author_avatar_url
-        }
+from model.Domain import Commit
+
 
 def get_commits_for_release(repo_owner, repo_name, release_tag, access_token):
     url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits?sha={release_tag}"
@@ -39,7 +14,7 @@ def get_commits_for_release(repo_owner, repo_name, release_tag, access_token):
 
     if response.status_code == 200:
         commits = response.json()
-        commit_list = [CommitInfo(
+        commit_list = [Commit(
             sha=commit["sha"],
             node_id=commit["node_id"],
             author_name=commit["commit"]["author"]["name"],
@@ -83,4 +58,5 @@ def get_commits_for_release(repo_owner, repo_name, release_tag, access_token):
 #         print("-----")
 # else:
 #     print(commits)
+
 

@@ -1,6 +1,8 @@
 import subprocess
 import os
-from git import Repo 
+from git import Repo
+
+import ReturnReleaseProject
 import repo_utils as ru
 import pandas as pd
 from multiprocessing import Pool
@@ -152,3 +154,22 @@ def commit_for_MonthYear(start_year, start_month, end_year, end_month):
             commit_hash = commit.hexsha
             ck_metrics_for_single_commit(commit_hash)
             ru.delete_garbage("class")
+
+
+
+
+
+def analyze_commits_for_release(repo_owner, repo_name, release_tag, access_token):
+    """Metodo per analizzare le metriche dei commit per release ipotizziamo che il repository
+    è già scaricato"""
+    commits = ReturnReleaseProject.get_commits_for_release(repo_owner, repo_name, release_tag,
+                                                           access_token)
+
+    if commits:
+        for commit in commits:
+            commit_hash = commit.sha
+            ck_metrics_for_single_commit(commit_hash)
+    else:
+        print("Nessun commit disponibile per il tag di rilascio specificato.")
+
+
