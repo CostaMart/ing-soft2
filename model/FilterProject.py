@@ -1,7 +1,10 @@
 from model.Domain import Repository
 import requests
+import subprocess
+import os
 
 
+folder = "repository"
 
 def search_repo(nome_progetto):
     
@@ -21,14 +24,26 @@ def search_repo(nome_progetto):
 
     return repositories
 
-# Esempio di utilizzo della funzione
-# nome_progetto = input("Inserisci il nome del progetto: ")
-# repositories = ricerca_e_restituzione_repositories(nome_progetto)
-#
-# for repository in repositories:
-#     print(f"Nome: {repository.name}")
-#     print(f"URL: {repository.url}")
-#     print(f"Descrizione: {repository.description}")
-#     print("-----------------------")
+
+def clone_repo(url):
+   
+    current_directory = os.getcwd()
+    folder_path = os.path.join(current_directory, folder)
+    
+    if not os.path.exists(folder_path):
+        try:
+            os.makedirs(folder_path)
+            
+            
+        except OSError as e:
+            print(f"Errore durante la creazione della cartella '{folder}': {e}")
+    else:        
+       os.system(f'rmdir /S /Q "{folder}"')
+        
+
+    
+    subprocess.call(['git', 'clone', url, folder])
+    
+    
 
 

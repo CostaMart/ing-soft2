@@ -9,9 +9,9 @@ class ListBox(ctk.CTkScrollableFrame):
         super().__init__(master= master)
         self.childList = []
         
-    def addBox(self, text: str):
+    def addBox(self, text: str, command = None):
         """  aggiunge un elemento alla lista """
-        newbox = self._ListItem(self, text)
+        newbox = self._ListItem(self, text, command = command)
         self.childList.append(newbox)
         newbox.pack(fill = ctk.X, expand = True, pady = 1)
     
@@ -26,7 +26,7 @@ class ListBox(ctk.CTkScrollableFrame):
     
     class _ListItem(ctk.CTkFrame):
         
-        def __init__(self, master: any, title: str):
+        def __init__(self, master: any, title: str, command = None):
             super().__init__(master = master, height= 40)
             
             self.configure(fg_color="#1d1e1e")
@@ -36,10 +36,8 @@ class ListBox(ctk.CTkScrollableFrame):
             
             self.bind(sequence= "<Enter>", command= self.on_enter)
             self.bind(sequence= "<Leave>", command= self.on_leave)
-            self.bind(sequence= "<Button-1>", command = self.function_test)
+            self.bind(sequence= "<Button-1>", command = command)
         
-        def function_test(self, event):
-            print("funziona")
         
         def on_enter(self, event):
             self.configure(fg_color="#847F7C")

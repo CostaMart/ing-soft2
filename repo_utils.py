@@ -35,7 +35,7 @@ def check_folder():
 def clone_repo():
     # Metodo che effettua il clone di un repository target.
     subprocess.call(['git', 'clone', remote_repo, folder])
-
+    
 
 
 def print_current_branch(repository):
