@@ -27,7 +27,6 @@ def search_repo(nome_progetto):
 
 
 def clone_repo(url):
-   
     current_directory = os.getcwd()
     folder_path = os.path.join(current_directory, folder)
     
