@@ -5,7 +5,7 @@ from .ListBox import ListBox
 from model.Domain import Repository
 import time
 import threading
-from controller.mainPageContoller import get_repo_list, get_selected_repo
+from controller.mainPageContoller import get_selected_repo, request_for_repos
 
 class IngSoftApp(ctk.CTk):
     
@@ -29,7 +29,7 @@ class IngSoftApp(ctk.CTk):
         self.listBox = ListBox(self)
         self.listBox.pack( padx = 10, fill = ctk.X, expand = True)
         
-        self.updateRepoList()
+        self.testRepoList = []
         
         # Avvia il ciclo principale dell'applicazione
         self.mainloop()
@@ -56,17 +56,21 @@ class IngSoftApp(ctk.CTk):
         self.message.config(font= font)
         self.message.pack()
         
-    def updateRepoList(self, newList = None):
+    def _updateRepoList(self, query, val):
+        
+        respolist = request_for_repos(query= query)
+        
         self.listBox.cleanList()
         
-        if (newList != None):
-            self.testRepoList = newList
+        if (respolist != None):
+            self.testRepoList = respolist
         
         for repo in self.testRepoList:
             command = self._generateCommand(repo.url)
             self.listBox.addBox(repo.name, command = command)
 
     def _generateCommand(self, value):
+        
         """ restituisce una closure che verrà assegnata al tasto corrsipondente """
         def asyncFun(event):
             thread = threading.Thread(target= self.downloadRepo, args = [value, 0])
@@ -74,6 +78,7 @@ class IngSoftApp(ctk.CTk):
         return asyncFun
     
     def downloadRepo(self, value, intero):
+        """ avvia il download del repo mostrando un messaggio """
         self.showMessage(f"now downloading: {value}")
         get_selected_repo(value)
         self.showMessage("download complete")
@@ -84,6 +89,7 @@ class IngSoftApp(ctk.CTk):
         self.text.set(msg)
     
     def _start_request(self):
-        self.testRepoList = get_repo_list(self.entry.get(), self.updateRepoList)
        
+        t = threading.Thread(target= self._updateRepoList, args= (self.entry.get(), 0) )
+        t.start()
    
