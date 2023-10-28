@@ -1,86 +1,86 @@
 import requests
 
+class CommitInfo:
+    def __init__(self, sha, node_id, author_name, author_email, author_date, committer_name, committer_email, committer_date, message, tree_sha, tree_url, commit_url, html_url, comments_url, author_login, author_id, author_avatar_url):
+        self.sha = sha
+        self.node_id = node_id
+        self.author = {
+            "name": author_name,
+            "email": author_email,
+            "date": author_date
+        }
+        self.committer = {
+            "name": committer_name,
+            "email": committer_email,
+            "date": committer_date
+        }
+        self.message = message
+        self.tree = {
+            "sha": tree_sha,
+            "url": tree_url
+        }
+        self.url = commit_url
+        self.html_url = html_url
+        self.comments_url = comments_url
+        self.author_info = {
+            "login": author_login,
+            "id": author_id,
+            "avatar_url": author_avatar_url
+        }
 
-def get_github_releases(repo_url):
-    # Estrai il nome del proprietario e del repository dal link
-    parts = repo_url.strip("/").split("/")
-    owner = parts[-2]
-    repo = parts[-1]
-
-    # URL dell'API delle release di GitHub
-    api_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
-
-    # Esegui la chiamata GET all'API di GitHub
-    response = requests.get(api_url)
-
-    # Verifica se la chiamata è stata eseguita con successo (status code 200)
-    if response.status_code == 200:
-        releases = response.json()
-        return releases
-    else:
-        print("Errore nell'ottenere le release del repository.")
-        return None
-
-
-# Esempio di utilizzo della funzione
-# repo_url="https://github.com/obsidianmd/obsidian-releases"
-# releases = get_github_releases(repo_url)
-#
-# if releases:
-#     print("Release disponibili nel repository:")
-#     for release in releases:
-#         print(f"- Nome: {release['name']}, Tag: {release['tag_name']}")
-# else:
-#     print("Impossibile ottenere le release del repository.")
-#
-# import requests
-#
-# import requests
-
-
-def get_github_release_commits(repo_url, release_tag):
-    # Estrai il nome del proprietario e del repository dal link
-    parts = repo_url.strip("/").split("/")
-    owner = parts[-2]
-    repo = parts[-1]
-
-    # URL dell'API per ottenere i dettagli dei commit della release
-    api_url = f"https://api.github.com/repos/{owner}/{repo}/commits"
-
-    # Parametri per filtrare i commit per il tag della release
-    params = {
-        "sha": release_tag
+def get_commits_for_release(repo_owner, repo_name, release_tag, access_token):
+    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits?sha={release_tag}"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Accept": "application/vnd.github.v3+json"
     }
 
-    # Esegui la chiamata GET all'API di GitHub per ottenere i commit della release
-    response = requests.get(api_url, params=params)
+    response = requests.get(url, headers=headers)
 
-    # Verifica se la chiamata è stata eseguita con successo (status code 200)
     if response.status_code == 200:
         commits = response.json()
-        return commits
+        commit_list = [CommitInfo(
+            sha=commit["sha"],
+            node_id=commit["node_id"],
+            author_name=commit["commit"]["author"]["name"],
+            author_email=commit["commit"]["author"]["email"],
+            author_date=commit["commit"]["author"]["date"],
+            committer_name=commit["commit"]["committer"]["name"],
+            committer_email=commit["commit"]["committer"]["email"],
+            committer_date=commit["commit"]["committer"]["date"],
+            message=commit["commit"]["message"],
+            tree_sha=commit["commit"]["tree"]["sha"],
+            tree_url=commit["commit"]["tree"]["url"],
+            commit_url=commit["url"],
+            html_url=commit["html_url"],
+            comments_url=commit["comments_url"],
+            author_login=commit["author"]["login"],
+            author_id=commit["author"]["id"],
+            author_avatar_url=commit["author"]["avatar_url"]
+        ) for commit in commits]
+        return commit_list
     else:
-        print(f"Errore nell'ottenere i commit della release {release_tag}. Codice di stato: {response.status_code}")
+        print(f"Errore {response.status_code}: Impossibile ottenere i commit associati alla release.")
         return None
 
-
-# Esempio di utilizzo della funzione per tutte le release fornite
-# repo_url = "https://github.com/owner/repository"
+# Esempio di utilizzo
+# repo_owner = "R2Northstar"
+# repo_name = "Northstar"
+# release_tag = "v1.19.9"
+# access_token = "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"
+# commits = get_commits_for_release(repo_owner,repo_name, release_tag, access_token)
 #
-# # Lista delle release fornite
-# release_tags = ["v1.4.16", "v1.4.14", "v1.4.13", "v1.4.12", "v1.4.11", "v1.4.10", "v1.4.5", "v1.3.7", "v1.3.5",
-#                 "v1.3.4", "v1.3.3", "v1.2.8", "v1.2.7", "v1.1.16", "v1.1.15", "v1.1.9", "v1.1.8-E21",
-#                 "v1.1.8", "v1.0.3", "v1.0.0", "v0.15.9", "v0.15.8", "v0.15.6", "v0.14.15", "v0.14.6",
-#                 "v0.14.5", "v0.14.2", "v0.13.33", "v0.13.31", "v0.13.30"]
-#
-# for release_tag in release_tags:
-#     commits = get_github_release_commits(repo_url, release_tag)
-#
-#     if commits:
-#         print(f"Commits per la release {release_tag}:")
-#         for commit in commits:
-#             print(f"- SHA: {commit['sha']}, Messaggio: {commit['commit']['message']}")
-#     else:
-#         print(f"Nessun commit trovato per la release {release_tag}")
-#     print("----")
+# if isinstance(commits, list):
+#     for commit in commits:
+#         print("SHA:", commit.sha)
+#         print("Author:", commit.author)
+#         print("Committer:", commit.committer)
+#         print("Message:", commit.message)
+#         print("URL:", commit.url)
+#         print("HTML URL:", commit.html_url)
+#         print("Comments URL:", commit.comments_url)
+#         print("Author Info:", commit.author_info)
+#         print("-----")
+# else:
+#     print(commits)
 

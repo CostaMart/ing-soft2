@@ -44,11 +44,7 @@ def clone_repo(url):
         
         elif sys.platform.startswith('linux'):
             print("siamo su linux")
-            shutil.rmtree(folder)   
-       
-        
-
-    
+            shutil.rmtree(folder)
     subprocess.call(['git', 'clone', url, folder])
     
     
