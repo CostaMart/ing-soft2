@@ -57,7 +57,7 @@ class IngSoftApp(ctk.CTk):
         self.message.pack()
         
     def _updateRepoList(self, query, val):
-        
+        """ medoto che esegue l'update della lista  """
         respolist = request_for_repos(query= query)
         
         self.listBox.cleanList()
@@ -70,15 +70,16 @@ class IngSoftApp(ctk.CTk):
             self.listBox.addBox(repo.name, command = command)
 
     def _generateCommand(self, value):
+        """ restituisce una closure che verrà assegnata al tasto corrsipondente, realizzando una closure ogni tasto, quando premuto, richiederà il download del repo relativo """
         
-        """ restituisce una closure che verrà assegnata al tasto corrsipondente """
         def asyncFun(event):
-            thread = threading.Thread(target= self.downloadRepo, args = [value, 0])
+            thread = threading.Thread(target= self._downloadRepo, args = [value, 0])
             thread.start()
         return asyncFun
     
-    def downloadRepo(self, value, intero):
-        """ avvia il download del repo mostrando un messaggio """
+    def _downloadRepo(self, value, intero):
+        
+        """ avvia il download del repo selezionato mostrando un messaggio sullo stato del download, viene utilzzata da generateCommand per generare una closure """
         self.showMessage(f"now downloading: {value}")
         get_selected_repo(value)
         self.showMessage("download complete")
@@ -86,10 +87,11 @@ class IngSoftApp(ctk.CTk):
         self.showMessage("")
         
     def showMessage(self, msg):
+        """ modifica il messaggio visualizzato """
         self.text.set(msg)
     
     def _start_request(self):
-       
+        "avvia la richiesta di update della lista su un thread separato"
         t = threading.Thread(target= self._updateRepoList, args= (self.entry.get(), 0) )
         t.start()
    
