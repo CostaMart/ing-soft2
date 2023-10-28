@@ -2,7 +2,8 @@ from model.Domain import Repository
 import requests
 import subprocess
 import os
-
+import sys
+import shutil
 
 folder = "repository"
 
@@ -33,12 +34,18 @@ def clone_repo(url):
     if not os.path.exists(folder_path):
         try:
             os.makedirs(folder_path)
-            
-            
+                    
         except OSError as e:
             print(f"Errore durante la creazione della cartella '{folder}': {e}")
-    else:        
-       os.system(f'rmdir /S /Q "{folder}"')
+    else:   
+        if sys.platform.startswith('win'):
+            print("siamo su windowss")
+            os.system(f'rmdir /S /Q "{folder}"')
+        
+        elif sys.platform.startswith('linux'):
+            print("siamo su linux")
+            shutil.rmtree(folder)   
+       
         
 
     
