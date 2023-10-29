@@ -9,7 +9,7 @@ import shutil
 setting = open("settings.json")
 settings = json.load(setting)
 remote_repo = settings['repo']
-folder = "Repository"
+folder = "repository"
 
 
 

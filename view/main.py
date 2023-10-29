@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import font
 import customtkinter as ctk
 from ttkthemes import ThemedTk
 from .ListBox import ListBox
@@ -6,13 +7,14 @@ from model.Domain import Repository
 import time
 import threading
 from controller.mainPageContoller import get_selected_repo, request_for_repos
+from view.LoadingIcon import RotatingIcon
 
 class IngSoftApp(ctk.CTk):
     
      
     
     """ main page dell'app """
-    def __init__(self):
+    def __init__(self, gitv):
         
         self.testRepoList = []
         
@@ -28,6 +30,13 @@ class IngSoftApp(ctk.CTk):
         
         self.listBox = ListBox(self)
         self.listBox.pack( padx = 10, fill = ctk.X, expand = True)
+        
+        self.gitStatusFrame = tk.Frame(self, height= 15)
+        self.gitStatusFrame.config(bg= "#2b2b2b")
+        self.gitStatusFrame.pack(fill= "x")
+        f = font.Font(size=7)
+        self.gitStatusLabel = tk.Label(self.gitStatusFrame , text = gitv, background="#2b2b2b", foreground= "white", font= f )
+        self.gitStatusLabel.place(x= 5, y= 0) 
         
         self.testRepoList = []
         
@@ -52,7 +61,10 @@ class IngSoftApp(ctk.CTk):
         self.text = tk.StringVar()
         font = ("Arial black", 12)  # Sostituisci con il font e la grandezza desiderati
         
-        self.message = tk.Label(self, textvariable= self.text, background="#1d1e1e", foreground= "#FFFFFF", width= 80 )
+        self.messageBox = tk.Frame(self)
+        self.messageBox.configure(bg = "#1d1e1e")
+        self.messageBox.pack(fill= "x")
+        self.message = tk.Label(self.messageBox, textvariable= self.text, background="#1d1e1e", foreground= "#FFFFFF")
         self.message.config(font= font)
         self.message.pack()
         
@@ -80,12 +92,15 @@ class IngSoftApp(ctk.CTk):
     def _downloadRepo(self, value, intero):
         
         """ avvia il download del repo selezionato mostrando un messaggio sullo stato del download, viene utilzzata da generateCommand per generare una closure """
+        icon = RotatingIcon(self.messageBox, iconPath= "resources\\rotationLoading.png", backgroundColor= "#1d1e1e")
+        icon.pack()
         self.showMessage(f"now downloading: {value}")
         get_selected_repo(value)
         self.showMessage("download complete")
+        icon.destroy()
         time.sleep(2)
         self.showMessage("")
-        
+    
     def showMessage(self, msg):
         """ modifica il messaggio visualizzato """
         self.text.set(msg)
