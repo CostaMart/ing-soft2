@@ -31,6 +31,8 @@ class IngSoftApp(ctk.CTk):
         self.listBox = ListBox(self)
         self.listBox.pack( padx = 10, fill = ctk.X, expand = True)
         
+        
+        
         self.gitStatusFrame = tk.Frame(self, height= 15)
         self.gitStatusFrame.config(bg= "#2b2b2b")
         self.gitStatusFrame.pack(fill= "x")
@@ -58,6 +60,7 @@ class IngSoftApp(ctk.CTk):
         searchBut = ctk.CTkButton(self, text= "Search", command= self._start_request)
         searchBut.pack(pady = 10)
         
+        
         self.text = tk.StringVar()
         font = ("Arial black", 12)  # Sostituisci con il font e la grandezza desiderati
         
@@ -70,16 +73,15 @@ class IngSoftApp(ctk.CTk):
         
     def _updateRepoList(self, query, val):
         """ medoto che esegue l'update della lista  """
-        respolist = request_for_repos(query= query)
         
-        self.listBox.cleanList()
+        respolist = request_for_repos(query= query)
         
         if (respolist != None):
             self.testRepoList = respolist
         
         for repo in self.testRepoList:
             command = self._generateCommand(repo.url)
-            self.listBox.addBox(repo.name, command = command)
+            self.listBox.addBox(repo.name, repo.description, command = command)
 
     def _generateCommand(self, value):
         """ restituisce una closure che verrà assegnata al tasto corrsipondente, realizzando una closure ogni tasto, quando premuto, richiederà il download del repo relativo """
@@ -94,7 +96,7 @@ class IngSoftApp(ctk.CTk):
         """ avvia il download del repo selezionato mostrando un messaggio sullo stato del download, viene utilzzata da generateCommand per generare una closure """
         icon = RotatingIcon(self.messageBox, iconPath= "resources\\rotationLoading.png", backgroundColor= "#1d1e1e")
         icon.pack()
-        self.showMessage(f"now downloading: {value}")
+        self.showMessage(f"now downloading: {str(value)}")
         get_selected_repo(value)
         self.showMessage("download complete")
         icon.destroy()
@@ -106,6 +108,7 @@ class IngSoftApp(ctk.CTk):
         self.text.set(msg)
     
     def _start_request(self):
+        self.listBox.cleanList()
         "avvia la richiesta di update della lista su un thread separato"
         t = threading.Thread(target= self._updateRepoList, args= (self.entry.get(), 0) )
         t.start()
