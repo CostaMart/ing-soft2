@@ -121,24 +121,15 @@ def commit_for_IntYear(start_year, end_year):
             ck_metrics_for_single_commit(commit_hash)
             ru.delete_garbage("class")
 
-# def process_commit(commit):
-#     # Metodo che serve solo per dividere i processi
-#     commit_hash = commit.hexsha
-#     ck_metrics_for_single_commit(commit_hash)
 
+def analyze_commits_for_release(repo_owner, repo_name, release_tag):
+    """Metodo per analizzare le metriche dei commit per release ipotizziamo che il repository
+    è già scaricato"""
+    commits = ReturnReleaseProject.get_commits_for_release(repo_owner, repo_name, release_tag)
 
-
-# def commit_for_yearConc(year):
-#     # Metodo che serve a calcolare le metriche per commit annuali in maiera concorrente su tutti i core
-#     repo_to_analyze = os.path.abspath('Repository')
-    
-#     selected_commits = []
-#     for commit in Repo(repo_to_analyze).iter_commits():
-#         if commit.committed_datetime.year == year:
-#             selected_commits.append(commit)
-
-#     # Create a Pool of worker processes
-#     with Pool() as pool:
-#         pool.map(process_commit, selected_commits)
-#     ru.delete_garbage("class")
-
+    if commits:
+        for commit in commits:
+            commit_hash = commit.sha
+            ck_metrics_for_single_commit(commit_hash)
+    else:
+        print("Nessun commit disponibile per il tag di rilascio specificato.")

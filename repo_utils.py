@@ -9,7 +9,7 @@ import shutil
 setting = open("settings.json")
 settings = json.load(setting)
 remote_repo = settings['repo']
-folder = "Repository"
+folder = "repository"
 
 
 
@@ -35,7 +35,7 @@ def check_folder():
 def clone_repo():
     # Metodo che effettua il clone di un repository target.
     subprocess.call(['git', 'clone', remote_repo, folder])
-
+    
 
 
 def print_current_branch(repository):
@@ -106,4 +106,5 @@ def refresh():
         for dir in dirs:
             dir_path = os.path.join(root, dir)
             os.rmdir(dir_path)
+
 
