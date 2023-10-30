@@ -1,33 +1,32 @@
 import tkinter as tk
+from tkinter import font
 import customtkinter as ctk
 from ttkthemes import ThemedTk
+from .widgets.ListBox import ListBox
 from model.Domain import Repository
-from .widgets.LoadingIcon import RotatingIcon
+import time
+import threading
+from controller.mainPageContoller import get_selected_repo, request_for_repos
+from view.widgets.LoadingIcon import RotatingIcon
 
 
-class StartupPage(ctk.CTk):
-    def __init__(self):
-        super().__init__()
+class ProjectMetricsPage(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(master = master)
         ctk.set_appearance_mode("dark")
-        self.title("Ing_soft")
-        self.geometry("800x500")
-        self.minsize(800, 500)
-        self.maxsize(1600,1000)
+       
         
         frame = ctk.CTkFrame(self)
         frame.pack(fill = ctk.BOTH)       
         
-        img = RotatingIcon(frame, "resources\\rotationLoading.png", backgroundColor= "#2b2b2b")
-        img.pack()
-        
         
         frame2 = ctk.CTkFrame(self)
         frame2.pack(pady = 40, fill= ctk.BOTH)
-        label = ctk.CTkLabel(frame2, text= "this tool uses git, \n you need to install git on your device an make it executable from command line")
+        label = ctk.CTkLabel(frame2, text= "buono")
         label.pack()
         
         
-    
+        ctk.CTkButton(self).pack()
             
             
             
@@ -38,6 +37,6 @@ class StartupPage(ctk.CTk):
         self.testRepoList = []
         
         # Avvia il ciclo principale dell'applicazione
-        self.mainloop()
+        
         
 

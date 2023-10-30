@@ -1,6 +1,6 @@
 from model.Domain import Repository
 from model import FilterProject
-import threading
+import os
 
         
 def request_for_repos(query):
@@ -11,3 +11,11 @@ def request_for_repos(query):
 def get_selected_repo(url):
     FilterProject.clone_repo(url)
     return
+
+
+def checkRepo():
+        percorso_git = os.path.join("repository", ".git")
+        if os.path.exists(percorso_git) and os.path.isdir(percorso_git):
+            return True
+        else:
+            return False

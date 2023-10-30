@@ -1,30 +1,29 @@
 import tkinter as tk
-from tkinter import font
+from tkinter import PhotoImage, font, Toplevel
 import customtkinter as ctk
 from ttkthemes import ThemedTk
-from .ListBox import ListBox
+from .widgets.ListBox import ListBox
 from model.Domain import Repository
 import time
 import threading
-from controller.mainPageContoller import get_selected_repo, request_for_repos
-from view.LoadingIcon import RotatingIcon
+from controller.mainPageContoller import get_selected_repo, request_for_repos, checkRepo
+from view.widgets.LoadingIcon import RotatingIcon
+from view.ProjectMetricsPage import ProjectMetricsPage 
 
-class IngSoftApp(ctk.CTk):
-    
-     
+
+class MainPage(ctk.CTkFrame):
     
     """ main page dell'app """
-    def __init__(self, gitv):
+    def __init__(self, master , gitv):
         
+        self.master = master
         self.testRepoList = []
+        self.pageStack = []
         
-        super().__init__()
+        super().__init__(master= master)
         
         ctk.set_appearance_mode("dark")
-        self.title("Ing_soft")
-        self.geometry("800x500")
-        self.minsize(800, 500)
-        self.maxsize(1600,1000)
+        
         
         self._initSearchBlock()
         
@@ -34,32 +33,49 @@ class IngSoftApp(ctk.CTk):
         
         
         self.gitStatusFrame = tk.Frame(self, height= 15)
-        self.gitStatusFrame.config(bg= "#2b2b2b")
+        self.gitStatusFrame.config(bg= "#1d1e1e")
         self.gitStatusFrame.pack(fill= "x")
         f = font.Font(size=7)
-        self.gitStatusLabel = tk.Label(self.gitStatusFrame , text = gitv, background="#2b2b2b", foreground= "white", font= f )
+        self.gitStatusLabel = tk.Label(self.gitStatusFrame , text = gitv, background="#1d1e1e", foreground= "white", font= f )
         self.gitStatusLabel.place(x= 5, y= 0) 
         
         self.testRepoList = []
         
-        # Avvia il ciclo principale dell'applicazione
-        self.mainloop()
+     
     
     def _initSearchBlock(self):
         """ inizializza la sezione con il form di ricerca """
+        self.topFrame = ctk.CTkFrame(self, height= 30, width= 200)
+        self.topFrame.place(y = 10 ,relx = 0.9)
         
         my_font = ctk.CTkFont(family="Arial black", size=25)
        
         label = ctk.CTkLabel(self, text= "Search for a repo ", width= 10, font = my_font)
-        label.pack(side = ctk.TOP, pady = 30)
+        label.pack(side = ctk.TOP, pady =10)
         
 
         self.entry = ctk.CTkEntry(self, width= 400)
         self.entry.pack()
         
-        searchBut = ctk.CTkButton(self, text= "Search", command= self._start_request)
-        searchBut.pack(pady = 10)
+
         
+        searchBut = ctk.CTkButton(self, text= "Search", command= self._start_request)
+        searchBut.pack( pady = 10)
+        
+
+        
+    
+        
+        self.repoButton = self.repoButton = ctk.CTkLabel(self.topFrame, text= "go to repo", bg_color= "#1d1e1e")
+        self.repoButton.bind("<Button-1>" , command = lambda x: self.master.newPage(ProjectMetricsPage))
+        self.repoButton.bind(sequence= "<Enter>", command= self.on_enter)
+        self.repoButton.bind(sequence= "<Leave>", command= self.on_leave)
+        self.repoButton.place(relx = 0, y = 1.01)
+        
+       
+        
+        if not checkRepo():
+            self.repoButton.forget()
         
         self.text = tk.StringVar()
         font = ("Arial black", 12)  # Sostituisci con il font e la grandezza desiderati
@@ -102,7 +118,8 @@ class IngSoftApp(ctk.CTk):
         icon.destroy()
         time.sleep(2)
         self.showMessage("")
-    
+        self.testForRepo()
+           
     def showMessage(self, msg):
         """ modifica il messaggio visualizzato """
         self.text.set(msg)
@@ -112,4 +129,21 @@ class IngSoftApp(ctk.CTk):
         "avvia la richiesta di update della lista su un thread separato"
         t = threading.Thread(target= self._updateRepoList, args= (self.entry.get(), 0) )
         t.start()
-   
+
+    def testForRepo(self):
+        if checkRepo():
+            self.repoButton.pack(side= ctk.RIGHT, padx = 10)
+        else:
+            if self.repoButton is not None:
+                self.repoButton.destroy()
+
+    def on_enter(self, event):
+            self.topFrame.configure(fg_color="#847F7C")
+            self.repoButton.configure(fg_color="#847F7C")
+            event.widget.configure(cursor="hand2")
+            
+            
+    def on_leave(self, event):
+        self.topFrame.configure(fg_color="#1d1e1e")
+        self.repoButton.configure(fg_color="#1d1e1e")
+        event.widget.configure(cursor="arrow")
