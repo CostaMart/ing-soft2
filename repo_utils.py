@@ -9,7 +9,7 @@ import shutil
 setting = open("settings.json")
 settings = json.load(setting)
 remote_repo = settings['repo']
-folder = "Repository"
+folder = "repository"
 
 
 
@@ -35,7 +35,7 @@ def check_folder():
 def clone_repo():
     """Metodo che effettua il clone di un repository target"""
     subprocess.call(['git', 'clone', remote_repo, folder])
-
+    
 
 
 def print_current_branch(repository):
@@ -98,4 +98,5 @@ def trova_file_classe(classe_filename):
         if classe_filename in files:
             return os.path.join(root, classe_filename)
     return None
+
 
