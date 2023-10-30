@@ -99,17 +99,9 @@ def analyze_commits_for_release(repo_owner, repo_name, release_tag):
     """Metodo per analizzare le metriche dei commit per release ipotizziamo che il repository
     è già scaricato"""
     commits = ReturnReleaseProject.get_commits_for_release(repo_owner, repo_name, release_tag)
-<<<<<<< HEAD
-=======
-
->>>>>>> f7b872c3b8521079938b10bf71d5265efda0461c
     if commits:
         for commit in commits:
             commit_hash = commit.sha
             ck_metrics_for_single_commit(commit_hash)
     else:
         print("Nessun commit disponibile per il tag di rilascio specificato.")
-<<<<<<< HEAD
-=======
-
->>>>>>> f7b872c3b8521079938b10bf71d5265efda0461c
