@@ -5,7 +5,8 @@ import pygit2
 import subprocess
 import datetime
 import math
-
+import ReturnReleaseProject
+import pandas as pd
 
 def controlla_numero_revisioni_per_classe(classe_filename):
     """Metodo che dato il nome di una classe ne calcola il numero di revisioni"""
@@ -75,6 +76,22 @@ def calcola_loc(classe_filename):
                 linee_di_codice += 1
 
         return linee_di_codice, linee_vuote, commenti
+    
+
+
+def calcola_loc_repo():
+    """Calcola il LOC per una lista di classi di un commit e restituisce un DataFrame."""
+    risultati = []
+    classi = ru.cerca_file_java("repository")
+    for classe in classi:
+        loc_result = calcola_loc(classe)  # Usa il tuo metodo calcola_loc
+        nome_classe = classe.split("/")[-1]  # Estrarre solo il nome della classe
+        risultati.append([nome_classe, loc_result[0], loc_result[1], loc_result[2]])
+
+    # Creare un DataFrame con i risultati
+    df = pd.DataFrame(risultati, columns=["Nome Classe", "Linee di Codice", "Linee Vuote", "Commenti"])
+    
+    return df
 
 
 

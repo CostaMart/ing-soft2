@@ -4,7 +4,9 @@ import json
 from pydriller import Repository
 import subprocess
 import shutil
-
+import glob
+import re
+import git
 
 setting = open("settings.json")
 settings = json.load(setting)
@@ -100,3 +102,15 @@ def trova_file_classe(classe_filename):
     return None
 
 
+
+def cerca_file_java(cartella_name):
+    """ Questo metodo cerca tutti i file java in una cartella e ne restituisce una lista di nomi di file """
+    risultati = []
+    cartella = os.path.abspath(cartella_name)
+    
+    for root, dirs, files in os.walk(cartella):
+        for file in files:
+            if file.endswith(".java"):
+                risultati.append(file)
+
+    return risultati
