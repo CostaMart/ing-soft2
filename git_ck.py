@@ -95,7 +95,15 @@ def commit_measure_year(year, measures):
     return result_df
 
 
+def analyze_commits_for_release(repo_owner, repo_name, release_tag):
+    """Metodo per analizzare le metriche dei commit per release ipotizziamo che il repository
+    è già scaricato"""
+    commits = ReturnReleaseProject.get_commits_for_release(repo_owner, repo_name, release_tag)
 
-
-
+    if commits:
+        for commit in commits:
+            commit_hash = commit.sha
+            ck_metrics_for_single_commit(commit_hash)
+    else:
+        print("Nessun commit disponibile per il tag di rilascio specificato.")
 
