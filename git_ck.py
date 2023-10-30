@@ -7,7 +7,10 @@ from multiprocessing import Pool
 
 
 def ck_metrics_for_single_commit(commit_hash, output = None):
-    # Questo metodo estrae le metriche del commit scelto
+    """Questo metodo estrae le metriche del commit scelto
+    Utilizzato per fare analisi su commit singoli
+    Utilizzato per fare analisi su commit in maniera iterativa per le richieste di metriche per intervallo"""
+
     repo_to_analyze = os.path.abspath('Repository')
     ck_tool = os.path.abspath('ck.jar')
     if (output is not None):
@@ -19,13 +22,14 @@ def ck_metrics_for_single_commit(commit_hash, output = None):
     subprocess.call(['git', 'checkout', '-f', commit_hash])
     os.chdir(os.path.dirname(ck_tool))
     subprocess.call(['java', '-jar', 'ck.jar', repo_to_analyze, 'true', '0', 'false', f"{output_dir}/{commit_hash}"])
-    # ru.delete_garbage("class")
+    if(output is not None):
+        ru.delete_garbage("class", output)
     # Non ritorna nulla ma crea il file csv con metriche per il commit richiesto
     
 
 
 def commit_measure_for_single_commit(measures, commit_hash):
-    # Questo metodo estrae dal commit la metrica o le metriche desiderate
+    """Questo metodo estrae dal commit la metrica o le metriche desiderate"""
     dir = os.path.abspath("output")+"\\"+commit_hash+"class.csv"
     df = pd.read_csv(dir)
     for measure in measures:
@@ -41,7 +45,7 @@ def commit_measure_for_single_commit(measures, commit_hash):
 
 
 def commit_measure_avg(measure, commit_hash, output =None): 
-    # Questo metodo estrae la media della metrica desiderata dal commit
+    """Questo metodo estrae la media della metrica desiderata dal commit"""
     if(output is None):
         dir = os.path.abspath("output")+"\\"+commit_hash
     else:
@@ -58,26 +62,8 @@ def commit_measure_avg(measure, commit_hash, output =None):
 
 
 
-######   DEPRECATO  ######
-
-
-# def commit_measure_avg_year(year, measure, commit_hash): 
-#     # Questo metodo estrae la media della metrica desiderata dal commit
-#     dir = os.path.abspath("output")+"\\"+str(year)+"\\"+commit_hash
-#     df = pd.read_csv(dir)
-#     if measure not in df.columns:
-#         print(f"Metrica '{measure}' non trovata nel file CSV.")
-#         return None
-
-#     # Calcola la media della metrica specificata
-#     mean_value = df[measure].mean()
-
-#     return mean_value
-
-
-
 def commit_for_year(year):
-    # Questo metodo estrae le metriche dei commit per l'anno inserito
+    """Questo metodo estrae le metriche dei commit per l'anno inserito"""
     repo_to_analyze = os.path.abspath('Repository')
     selected_commits = []
     
@@ -93,33 +79,20 @@ def commit_for_year(year):
 
 
 
-
-def commit_measure_year(year, measure):
+def commit_measure_year(year, measures):
+    """ Questo metodo calcola le metriche per l'anno desiderato e fa la media delle metriche richieste per ogni commit"""
     commit_for_year(year)
     result_data = []
-    path = os.path.abspath("output")+"\\"+str(year)
+    path = os.path.abspath("output") + "\\" + str(year)
     element_names = os.listdir(path)
+    
     for name in element_names:
-        result_data.append({"name": name, "avg": commit_measure_avg(measure, name, str(year))})
+        metric_averages = {}
+        for measure in measures:
+            metric_averages[measure] = commit_measure_avg(measure, name, str(year))
+        result_data.append({"name": name, **metric_averages})
     result_df = pd.DataFrame(result_data)
     return result_df
-
-
-
-def commit_for_IntYear(start_year, end_year):
-    repo_to_analyze = os.path.abspath('Repository')
-    repo = Repo(repo_to_analyze)
-    
-    selected_commits = []
-    for commit in repo.iter_commits():
-        commit_date = commit.committed_datetime
-        if start_year <= commit_date.year <= end_year :
-            selected_commits.append(commit)
-
-    for commit in selected_commits:
-            commit_hash = commit.hexsha
-            ck_metrics_for_single_commit(commit_hash)
-            ru.delete_garbage("class")
 
 
 def analyze_commits_for_release(repo_owner, repo_name, release_tag):
@@ -133,3 +106,4 @@ def analyze_commits_for_release(repo_owner, repo_name, release_tag):
             ck_metrics_for_single_commit(commit_hash)
     else:
         print("Nessun commit disponibile per il tag di rilascio specificato.")
+
