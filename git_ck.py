@@ -7,9 +7,10 @@ from multiprocessing import Pool
 
 
 def ck_metrics_for_single_commit(commit_hash, output = None):
-    # Questo metodo estrae le metriche del commit scelto
-    # Utilizzato per fare analisi su commit singoli
-    # Utilizzato per fare analisi su commit in maniera iterativa per le richieste di metriche per intervallo
+    """Questo metodo estrae le metriche del commit scelto
+    Utilizzato per fare analisi su commit singoli
+    Utilizzato per fare analisi su commit in maniera iterativa per le richieste di metriche per intervallo"""
+
     repo_to_analyze = os.path.abspath('Repository')
     ck_tool = os.path.abspath('ck.jar')
     if (output is not None):
@@ -28,7 +29,7 @@ def ck_metrics_for_single_commit(commit_hash, output = None):
 
 
 def commit_measure_for_single_commit(measures, commit_hash):
-    # Questo metodo estrae dal commit la metrica o le metriche desiderate
+    """Questo metodo estrae dal commit la metrica o le metriche desiderate"""
     dir = os.path.abspath("output")+"\\"+commit_hash+"class.csv"
     df = pd.read_csv(dir)
     for measure in measures:
@@ -44,7 +45,7 @@ def commit_measure_for_single_commit(measures, commit_hash):
 
 
 def commit_measure_avg(measure, commit_hash, output =None): 
-    # Questo metodo estrae la media della metrica desiderata dal commit
+    """Questo metodo estrae la media della metrica desiderata dal commit"""
     if(output is None):
         dir = os.path.abspath("output")+"\\"+commit_hash
     else:
@@ -62,7 +63,7 @@ def commit_measure_avg(measure, commit_hash, output =None):
 
 
 def commit_for_year(year):
-    # Questo metodo estrae le metriche dei commit per l'anno inserito
+    """Questo metodo estrae le metriche dei commit per l'anno inserito"""
     repo_to_analyze = os.path.abspath('Repository')
     selected_commits = []
     
@@ -79,7 +80,7 @@ def commit_for_year(year):
 
 
 def commit_measure_year(year, measures):
-    # Questo metodo calcola le metriche per l'anno desiderato e fa la media delle metriche richieste per ogni commit
+    """ Questo metodo calcola le metriche per l'anno desiderato e fa la media delle metriche richieste per ogni commit"""
     commit_for_year(year)
     result_data = []
     path = os.path.abspath("output") + "\\" + str(year)
