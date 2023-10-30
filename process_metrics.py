@@ -2,7 +2,7 @@ import git
 import os
 import repo_utils as ru
 import pygit2
-import re
+import subprocess
 
 
 def controlla_numero_revisioni_per_classe(classe_filename):
@@ -53,3 +53,38 @@ def calcola_code_churn(commit_hash1, commit_hash2):
     return code_churn
 
 
+
+def calcola_single_loc(classe_filename):
+    classe_file_path = ru.trova_file_classe(classe_filename)
+    with open(classe_file_path, 'r') as file:
+        linee_di_codice = 0
+        linee_vuote = 0
+        commenti = 0
+
+        for linea in file:
+            linea = linea.strip()
+            if not linea:
+                linee_vuote += 1
+            elif linea.startswith('#') or linea.startswith('//') or linea.startswith('*') or linea.startswith('*/') or linea.startswith('/*'):
+                commenti += 1
+            else:
+                linee_di_codice += 1
+
+        return linee_di_codice, linee_vuote, commenti
+
+
+
+def calcola_autori_distinti_per_file(file_name):
+    file_path = ru.trova_file_classe(file_name)
+    repository_path = os.path.abspath('Repository')
+    result = subprocess.check_output(['git', 'log', '--format="%an"', '--follow', file_path], cwd=repository_path, shell=True, text=True)
+
+    autori_distinti = set()
+    lines = result.split('\n')
+
+    for line in lines:
+        autore = line.strip('"')
+        if autore:
+            autori_distinti.add(autore)
+
+    return autori_distinti
