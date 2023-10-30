@@ -4,6 +4,7 @@ from git import Repo
 import repo_utils as ru
 import pandas as pd
 from multiprocessing import Pool
+import ReturnReleaseProject
 
 
 def ck_metrics_for_single_commit(commit_hash, output = None):
