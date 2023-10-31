@@ -2,8 +2,13 @@ import customtkinter as ctk
 from PIL.Image import Image, open
 
 
+
 class SideButton(ctk.CTkFrame):
-    def __init__(self, master, onPress, onPressParam = None, side = "right", imgpath = None):
+    """bottone laterale, è possibile decidere dove posizionare il testo o l'icona, 
+    passare il path per un'immagine da usare come icona (24px) e una fuznione di callback (con parametri)
+    avviata alla pressione del tasto"""
+    
+    def __init__(self, master, onPress, onPressParam = None, side : str = "right", imgpath : str = None):
         
         super().__init__(master, height= 30, width= 200, fg_color= "#1d1e1e")
         

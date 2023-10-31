@@ -2,7 +2,7 @@ import tkinter as tk
 import customtkinter as ctk
 import time
 from controller.mainPageContoller import get_selected_repo, request_for_repos
-from view.main import MainPage
+from view.mainPage import MainPage
 
 class IngSoftApp(ctk.CTk):
     
@@ -31,7 +31,7 @@ class IngSoftApp(ctk.CTk):
         self.mainloop()
            
     def previousPage(self):
-        """"add a new page to the stack"""
+        """"ritorna alla pagina precedente contenuta nel page stack, utilizza un'animazione di sliding"""
         page = self.pageStack[-2]
         page.place(relwidth = 1, relheight = 1, rely = 0, relx = 1)
         self._previousPageAnimation(self.pageStack[-1], page, 0)
@@ -39,7 +39,7 @@ class IngSoftApp(ctk.CTk):
         old.destroy()  
         
     def newPage(self, newPage):
-        """"add a new page to the stack"""
+        """passa la schermata ad una nuova pagina, ossia quella passata come parametro (è necessario passare il costruttore della pagina come funzione, ossia senza parentesi tonde)"""
         page = newPage(self)
         page.place(relwidth = 1, relheight = 1, rely = 0, relx = 1)
         self._newPageAnimation(self.pageStack[-1], page, 0)
@@ -48,7 +48,8 @@ class IngSoftApp(ctk.CTk):
         self.pageStack.append(page)  
                
     def _newPageAnimation(self, leftPage, rigPage, l):
-        
+        """utilty function, avvia un'animazione di sliding
+        pensta unicamente per essere utilzzata da newpage"""
         while(l < 1):
             
             leftPage.place(relwidth = 1, relheight = 1, relx = -l)
@@ -62,6 +63,8 @@ class IngSoftApp(ctk.CTk):
         rigPage.place(relwidth = 1, relheight = 1, rely = 0, relx = 1 - l)
        
     def _previousPageAnimation(self, leftPage, rigPage, l):
+        """utilty function, avvia un'animazione di sliding
+        pensta unicamente per essere utilzzata da previousPage"""
         
         while(l < 1):
             

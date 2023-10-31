@@ -21,24 +21,19 @@ class MainPage(ctk.CTkFrame):
         self.pageStack = []
         
         super().__init__(master= master)
-        
         ctk.set_appearance_mode("dark")
-        
-        
         self._initSearchBlock()
         
+        # inizializza la lista a centro pagina
         self.listBox = ListBox(self)
         self.listBox.pack( padx = 10, fill = ctk.X, expand = True)
         
         
-        
+        # inizializza il frame di status di git (barra in basso)
         self.gitStatusFrame = tk.Frame(self, height= 15)
         self.gitStatusFrame.config(bg= "#1d1e1e")
         self.gitStatusFrame.pack(fill= "x")
         f = font.Font(size=7)
-        
-        
-        
         
         self.gitStatusLabel = tk.Label(self.gitStatusFrame , text = gitv, background="#1d1e1e", foreground= "white", font= f )
         self.gitStatusLabel.place(x= 5, y= 0) 
@@ -50,7 +45,7 @@ class MainPage(ctk.CTkFrame):
     def _initSearchBlock(self):
         """ inizializza la sezione con il form di ricerca """
         
-        
+        #inizializza il modulo a centro pagina
         my_font = ctk.CTkFont(family="Arial black", size=25)
        
         label = ctk.CTkLabel(self, text= "Search for a repo ", width= 10, font = my_font)
@@ -61,16 +56,16 @@ class MainPage(ctk.CTkFrame):
         self.entry.pack()
         
 
-        
+        # inizializza il bottone laterale
         searchBut = ctk.CTkButton(self, text= "Search", command= self._start_request)
         searchBut.pack( pady = 10)
         
         self.sideB = SideButton(self.master, self.master.newPage, ProjectMetricsPage)
         self.sideB.place(y = 10 ,relx = 0.9)
         
-        
+        # finalizza inizializzazione del modulo di centro pagina
         self.text = tk.StringVar()
-        font = ("Arial black", 12)  # Sostituisci con il font e la grandezza desiderati
+        font = ("Arial black", 12)  
         
         self.messageBox = tk.Frame(self)
         self.messageBox.configure(bg = "#1d1e1e")

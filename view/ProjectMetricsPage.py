@@ -4,8 +4,6 @@ import customtkinter as ctk
 from ttkthemes import ThemedTk
 from .widgets.ListBox import ListBox
 from model.Domain import Repository
-import time
-import threading
 from controller.mainPageContoller import get_selected_repo, request_for_repos
 from view.widgets.SideButton import SideButton
 
