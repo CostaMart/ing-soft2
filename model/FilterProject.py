@@ -1,3 +1,4 @@
+from model import Domain
 from model.Domain import Repository
 import requests
 import subprocess
@@ -50,6 +51,32 @@ def clone_repo(url):
     
     subprocess.call(['git', 'clone', url, folder])
     
-    
 
+def get_all_release_tag_repo(owner, repo_name):
+    """Metodo che ritorna tutte le  releases di uno specifico progetto"""
+    url = f"https://api.github.com/repos/{owner}/{repo_name}/releases"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        releases = response.json()
+        # Estrai solo i tag delle release dalla lista di release
+        release_tags = [release['tag_name'] for release in releases]
+        return release_tags
+    else:
+        print(f"Errore {response.status_code}: Impossibile ottenere le release del progetto.")
+        return None
+
+
+def get_repository_metadata(owner, repo_name):
+    """metodo che ritorna tutti i metadati di un progetto github"""
+    api_url = f"https://api.github.com/repos/{owner}/{repo_name}"
+    response = requests.get(api_url)
+
+    if response.status_code == 200:
+        repository_data = response.json()
+        repository = Domain.MetadataRepository(repository_data)
+        return repository
+    else:
+        print(f"Errore: Impossibile ottenere i dati del repository. Codice di stato: {response.status_code}")
+        return None
 
