@@ -7,7 +7,8 @@ from model.Domain import Repository
 import time
 import threading
 from controller.mainPageContoller import get_selected_repo, request_for_repos
-from view.widgets.LoadingIcon import RotatingIcon
+from view.widgets.SideButton import SideButton
+
 
 
 class ProjectMetricsPage(ctk.CTkFrame):
@@ -15,18 +16,14 @@ class ProjectMetricsPage(ctk.CTkFrame):
         super().__init__(master = master)
         ctk.set_appearance_mode("dark")
        
-        
-        frame = ctk.CTkFrame(self)
-        frame.pack(fill = ctk.BOTH)       
-        
-        
-        frame2 = ctk.CTkFrame(self)
-        frame2.pack(pady = 40, fill= ctk.BOTH)
-        label = ctk.CTkLabel(frame2, text= "buono")
-        label.pack()
+        self.master = master
+               
         
         
-        ctk.CTkButton(self).pack()
+        self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath="resources\left-arrow.png")
+        self.backButton.place(x= -150, y= 10 )
+        
+        
             
             
             
