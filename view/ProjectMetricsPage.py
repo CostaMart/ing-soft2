@@ -6,7 +6,8 @@ from .widgets.ListBox import ListBox
 from model.Domain import Repository
 from controller.mainPageContoller import get_selected_repo, request_for_repos
 from view.widgets.SideButton import SideButton
-
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 class ProjectMetricsPage(ctk.CTkFrame):
@@ -16,20 +17,39 @@ class ProjectMetricsPage(ctk.CTkFrame):
        
         self.master = master
                
+       
         
         
+        self.frame = ctk.CTkFrame(self)
+        self.frame.grid(row=0, column=0)
+
+        # Creare un oggetto Figure di Matplotlib
+        fig = Figure(figsize=(5, 4), dpi=100, facecolor= "#2b2b2b")
+        
+        # Aggiungere un subplot al figure
+        ax = fig.add_subplot(111)
+        ax.plot([1, 2, 3, 4, 5], [10, 5, 12, 6, 15])  # Esempio di dati per il grafico
+        
+        ax.spines['top'].set_color('none')
+        ax.spines['right'].set_color('none')
+        ax.spines['bottom'].set_color('white')  # Asse delle ascisse (X)
+        ax.spines['left'].set_color('white')
+        
+        ax.tick_params(axis='both', colors='white')
+        ax.set_facecolor("#2b2b2b")
+        # Creare un oggetto FigureCanvasTkAgg per il grafico
+        canvas = FigureCanvasTkAgg(fig, master=self.frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack()
+                
+            
+            
         self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath="resources\left-arrow.png")
         self.backButton.place(x= -150, y= 10 )
-        
-        
-            
-            
-            
-       
             
         
         
-        self.testRepoList = []
+        
         
         # Avvia il ciclo principale dell'applicazione
         
