@@ -1,7 +1,7 @@
-from .FilterProject import *
+from ..FilterProject import *
 
 
-class RepoRepository:
+class CRUDRepo:
     
     def _set_release_tags(self, owner, repo_name):
            

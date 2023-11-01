@@ -4,6 +4,7 @@ import customtkinter as ctk
 from view.widgets.SideButton import SideButton
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from controller.ProjectMetricsContoller import MetricsPageContoller
 import tkinter as tk
 
 
@@ -17,6 +18,7 @@ class ProjectMetricsPage(ctk.CTkFrame):
         super().__init__(master = master)
         ctk.set_appearance_mode("dark")
        
+        self.controller = MetricsPageContoller() 
         self.master = master
                
        
@@ -25,7 +27,7 @@ class ProjectMetricsPage(ctk.CTkFrame):
         self.frame = ctk.CTkFrame(self, width= 400, height= 400)
         self.frame.pack( fill = "x", expand= True)
         
-        label = ctk.CTkLabel(self.frame, text = self.master.repoData.name)
+        label = ctk.CTkLabel(self.frame, text = self.controller.getLocalRepoData().name)
         label.pack()
         # Creare un oggetto Figure di Matplotlib
         fig = Figure(figsize=(5, 4), dpi=100, facecolor= "#2b2b2b")

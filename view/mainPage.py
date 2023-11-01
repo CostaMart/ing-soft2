@@ -43,7 +43,10 @@ class MainPage(ctk.CTkFrame):
         
         self.testRepoList = []
         
-        if self.master.repoData == None :
+        self._initRepoData()
+        
+        
+        if self.controller.getRepoData() == None :
             self.sideB.place_forget()
             
             
@@ -120,10 +123,7 @@ class MainPage(ctk.CTkFrame):
             self.icon.pack_forget()
             self.showMessage(" ")
             self._recoverRepoData()
-            
-                
-            
-               
+                          
     def showMessage(self, msg):
         """ modifica il messaggio visualizzato """
         self.text.set(msg)
@@ -140,10 +140,10 @@ class MainPage(ctk.CTkFrame):
             mysefl.icon.pack()
             mysefl.icon.start()
             mysefl.showMessage("we are now analyzing this repo")
-            mysefl.master.initLocalrepoData()
-          
+            mysefl.controller.requestRepoUpdate()
+           
             
-            if mysefl.master.repoData !=None:
+            if mysefl.controller.getRepoData() != None:
                 
                 mysefl.sideB.place(y = 10 ,relx = 0.9)
                 mysefl.showMessage("done!")
@@ -155,7 +155,10 @@ class MainPage(ctk.CTkFrame):
                 
         threading.Thread(target= toCall).start()
        
-       
-  
+    def _initRepoData(self):
+        self.showMessage("we are initializing repo data")
+        self.loading = True
+        self._recoverRepoData()
+
         
     

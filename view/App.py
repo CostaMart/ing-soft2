@@ -1,18 +1,17 @@
 import tkinter as tk
 import customtkinter as ctk
 import time
-from controller.StartAppContoller import RepoData
+from controller.StartAppContoller import StartAppController
 from view.mainPage import MainPage
-import threading
 
 
 class IngSoftApp(ctk.CTk):
     
-    """ rappresenta l'intera applicazione, gestisce la navigazione tra le pagine"""
+    """ rappresenta l'intera applicazione, gestisce la navigazione tra le pagine e l'accesso ai dati globali dell'applicazione """
     
     def __init__(self, gitv):
         
-        self.repoData = None
+        self.contoller = StartAppController()
         self.testRepoList = []
         self.pageStack = []
         
@@ -23,10 +22,9 @@ class IngSoftApp(ctk.CTk):
         self.geometry("800x500")
         self.minsize(800, 500)
         self.maxsize(1600,1000)
+               
         
-        self.repoData = RepoData()  
-    
-       
+        self.contoller.getLocalRepoData()
         
         # Avvia il ciclo principale dell'applicazione
         newPage = MainPage(self, gitv= gitv)
@@ -35,6 +33,9 @@ class IngSoftApp(ctk.CTk):
         
         self.mainloop()
            
+           
+           
+    # ----------------------------- METODI PER LA GESTINE DELLA PAGINA E DEI DATI -----------------------------
     def previousPage(self):
         """"ritorna alla pagina precedente contenuta nel page stack, utilizza un'animazione di sliding"""
         page = self.pageStack[-2]
@@ -50,8 +51,10 @@ class IngSoftApp(ctk.CTk):
         self._newPageAnimation(self.pageStack[-1], page, 0)
         self.pageStack[-1].place_forget()
         
-        self.pageStack.append(page)  
-               
+        self.pageStack.append(page)   
+    
+
+    # ----------------------------- METODI PER LA GESTIONE DELLA GRAFICA -----------------------------  
     def _newPageAnimation(self, leftPage, rigPage, l):
         """utilty function, avvia un'animazione di sliding
         pensta unicamente per essere utilzzata da newpage"""
@@ -81,11 +84,6 @@ class IngSoftApp(ctk.CTk):
         l= 1
         
         leftPage.place(relwidth = 1, relheight = 1, rely = 0, relx = -l)
-        rigPage.place(relwidth = 1, relheight = 1, rely = 0, relx = 1 - l)   
-    
-    def initLocalrepoData(self):
-        """loads repo data from github """
-        self.repoData = RepoData()
-      
+        rigPage.place(relwidth = 1, relheight = 1, rely = 0, relx = 1 - l)    
       
        
