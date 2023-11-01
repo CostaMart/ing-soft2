@@ -43,7 +43,21 @@ class CRUDRepo:
         else:
             return None
        
-    
+    def getRepoList(self, repoName):
+        url = f"https://api.github.com/search/repositories?q={repoName}"
+        response = requests.get(url)
+        risultati = response.json()["items"]
+
+        # Crea una lista di oggetti di tipo Repository
+        repositories = []
+        for risultato in risultati:
+            name = risultato["name"]
+            html_url = risultato["html_url"]
+            description = risultato["description"]
+            repository = Repository(name, html_url, description)
+            repositories.append(repository)
+
+        return repositories
             
             
    
