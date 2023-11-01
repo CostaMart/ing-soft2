@@ -37,3 +37,7 @@ def generate_master(folder = "repository"):
     bf = pm.calcola_numero_bug_fix()
     resultDF = pd.DataFrame(result)
     return resultDF, bf
+
+
+
+
