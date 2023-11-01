@@ -84,7 +84,8 @@ class IngSoftApp(ctk.CTk):
         rigPage.place(relwidth = 1, relheight = 1, rely = 0, relx = 1 - l)   
     
     def initLocalrepoData(self):
+        """loads repo data from github """
         self.repoData = RepoData()
       
-          
+      
        
