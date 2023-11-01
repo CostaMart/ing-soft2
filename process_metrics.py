@@ -5,11 +5,11 @@ import pygit2
 import subprocess
 import datetime
 import math
+import pandas as pd
 
-
-def controlla_numero_revisioni_per_classe(classe_filename):
+def controlla_numero_revisioni_per_classe(classe_filename, folder = "repository"):
     """Metodo che dato il nome di una classe ne calcola il numero di revisioni"""
-    repository_path = os.path.abspath('Repository')
+    repository_path = os.path.abspath(folder)
     classe_file_path = ru.trova_file_classe(classe_filename)
 
     if classe_file_path is None:
@@ -25,9 +25,19 @@ def controlla_numero_revisioni_per_classe(classe_filename):
 
 
 
-def calcola_numero_bug_fix():
+def controlla_numero_revisioni_per_repo(folder = "repository"):
+    """Metodo che calcola il numero di revisioni per repository"""
+    list = ru.cerca_file_java(folder)
+    class_data = []
+    for element in list:
+        class_data.append({'Nome della Classe': element, 'Numero di Revisioni': controlla_numero_revisioni_per_classe(element)})
+    return pd.DataFrame(class_data)
+
+
+
+def calcola_numero_bug_fix(folder ="repository"):
     """Metodo che calcola i bug fix di un progetto se documentati """
-    repository_path = os.path.abspath('Repository')
+    repository_path = os.path.abspath(folder)
     repo = git.Repo(repository_path)
     numero_bug_fix = 0
 
@@ -39,9 +49,9 @@ def calcola_numero_bug_fix():
 
 
 
-def calcola_code_churn(commit_hash1, commit_hash2):
+def calcola_code_churn(commit_hash1, commit_hash2, folder="repository"):
     """Metodo che calcola i code churn tra 2 commit, praticamente le linee modificate """
-    repository_path = os.path.abspath('Repository')
+    repository_path = os.path.abspath(folder)
     repo = pygit2.Repository(repository_path)
     code_churn = 0
 
@@ -75,16 +85,32 @@ def calcola_loc(classe_filename):
                 linee_di_codice += 1
 
         return linee_di_codice, linee_vuote, commenti
+    
+
+
+def calcola_loc_repo(folder="repository"):
+    """Calcola il LOC per una lista di classi di un commit e restituisce un DataFrame."""
+    risultati = []
+    classi = ru.cerca_file_java(folder)
+    for classe in classi:
+        loc_result = calcola_loc(classe)  # Usa il tuo metodo calcola_loc
+        nome_classe = classe.split("/")[-1]  # Estrarre solo il nome della classe
+        risultati.append([nome_classe, loc_result[0], loc_result[1], loc_result[2]])
+
+    # Creare un DataFrame con i risultati
+    df = pd.DataFrame(risultati, columns=["Nome della Classe", "Linee di Codice", "Linee Vuote", "Commenti"])
+    
+    return df
 
 
 
-def calcola_autori_distinti_per_file(file_name):
+def calcola_autori_distinti_per_file(file_name, folder = "repository"):
     """Questo metodo calcola il numero di autori distinti per file e ne restituisce una lista di nomi"""
     file_path = ru.trova_file_classe(file_name)
-    repository_path = os.path.abspath('Repository')
+    repository_path = os.path.abspath(folder)
     result = subprocess.check_output(['git', 'log', '--format="%an"', '--follow', file_path], cwd=repository_path, shell=True, text=True)
 
-    autori_distinti = set()
+    autori_distinti =set()
     lines = result.split('\n')
 
     for line in lines:
@@ -96,9 +122,19 @@ def calcola_autori_distinti_per_file(file_name):
 
 
 
-def calcola_settimane_file(class_name):
+def calcola_autori_distinti_per_repo(folder = "repository"):
+    """Metodo che calcola e restituisce gli autori distinti che hanno modificato un file"""
+    list = ru.cerca_file_java(folder)
+    class_data = []
+    for element in list:
+        class_data.append({'Nome della Classe': element, 'Autori': calcola_autori_distinti_per_file(element)})
+    return pd.DataFrame(class_data)
+
+
+
+def calcola_settimane_file(class_name, folder = "repository"):
     """Questo metodo calcola l'età del file richiesto in settimane"""
-    repository_path = os.path.abspath('Repository')
+    repository_path = os.path.abspath(folder)
     file_path = ru.trova_file_classe(class_name)
     git_command = f'git log --diff-filter=A --format=%ct -- {file_path}'
     result = subprocess.check_output(git_command, cwd=repository_path, shell=True).decode('utf-8').strip()
@@ -116,3 +152,13 @@ def calcola_settimane_file(class_name):
     weeks = time_difference.days / 7
     weeks_true= math.floor(weeks)
     return weeks_true
+
+
+
+def calcola_settimane_repo(folder = "repository"):
+    """Questo metodo calcola l'età in settimane di tutti i file in una repository"""
+    list = ru.cerca_file_java(folder)
+    class_data = []
+    for element in list:
+        class_data.append({'Nome della Classe': element, 'Settimane file': calcola_settimane_file(element)})
+    return pd.DataFrame(class_data)
