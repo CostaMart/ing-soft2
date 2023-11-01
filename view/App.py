@@ -1,8 +1,10 @@
 import tkinter as tk
 import customtkinter as ctk
 import time
-from controller.mainPageContoller import get_selected_repo, request_for_repos
+from controller.StartAppContoller import RepoData
 from view.mainPage import MainPage
+import threading
+
 
 class IngSoftApp(ctk.CTk):
     
@@ -10,6 +12,7 @@ class IngSoftApp(ctk.CTk):
     
     def __init__(self, gitv):
         
+        self.repoData = None
         self.testRepoList = []
         self.pageStack = []
         
@@ -21,6 +24,8 @@ class IngSoftApp(ctk.CTk):
         self.minsize(800, 500)
         self.maxsize(1600,1000)
         
+        self.repoData = RepoData()  
+    
        
         
         # Avvia il ciclo principale dell'applicazione
@@ -77,4 +82,9 @@ class IngSoftApp(ctk.CTk):
         
         leftPage.place(relwidth = 1, relheight = 1, rely = 0, relx = -l)
         rigPage.place(relwidth = 1, relheight = 1, rely = 0, relx = 1 - l)   
-            
+    
+    def initLocalrepoData(self):
+        self.repoData = RepoData()
+      
+          
+       

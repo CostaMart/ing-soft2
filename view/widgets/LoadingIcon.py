@@ -18,9 +18,15 @@ class RotatingIcon(tk.Canvas):
         self.image_id = self.create_image(10, 10, image=self.tk_image)
 
         # Avvia l'animazione
-        t = threading.Thread(target= self.animate, args= [0])
-        t.start()
+    
+    
+    def start(self):
+        self.keepRotating = True
+        self.t = threading.Thread(target= self.animate, args= [0])
+        self.t.start()
 
+    
+    
     def animate(self, angle):
         """start animation on animation thread"""
         if self.keepRotating == True:
@@ -39,6 +45,8 @@ class RotatingIcon(tk.Canvas):
             
             self.master.after(20, self.animate, (angle + self.rotationSpeed) % 360)
 
-    def destroy(self) -> None:
+        
+    def stop(self) -> None:
         self.keepRotating = False
-        return super().destroy()
+        
+    

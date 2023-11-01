@@ -1,5 +1,5 @@
 """ contains domain objects """
-from model import FilterProject
+
 
 
 class Repository:
@@ -38,7 +38,7 @@ class Commit:
         }
 
 class MetadataRepository:
-    def __init__(self, data):
+    def __init__(self, data: dict):
         self.id = data['id']
         self.node_id = data['node_id']
         self.name = data['name']
@@ -82,16 +82,19 @@ class MetadataRepository:
         self.watchers = data['watchers']
         self.default_branch = data['default_branch']
         self.temp_clone_token = data['temp_clone_token']
-        self.organization = data['organization']
+        
+        # dava errore se non c'era un'organizzazione nel progetto, quindi prima di prendere questo dato si fa un controllo
+        if "organization" in data.keys():
+            self.organization = data['organization']
+        else:
+            data['organization'] = "no organization"
+            
         self.network_count = data['network_count']
         self.subscribers_count = data['subscribers_count']
         self.tag_releases = None  # Imposta l'attributo tag_releases come nullo all'inizio
-
-    def set_release_tags(self, owner, repo_name):
-        """Metodo che setta le versioni delle release nell'oggetto
-        che modella i metadati del progetto github"""
-        release_tags = FilterProject.get_all_release_tag_repo(owner, repo_name)
-        if release_tags:
-            self.tag_releases = release_tags
-        else:
-            print("Impossibile impostare i tag delle release.")
+    
+    def __str__(self) -> str:
+        super().__str__()
+        dict = self.__dict__
+        for key in dict:
+            print(f'{key}: {dict[key]}')

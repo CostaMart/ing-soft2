@@ -49,7 +49,7 @@ def clone_repo(url):
         
 
     
-    subprocess.call(['git', 'clone', url, folder])
+    return subprocess.call(['git', 'clone', url, folder])
     
 
 def get_all_release_tag_repo(owner, repo_name):
