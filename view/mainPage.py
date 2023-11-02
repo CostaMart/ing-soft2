@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import PhotoImage, font, Toplevel
+from typing import List
 import customtkinter as ctk
 from ttkthemes import ThemedTk
 from .widgets.ListBox import ListBox
@@ -53,7 +54,7 @@ class MainPage(ctk.CTkFrame):
         else:
             self.sideB.place(y = 10 ,relx = 0.9)
      
-    
+    # -----------------------------GUI management -----------------------------
     def _initSearchBlock(self):
         """ inizializza la sezione con il form di ricerca """
         
@@ -86,22 +87,39 @@ class MainPage(ctk.CTkFrame):
         self.message.config(font= font)
         self.message.pack()
         self.icon = RotatingIcon(self.messageBox, iconPath= "resources\\rotationLoading.png", backgroundColor= "#1d1e1e")
-                  
-    def _updateRepoList(self, query, val):
-        """ medoto che esegue l'update della lista  """
+                                              
+    def showMessage(self, msg):
+        """ modifica il messaggio visualizzato """
+        self.text.set(msg)
+    
+    def _start_request(self):
+        self.listBox.cleanList()
+        self.controller.request_for_repos(self.entry.get(), self._updateRepoList)
         
-        respolist = self.controller.request_for_repos(query= query)
+    def _recoverRepoData(self):
+        self.controller.requestRepoUpdate(self.beforeRepoDataUpdate, self.afterRepoDataUpdate)
+              
+    def _initRepoData(self):
+        self.showMessage("we are initializing repo data")
+        self.loading = True
+        self._recoverRepoData()
+
         
-        if (respolist != None):
-            self.testRepoList = respolist
+    # ----------------------------- callbacks -----------------------------
+    def _updateRepoList(self, repolist : List[Repository]):
+        """ medoto che esegue l'update della list, passato come callback alla funzione asincrona del controller,
+        tramite generateCommand assegna ad ogni elemento della lista una callback per il download del repo assegnato"""
+        
+        if (repolist != None):
+            self.testRepoList = repolist
         
         for repo in self.testRepoList:
             command = self._generateCommand(repo.url)
             self.listBox.addBox(repo.name, repo.description, command = command)
-
+    
     def _generateCommand(self, value):
-        """ restituisce una closure che verrà assegnata al tasto corrsipondente, realizzando una closure ogni tasto, quando premuto, richiederà il download del repo relativo """
-        
+        """ restituisce una clousre che avvia il donwload asincrono del repo. la funzione di download (che gestisce anche
+        l'aggiornamento dell'interfaccia durante il caricamento) è downloadRepo """
         def asyncFun(event):
             thread = threading.Thread(target= self._downloadRepo, args = [value, 0])
             thread.start()
@@ -122,43 +140,22 @@ class MainPage(ctk.CTkFrame):
             self.icon.stop()
             self.icon.pack_forget()
             self.showMessage(" ")
-            self._recoverRepoData()
-                          
-    def showMessage(self, msg):
-        """ modifica il messaggio visualizzato """
-        self.text.set(msg)
-    
-    def _start_request(self):
-        self.listBox.cleanList()
-        "avvia la richiesta di update della lista su un thread separato"
-        t = threading.Thread(target= self._updateRepoList, args= (self.entry.get(), 0) )
-        t.start()
-
-    def _recoverRepoData(self):
-        mysefl = self
-        def toCall():
-            mysefl.icon.pack()
-            mysefl.icon.start()
-            mysefl.showMessage("we are now analyzing this repo")
-            mysefl.controller.requestRepoUpdate()
-           
-            
-            if mysefl.controller.getRepoData() != None:
-                
-                mysefl.sideB.place(y = 10 ,relx = 0.9)
-                mysefl.showMessage("done!")
-                mysefl.icon.stop()
-                mysefl.icon.pack_forget()
-                time.sleep(3)
-                mysefl.showMessage("")
-                mysefl.loading = False
-                
-        threading.Thread(target= toCall).start()
+            self._recoverRepoData()       
        
-    def _initRepoData(self):
-        self.showMessage("we are initializing repo data")
-        self.loading = True
-        self._recoverRepoData()
-
-        
+    def beforeRepoDataUpdate(self):
+        self.icon.pack()
+        self.icon.start()
+        self.showMessage("we are now analyzing this repo")
+                   
+    def afterRepoDataUpdate(self):
+        if self.controller.getRepoData() != None:
+                
+                self.sideB.place(y = 10 ,relx = 0.9)
+                self.showMessage("done!")
+                self.icon.stop()
+                self.icon.pack_forget()
+                time.sleep(3)
+                self.showMessage("")
+                self.loading = False
+    
     
