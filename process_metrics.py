@@ -155,33 +155,29 @@ def calcola_autori_distinti_per_repo(folder = "repository"):
 
 
 
-def calcola_settimane_file(class_name, folder="repository"):
+def calcola_settimane_file(class_name, folder = "repository"):
     """Questo metodo calcola l'età del file richiesto in settimane"""
-    file_path = ru.trova_file_classe(class_name)
     repository_path = os.path.abspath(folder)
+    file_path = ru.trova_file_classe(class_name)
+    git_command = f'git log --diff-filter=A --format=%ct -- "{file_path}"'
+    result = subprocess.check_output(git_command, cwd=repository_path, shell=True).decode().strip()
 
-    result = subprocess.check_output(['git', 'log', '--format="%at"', '--follow', file_path], cwd=repository_path, shell=True, text=True)
-    
-    # Divide la stringa in due timestamp
-    timestamps = result.strip().split('\n')
-    
-    if len(timestamps) != 2:
-        return None  # Gestisci il caso in cui non ci siano due timestamp validi
-    
-    try:
-        # Converte i timestamp in valori interi
-        timestamp1 = int(timestamps[0])
-        timestamp2 = int(timestamps[1])
-    except ValueError:
-        return None  # Gestisci il caso in cui i timestamp non possano essere convertiti in interi
+    if not result:
+        return None 
+    timestamps = result.split('\n')
 
-    file_creation_date = datetime.datetime.utcfromtimestamp(timestamp1)
-    current_time = datetime.datetime.utcfromtimestamp(timestamp2)
-    
-    # Calcola la differenza in settimane tra le due date
-    weeks_difference = (current_time - file_creation_date).days // 7
+    # Prendi solo la prima parte del timestamp (ignorando il timestamp doppio se presente)
+    first_timestamp = timestamps[0]
 
-    return weeks_difference
+    # Converti il timestamp in un intero
+    file_creation_timestamp = int(first_timestamp)
+    file_creation_date = datetime.datetime.utcfromtimestamp(file_creation_timestamp)
+
+    current_time = datetime.datetime.now()
+    time_difference = current_time - file_creation_date
+
+    # Calcola il numero di giorni
+    return math.ceil(time_difference.days/7)
 
 
 

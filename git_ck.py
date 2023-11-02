@@ -4,7 +4,7 @@ from git import Repo
 import repo_utils as ru
 import pandas as pd
 from multiprocessing import Pool
-import ReturnReleaseProject
+import model.ReturnReleaseProject
 
 from model import ReturnReleaseProject
 
