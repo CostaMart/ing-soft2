@@ -6,7 +6,7 @@ from .DataAccessLayer.RepoDataAccess import CRUDRepo
 import subprocess
 
 class LocalRepoModel:
-    """modella le interazioni e il recupero dei dati locali (come il repo locale) necessari all app """
+    """SINGLETON: modella le interazioni e il recupero dei dati locali (come il repo locale) necessari all app """
     
     
     _instance = None
@@ -16,13 +16,14 @@ class LocalRepoModel:
         
         if cls._instance is None:
             cls._instance = super(LocalRepoModel, cls).__new__(cls)
-            
         return cls._instance
     
     def getRepoData(self):
+        """ ritorna i metadati del repository installato localente """
         return self.repoData
     
     def RepoDataUpdate(self):
+        """ recupera i meta dati aggiornati relativi al repo installato localmente """
         CRUD = CRUDRepo()
         self._CheckRepoDir()
         
@@ -34,8 +35,6 @@ class LocalRepoModel:
         repoDir = f"{current_directory}\\repository\\{repoDir}"
         repoDir = repoDir.replace("\n", "")
         
-        
-
         if os.getcwd() == f"{current_directory}\\repository".replace("\n",""):
             os.chdir(repoDir)
             
@@ -51,33 +50,17 @@ class LocalRepoModel:
             self.repoData = repodata
         
         os.chdir(current_directory)
-        
-        
+          
     def createLocalRepo(self, url):
+        """a partire dall'URL fornito intsalla localmente in una directory 'repository' il repo cercato"""
+       
         current_directory = os.getcwd()
         folder_path = os.path.join(current_directory, "repository")
         os.chdir(folder_path)
-    
-    
-        if not os.path.exists(folder_path):
-            try:
-                os.makedirs(folder_path)
-                    
-            except OSError as e:
-                print(f"Errore durante la creazione della cartella repository': {e}")
-        else:   
-            if sys.platform.startswith('win'):
-                print("siamo su windowss")
-                os.system(f'rmdir /S /Q ')
-        
-            elif sys.platform.startswith('linux'):
-                print("siamo su linux")
-                shutil.rmtree("repository")   
        
         contenuto_directory = os.listdir()
 
         def on_rm_error( func, path, exc_info):
-
             os.chmod( path, stat.S_IWRITE )
             os.unlink( path )
         
@@ -91,6 +74,7 @@ class LocalRepoModel:
         os.chdir(current_directory)
         
     def _CheckRepoDir(self):
+        "controlla se la directory repository esiste localmente, altrimenti la crea "
         if not os.path.exists("repository"):
             try:
                 os.makedirs("repository")
