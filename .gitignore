@@ -2,3 +2,4 @@
 /VirtualEnvirovment
 repository/
 *.pyc
+**/__pycache__
