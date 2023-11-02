@@ -15,12 +15,4 @@ class RepoModel:
         CRUD = CRUDRepo()
         return CRUD.getJavaRepoList(name)
 
-# Esempio di utilizzo:
-repo_name = "esempio"  # Sostituisci con il nome del repository che stai cercando
-repositories = RepoModel.getRepoListByNameInJava(repo_name)
 
-for repo in repositories:
-    print(f"Nome: {repo.name}")
-    print(f"URL: {repo.url}")
-    print(f"Descrizione: {repo.description}")
-    print("---")

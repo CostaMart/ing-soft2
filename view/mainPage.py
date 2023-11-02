@@ -11,6 +11,7 @@ from controller.mainPageContoller import mainPageController
 from view.widgets.LoadingIcon import RotatingIcon
 from view.ProjectMetricsPage import ProjectMetricsPage 
 from view.widgets.SideButton import SideButton
+import os
 
 class MainPage(ctk.CTkFrame):
     
@@ -86,7 +87,10 @@ class MainPage(ctk.CTkFrame):
         self.message = tk.Label(self.messageBox, textvariable= self.text, background="#1d1e1e", foreground= "#FFFFFF")
         self.message.config(font= font)
         self.message.pack()
-        self.icon = RotatingIcon(self.messageBox, iconPath= "resources\\rotationLoading.png", backgroundColor= "#1d1e1e")
+        icon_filename = "rotationLoading.png"
+        resources_directory = "resources"
+        icon_path = os.path.join(resources_directory, icon_filename)
+        self.icon = RotatingIcon(self.messageBox, iconPath = icon_path, backgroundColor= "#1d1e1e")
                                               
     def showMessage(self, msg):
         """ modifica il messaggio visualizzato """

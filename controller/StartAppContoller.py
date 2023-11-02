@@ -1,5 +1,4 @@
 
-
 import os
 import subprocess
 from model.DataAccessLayer.RepoDataAccess import CRUDRepo
@@ -24,4 +23,3 @@ class StartAppController:
     
     def getLocalRepoData(self):
         return  self.localModel.repoData
-
