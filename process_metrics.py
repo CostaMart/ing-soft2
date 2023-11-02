@@ -13,7 +13,7 @@ def controlla_numero_revisioni_per_classe(classe_filename, folder = "repository"
     """Metodo che dato il nome di una classe ne calcola il numero di revisioni"""
     repository_path = os.path.abspath(folder)
     classe_file_path = ru.trova_file_classe(classe_filename)
-    print(classe_file_path)
+    # print(classe_file_path)
     if classe_file_path is None:
         return 0 
 
@@ -80,7 +80,7 @@ def calcola_loc(classe_filename):
     # Verifica la codifica rilevata
     if file_encoding is None:
         file_encoding = 'utf-8'  # Imposta una codifica predefinita se non può essere rilevata
-    print(file_encoding)
+    # print(file_encoding)
     with open(classe_file_path, 'r', encoding=file_encoding) as file:
         linee_di_codice = 0
         linee_vuote = 0
@@ -127,7 +127,7 @@ def calcola_autori_distinti_per_file(file_name, folder="repository"):
     # Rileva la codifica dell'output
     encoding_info = chardet.detect(output)
     output_encoding = encoding_info['encoding']
-    print(encoding_info)
+    # print(encoding_info)
     # Verifica la codifica rilevata
     if output_encoding is None:
         output_encoding = 'utf-8'  # Imposta una codifica predefinita se non può essere rilevata

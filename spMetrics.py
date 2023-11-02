@@ -25,21 +25,15 @@ def generate(hash_code, folder = "repository"):
 def generate_master(folder = "repository"):
     """Calcola le metriche di processo dell'elemento puntato dalla repository"""
     if(folder != "repository"):
-        sf = pm.calcola_settimane_repo(folder)
-        ad = pm.calcola_autori_distinti_per_repo(folder)
-        lc = pm.calcola_loc_repo(folder)
         nr = pm.controlla_numero_revisioni_per_repo(folder)
-        # lc = pm.calcola_loc_repo(folder)
-        # ad = pm.calcola_autori_distinti_per_repo(folder)
-        # sf = pm.calcola_settimane_repo(folder)
+        lc = pm.calcola_loc_repo(folder)
+        ad = pm.calcola_autori_distinti_per_repo(folder)
+        sf = pm.calcola_settimane_repo(folder)
     else:
-        sf = pm.calcola_settimane_repo()
-        ad = pm.calcola_autori_distinti_per_repo()
-        lc = pm.calcola_loc_repo()
         nr = pm.controlla_numero_revisioni_per_repo()
-        # lc = pm.calcola_loc_repo()
-        # ad = pm.calcola_autori_distinti_per_repo()
-        # sf = pm.calcola_settimane_repo()
+        lc = pm.calcola_loc_repo()
+        ad = pm.calcola_autori_distinti_per_repo()
+        sf = pm.calcola_settimane_repo()
     result = nr.merge(lc, on='Nome della Classe').merge(ad, on='Nome della Classe').merge(sf, on='Nome della Classe')
     bf = pm.calcola_numero_bug_fix()
     resultDF = pd.DataFrame(result)
