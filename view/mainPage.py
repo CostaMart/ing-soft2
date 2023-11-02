@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import PhotoImage, font, Toplevel
 from typing import List
@@ -86,8 +87,13 @@ class MainPage(ctk.CTkFrame):
         self.message = tk.Label(self.messageBox, textvariable= self.text, background="#1d1e1e", foreground= "#FFFFFF")
         self.message.config(font= font)
         self.message.pack()
-        self.icon = RotatingIcon(self.messageBox, iconPath= "resources\\rotationLoading.png", backgroundColor= "#1d1e1e")
-                                              
+
+        """Sistemazione dell'icona del s.o."""
+        icon_filename = "rotationLoading.png"
+        resources_directory = "resources"
+        icon_path = os.path.join(resources_directory, icon_filename)
+        self.icon = RotatingIcon(self.messageBox, iconPath=icon_path, backgroundColor="#1d1e1e")
+
     def showMessage(self, msg):
         """ modifica il messaggio visualizzato """
         self.text.set(msg)

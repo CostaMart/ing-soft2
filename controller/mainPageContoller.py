@@ -44,7 +44,7 @@ class mainPageController:
         self.globalModel.createLocalRepo(url)
         return True
            
-    def checkRepo():
+    def checkRepo(self):
             percorso_git = os.path.join("repository", ".git")
             if os.path.exists(percorso_git) and os.path.isdir(percorso_git):
                 return True

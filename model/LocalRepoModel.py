@@ -31,12 +31,12 @@ class LocalRepoModel:
         os.chdir("repository")
         repoDir = subprocess.check_output(["dir"]).decode("utf-8")
         
-        repoDir = f"{current_directory}\\repository\\{repoDir}"
+        repoDir = os.path.join(current_directory,"repository",repoDir)
         repoDir = repoDir.replace("\n", "")
         
-        
+        checkDir = os.path.join(current_directory,"repository")
 
-        if os.getcwd() == f"{current_directory}\\repository".replace("\n",""):
+        if os.getcwd() == checkDir:
             os.chdir(repoDir)
             
             result = subprocess.check_output(["git", "remote", "show", "origin"]).decode("utf-8")
@@ -49,7 +49,7 @@ class LocalRepoModel:
             repoName = firstLine.split("/")[-1]
             repodata = CRUD.getRepoByNameeAuthor(name, repoName)
             self.repoData = repodata
-        
+
         os.chdir(current_directory)
         
         
@@ -57,23 +57,7 @@ class LocalRepoModel:
         current_directory = os.getcwd()
         folder_path = os.path.join(current_directory, "repository")
         os.chdir(folder_path)
-    
-    
-        if not os.path.exists(folder_path):
-            try:
-                os.makedirs(folder_path)
-                    
-            except OSError as e:
-                print(f"Errore durante la creazione della cartella repository': {e}")
-        else:   
-            if sys.platform.startswith('win'):
-                print("siamo su windowss")
-                os.system(f'rmdir /S /Q ')
-        
-            elif sys.platform.startswith('linux'):
-                print("siamo su linux")
-                shutil.rmtree("repository")   
-       
+
         contenuto_directory = os.listdir()
 
         def on_rm_error( func, path, exc_info):

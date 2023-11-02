@@ -1,3 +1,4 @@
+import os.path
 import tkinter as tk
 from tkinter import font
 import customtkinter as ctk
@@ -27,9 +28,9 @@ class ProjectMetricsPage(ctk.CTkFrame):
         
         self.but = ctk.CTkButton(self, command= lambda: print(master.repoData) )
         self.but.pack()
-      
+        left_arrow = os.path.join("resources","left-arrow.png")
         
-        self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath="resources\left-arrow.png")
+        self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath=left_arrow)
         self.backButton.place(x= -150, y= 10 )
             
         
