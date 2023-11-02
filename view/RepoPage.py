@@ -1,7 +1,7 @@
 import tkinter as tk
 import customtkinter as ctk
 from ttkthemes import ThemedTk
-from .ListBox import ListBox
+from .widgets.ListBox import ListBox
 from model.Domain import Repository
 
 
@@ -14,4 +14,3 @@ class RepoPage(ctk.CTk):
         self.geometry("800x500")
         self.minsize(800, 500)
         self.maxsize(1600,1000)
-        

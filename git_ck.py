@@ -6,6 +6,8 @@ import pandas as pd
 from multiprocessing import Pool
 import ReturnReleaseProject
 
+from model import ReturnReleaseProject
+
 
 def ck_metrics_for_single_commit(commit_hash, output = None, folder = "repository"):
     """Questo metodo estrae le metriche del commit scelto
