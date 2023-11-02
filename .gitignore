@@ -1,3 +1,4 @@
 # Ignora l'ambiente virtuale
 /myVirtualEnvirovment
 *.pyc
+**/__pycache__
