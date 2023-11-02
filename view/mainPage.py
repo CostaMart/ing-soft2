@@ -11,7 +11,6 @@ from controller.mainPageContoller import mainPageController
 from view.widgets.LoadingIcon import RotatingIcon
 from view.ProjectMetricsPage import ProjectMetricsPage 
 from view.widgets.SideButton import SideButton
-import os
 
 class MainPage(ctk.CTkFrame):
     
@@ -87,10 +86,7 @@ class MainPage(ctk.CTkFrame):
         self.message = tk.Label(self.messageBox, textvariable= self.text, background="#1d1e1e", foreground= "#FFFFFF")
         self.message.config(font= font)
         self.message.pack()
-        icon_filename = "rotationLoading.png"
-        resources_directory = "resources"
-        icon_path = os.path.join(resources_directory, icon_filename)
-        self.icon = RotatingIcon(self.messageBox, iconPath = icon_path, backgroundColor= "#1d1e1e")
+        self.icon = RotatingIcon(self.messageBox, iconPath= "resources\\rotationLoading.png", backgroundColor= "#1d1e1e")
                                               
     def showMessage(self, msg):
         """ modifica il messaggio visualizzato """
@@ -152,10 +148,18 @@ class MainPage(ctk.CTkFrame):
         self.showMessage("we are now analyzing this repo")
                    
     def afterRepoDataUpdate(self):
+        
         if self.controller.getRepoData() != None:
                 
                 self.sideB.place(y = 10 ,relx = 0.9)
                 self.showMessage("done!")
+                self.icon.stop()
+                self.icon.pack_forget()
+                time.sleep(3)
+                self.showMessage("")
+                self.loading = False
+        else:
+                self.showMessage("something wrong happened :(")
                 self.icon.stop()
                 self.icon.pack_forget()
                 time.sleep(3)

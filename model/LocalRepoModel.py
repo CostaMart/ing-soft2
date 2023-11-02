@@ -1,5 +1,6 @@
 import os
 import shutil
+import stat
 import sys
 from .DataAccessLayer.RepoDataAccess import CRUDRepo
 import subprocess
@@ -24,19 +25,39 @@ class LocalRepoModel:
     def RepoDataUpdate(self):
         CRUD = CRUDRepo()
         self._CheckRepoDir()
-  
-        result = subprocess.check_output(["git", "remote", "show", "origin"], cwd="repository").decode("utf-8")
         
-        firstLine = result.split("\n")[1]
-        name = firstLine.split("/")[-2]
-        repoName = firstLine.split("/")[-1]
-        repodata = CRUD.getRepoByNameeAuthor(name, repoName)
+        current_directory = os.getcwd()
+        
+        os.chdir("repository")
+        repoDir = subprocess.check_output(["dir"]).decode("utf-8")
+        
+        repoDir = f"{current_directory}\\repository\\{repoDir}"
+        repoDir = repoDir.replace("\n", "")
+        
+        
 
-        self.repoData = repodata
-
+        if os.getcwd() == f"{current_directory}\\repository".replace("\n",""):
+            os.chdir(repoDir)
+            
+            result = subprocess.check_output(["git", "remote", "show", "origin"]).decode("utf-8")
+    
+            os.chdir(current_directory)
+            print(os.getcwd())
+            
+            firstLine = result.split("\n")[1]
+            name = firstLine.split("/")[-2]
+            repoName = firstLine.split("/")[-1]
+            repodata = CRUD.getRepoByNameeAuthor(name, repoName)
+            self.repoData = repodata
+        
+        os.chdir(current_directory)
+        
+        
     def createLocalRepo(self, url):
         current_directory = os.getcwd()
         folder_path = os.path.join(current_directory, "repository")
+        os.chdir(folder_path)
+    
     
         if not os.path.exists(folder_path):
             try:
@@ -53,8 +74,22 @@ class LocalRepoModel:
                 print("siamo su linux")
                 shutil.rmtree("repository")   
        
-        return subprocess.call(['git', 'clone', url], cwd= "repository")
-    
+        contenuto_directory = os.listdir()
+
+        def on_rm_error( func, path, exc_info):
+
+            os.chmod( path, stat.S_IWRITE )
+            os.unlink( path )
+        
+        for dir in contenuto_directory:
+            if dir != "repository":
+                shutil.rmtree( dir, onerror = on_rm_error )
+               
+        
+            
+        subprocess.call(['git', 'clone', url])
+        os.chdir(current_directory)
+        
     def _CheckRepoDir(self):
         if not os.path.exists("repository"):
             try:
@@ -63,4 +98,3 @@ class LocalRepoModel:
                 print(f"Errore durante la creazione della cartella: {e}")
         else:
             return
-

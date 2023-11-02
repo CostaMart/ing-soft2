@@ -8,13 +8,13 @@ import threading
 
 
 class mainPageController:
+   
     def __init__(self):
         super().__init__()
         self.process = None
         self.globalModel = LocalRepoModel()
         self.repoModel = RepoModel()
-      
-      
+         
     def requestRepoUpdate(self, callbackBefore : Callable[[], None] = None, callbackAfter : Callable[[], None] = None):
         """ avvia una richiesta di update per i dati locali del repository, verrà eseguita su un thread apposito
         è possibile registrare una callback sia prima che dopo l'update,
@@ -39,13 +39,12 @@ class mainPageController:
             callback(repoList)
         
         threading.Thread(target= toRun).start()
-        
-     
+            
     def get_selected_repo(self, url):
         self.globalModel.createLocalRepo(url)
         return True
            
-    def checkRepo(self):
+    def checkRepo():
             percorso_git = os.path.join("repository", ".git")
             if os.path.exists(percorso_git) and os.path.isdir(percorso_git):
                 return True
