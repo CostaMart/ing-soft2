@@ -1,11 +1,8 @@
-import subprocess
-import sys
-import os
 import tkinter as tk
 import customtkinter as ctk
 from ttkthemes import ThemedTk
 from model.Domain import Repository
-from .LoadingIcon import RotatingIcon
+from .widgets.LoadingIcon import RotatingIcon
 
 
 class StartupPage(ctk.CTk):

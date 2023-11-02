@@ -2,7 +2,7 @@ import requests
 
 from model.Domain import Commit
 
-
+"""Metodo che trova tutti i commit appartenenti ad una release"""
 def get_commits_for_release(repo_owner, repo_name, release_tag):
     url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits?sha={release_tag}"
 

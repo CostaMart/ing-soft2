@@ -6,6 +6,8 @@ import pandas as pd
 from multiprocessing import Pool
 import ReturnReleaseProject
 
+from model import ReturnReleaseProject
+
 
 def ck_metrics_for_single_commit(commit_hash, output = None, folder = "repository"):
     """Questo metodo estrae le metriche del commit scelto
@@ -80,9 +82,9 @@ def commit_for_year(year, folder = "repository"):
 
 
 
-def commit_measure_year(year, measures):
+def commit_measure_year(year, measures, folder= "repository"):
     """ Questo metodo calcola le metriche per l'anno desiderato e fa la media delle metriche richieste per ogni commit"""
-    commit_for_year(year)
+    commit_for_year(year, folder)
     result_data = []
     path = os.path.abspath("output") + "\\" + str(year)
     element_names = os.listdir(path)
@@ -120,11 +122,44 @@ def commit_measure_release(measures, folder = "repository"):
     for name in element_names:
         metric_averages = {}
         for measure in measures:
-            metric_averages[measure] = commit_measure_avg(measure, name)
+            metric_averages[measure] = commit_measure_avg(measure, name, folder)
         result_data.append({"Commit Hash": name, **metric_averages})
     result_df = pd.DataFrame(result_data)
     rel['Commit Hash'] = rel['Commit Hash']+'class.csv'
     result = rel.merge(result_df, on ="Commit Hash")
+    return result
+
+
+
+def analyze_commits_for_interval(df, index, folder = "repository"):
+    """Questo metodo estrae i commit corrispondenti all'intervallo scelto e li analizza"""
+    commits = ru.sfoglia_commit(df, index)
+    if not commits.empty:  # Controlla se il DataFrame non è vuoto
+        commit_messages = commits.iloc[:, 0]  # Estrai la seconda colonna
+        for commit_message in commit_messages:
+                ck_metrics_for_single_commit(commit_message, folder = folder)
+        ru.delete_garbage("class")
+        return commits
+    else:
+        print("Nessun commit disponibile per il tag di rilascio specificato.")
+
+
+
+def commit_measure_interval(measures, df, index, folder = "repository"):
+    """ Questo metodo calcola le metriche per l'intervallo e fa la media delle metriche richieste per ogni commit"""
+    commit = analyze_commits_for_interval(df, index, folder)
+    commit['Commit Hash'] = commit['Commit Hash'] + 'class.csv'
+    result_data = []
+    path = os.path.abspath("output")
+    element_names = os.listdir(path)
+    
+    for name in element_names:
+        metric_averages = {}
+        for measure in measures:
+            metric_averages[measure] = commit_measure_avg(measure, name)
+        result_data.append({"Commit Hash": name, **metric_averages})
+    result_df = pd.DataFrame(result_data)
+    result = commit.merge(result_df, on ="Commit Hash")
     return result
 
 

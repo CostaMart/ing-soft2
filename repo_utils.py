@@ -3,6 +3,7 @@ import pandas as pd
 import json
 from pydriller import Repository
 import subprocess
+import urllib.parse
 
 setting = open("settings.json")
 settings = json.load(setting)
@@ -93,7 +94,7 @@ def dataCommitLink(rep):
     for commit in get_commits(rep):
         commit_hash = commit.hash
         commit_date = commit.committer_date
-        commit_data.append({'Titolo del Commit': commit_hash, 'Data del Commit': commit_date})
+        commit_data.append({'Commit Hash': commit_hash, 'Data del Commit': commit_date})
     return pd.DataFrame(commit_data)
 
 
@@ -193,3 +194,39 @@ def checkout_commit(commit_hash, folder = "repository"):
         print(f"Checkout effettuato con successo al commit {commit_hash}.")
     except subprocess.CalledProcessError as e:
         print(f"Errore durante il checkout al commit {commit_hash}: {e.stderr}")
+
+
+
+def inizia_analisi(tag = None):
+    """Questo metodo prepara il processo alle operazioni da effettuare"""
+    if(tag is None):
+        check_repo()
+        check_folder()
+        folder = "repository"
+    else:
+        parsed_url = urllib.parse.urlparse(settings["repo"])
+        folder= parsed_url.path.strip('/').split('/')[-1]
+        check_folder()
+        if not os.path.exists(folder):
+            clone_git_repository_with_tag(tag)
+            
+    repo = repo_to_use(folder)
+    return dataCommitLink(repo), folder
+
+
+
+def sfoglia_commit(df, index = 0):
+    """Questo metodo richiede il dataframe ritornato dall'inizializzazione e sfoglia i commit 10 alla volta sulla base dell'indice passato"""
+    if index >= df.shape[0]:
+        return pd.DataFrame()  # Se l'indice è troppo grande, restituisci un DataFrame vuoto
+    
+    start_index = index
+    end_index = min(index + 10, df.shape[0])
+    
+    subset_df = df.iloc[start_index:end_index]
+    
+    return subset_df
+        
+
+    
+

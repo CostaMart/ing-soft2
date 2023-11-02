@@ -21,6 +21,7 @@ def generate(hash_code, folder = "repository"):
     return resultDF, bf
 
 
+
 def generate_master(folder = "repository"):
     """Calcola le metriche di processo dell'elemento puntato dalla repository"""
     if(folder != "repository"):
@@ -37,3 +38,7 @@ def generate_master(folder = "repository"):
     bf = pm.calcola_numero_bug_fix()
     resultDF = pd.DataFrame(result)
     return resultDF, bf
+
+
+
+
