@@ -51,6 +51,19 @@ def clone_repo(url):
     
     return subprocess.call(['git', 'clone', url, folder])
     
+def get_all_release_tag_repo(owner, repo_name):
+    """Metodo che ritorna tutte le  releases di uno specifico progetto"""
+    url = f"https://api.github.com/repos/{owner}/{repo_name}/releases"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        releases = response.json()
+        # Estrai solo i tag delle release dalla lista di release
+        release_tags = [release['tag_name'] for release in releases]
+        return release_tags
+    else:
+        print(f"Errore {response.status_code}: Impossibile ottenere le release del progetto.")
+        return None
 
 def get_all_release_tag_repo(owner, repo_name):
     """Metodo che ritorna tutte le  releases di uno specifico progetto"""
