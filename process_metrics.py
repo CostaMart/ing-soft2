@@ -6,12 +6,14 @@ import subprocess
 import datetime
 import math
 import pandas as pd
+import chardet
+
 
 def controlla_numero_revisioni_per_classe(classe_filename, folder = "repository"):
     """Metodo che dato il nome di una classe ne calcola il numero di revisioni"""
     repository_path = os.path.abspath(folder)
     classe_file_path = ru.trova_file_classe(classe_filename)
-
+    print(classe_file_path)
     if classe_file_path is None:
         return 0 
 
@@ -70,7 +72,16 @@ def calcola_loc(classe_filename):
     """Questo metodo calcola le misure LOC di un codice restituendo il 
        numero di linee di codice il numero di linee vuote e il numero di commenti"""
     classe_file_path = ru.trova_file_classe(classe_filename)
-    with open(classe_file_path, 'r') as file:
+    with open(classe_file_path, 'rb') as raw_file:
+        raw_data = raw_file.read()
+        encoding_info = chardet.detect(raw_data)
+        file_encoding = encoding_info['encoding']
+    
+    # Verifica la codifica rilevata
+    if file_encoding is None:
+        file_encoding = 'utf-8'  # Imposta una codifica predefinita se non può essere rilevata
+    print(file_encoding)
+    with open(classe_file_path, 'r', encoding=file_encoding) as file:
         linee_di_codice = 0
         linee_vuote = 0
         commenti = 0
@@ -104,19 +115,31 @@ def calcola_loc_repo(folder="repository"):
 
 
 
-def calcola_autori_distinti_per_file(file_name, folder = "repository"):
+def calcola_autori_distinti_per_file(file_name, folder="repository"):
     """Questo metodo calcola il numero di autori distinti per file e ne restituisce una lista di nomi"""
     file_path = ru.trova_file_classe(file_name)
     repository_path = os.path.abspath(folder)
-    result = subprocess.check_output(['git', 'log', '--format="%an"', '--follow', file_path], cwd=repository_path, shell=True, text=True)
 
-    autori_distinti =set()
-    lines = result.split('\n')
+    # Esegui il comando Git per ottenere gli autori
+    git_command = ['git', 'log', '--format="%an"', '--follow', file_path]
+    output = subprocess.check_output(git_command, cwd=repository_path)
 
+    # Rileva la codifica dell'output
+    encoding_info = chardet.detect(output)
+    output_encoding = encoding_info['encoding']
+    print(encoding_info)
+    # Verifica la codifica rilevata
+    if output_encoding is None:
+        output_encoding = 'utf-8'  # Imposta una codifica predefinita se non può essere rilevata
+
+    # Decodifica l'output con la codifica corretta
+    decoded_output = output.decode(output_encoding)
+
+    autori_distinti = set()
+    lines = decoded_output.split('\n')
     for line in lines:
-        autore = line.strip('"')
-        if autore:
-            autori_distinti.add(autore)
+        autore = line.strip('"\n')  # Rimuovi i caratteri di citazione e newline
+        autori_distinti.add(autore)
 
     return autori_distinti
 
@@ -132,26 +155,33 @@ def calcola_autori_distinti_per_repo(folder = "repository"):
 
 
 
-def calcola_settimane_file(class_name, folder = "repository"):
+def calcola_settimane_file(class_name, folder="repository"):
     """Questo metodo calcola l'età del file richiesto in settimane"""
-    repository_path = os.path.abspath(folder)
     file_path = ru.trova_file_classe(class_name)
-    git_command = f'git log --diff-filter=A --format=%ct -- {file_path}'
-    result = subprocess.check_output(git_command, cwd=repository_path, shell=True).decode('utf-8').strip()
+    repository_path = os.path.abspath(folder)
 
-    if not result:
-        return None 
+    result = subprocess.check_output(['git', 'log', '--format="%at"', '--follow', file_path], cwd=repository_path, shell=True, text=True)
+    
+    # Divide la stringa in due timestamp
+    timestamps = result.strip().split('\n')
+    
+    if len(timestamps) != 2:
+        return None  # Gestisci il caso in cui non ci siano due timestamp validi
+    
+    try:
+        # Converte i timestamp in valori interi
+        timestamp1 = int(timestamps[0])
+        timestamp2 = int(timestamps[1])
+    except ValueError:
+        return None  # Gestisci il caso in cui i timestamp non possano essere convertiti in interi
 
-    file_creation_timestamp = int(result)
-    file_creation_date = datetime.datetime.utcfromtimestamp(file_creation_timestamp)
+    file_creation_date = datetime.datetime.utcfromtimestamp(timestamp1)
+    current_time = datetime.datetime.utcfromtimestamp(timestamp2)
+    
+    # Calcola la differenza in settimane tra le due date
+    weeks_difference = (current_time - file_creation_date).days // 7
 
-    current_time = datetime.datetime.now()
-
-    time_difference = current_time - file_creation_date
-
-    weeks = time_difference.days / 7
-    weeks_true= math.floor(weeks)
-    return weeks_true
+    return weeks_difference
 
 
 
