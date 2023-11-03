@@ -5,7 +5,6 @@ import repo_utils as ru
 import pandas as pd
 from multiprocessing import Pool
 import model.ReturnReleaseProject
-
 from model import ReturnReleaseProject
 
 
@@ -13,7 +12,7 @@ def ck_metrics_for_single_commit(commit_hash, output = None, folder = "repositor
     """Questo metodo estrae le metriche del commit scelto
     Utilizzato per fare analisi su commit singoli
     Utilizzato per fare analisi su commit in maniera iterativa per le richieste di metriche per intervallo"""
-
+    partenza = os.getcwd()
     repo_to_analyze = os.path.abspath(folder)
     ck_tool = os.path.abspath('ck.jar')
     if (output is not None):
@@ -21,12 +20,17 @@ def ck_metrics_for_single_commit(commit_hash, output = None, folder = "repositor
         os.makedirs(output_dir, exist_ok=True)
     else:
         output_dir = os.path.abspath("output")
-    os.chdir(repo_to_analyze)
-    subprocess.call(['git', 'checkout', '-f', commit_hash])
-    os.chdir(os.path.dirname(ck_tool))
-    subprocess.call(['java', '-jar', 'ck.jar', repo_to_analyze, 'true', '0', 'false', f"{output_dir}/{commit_hash}"])
-    if(output is not None):
-        ru.delete_garbage("class", output)
+    file_name = commit_hash + "class.csv"
+    file_path = os.path.join(output_dir, file_name)
+
+    if not os.path.exists(file_path):
+        os.chdir(repo_to_analyze)
+        subprocess.call(['git', 'checkout', '-f', commit_hash])
+        os.chdir(os.path.dirname(ck_tool))
+        subprocess.call(['java', '-jar', 'ck.jar', repo_to_analyze, 'true', '0', 'false', f"{output_dir}/{commit_hash}"])
+        if(output is not None):
+            ru.delete_garbage("class", output)
+            os.chdir(partenza)
     # Non ritorna nulla ma crea il file csv con metriche per il commit richiesto
     
 
