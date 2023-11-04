@@ -15,4 +15,4 @@ class RepoModel:
         CRUD = CRUDRepo()
         return CRUD.getJavaRepoList(name)
 
-
+    

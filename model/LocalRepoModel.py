@@ -1,7 +1,7 @@
 import os
 import shutil
 import stat
-import sys
+import model.DataAccessLayer.RepoDataAccess
 from .DataAccessLayer.RepoDataAccess import CRUDRepo
 import subprocess
 
@@ -56,8 +56,9 @@ class LocalRepoModel:
             firstLine = result.split("\n")[1]
             name = firstLine.split("/")[-2]
             repoName = firstLine.split("/")[-1]
-            repodata = CRUD.getRepoByNameeAuthor(name, repoName)
+            repodata = self.CRUD.getRepoByNameeAuthor(name, repoName)
             self.repoData = repodata
+            self.repoData.releases = self.CRUD.get_all_release_tag_repo(name, repoName)
 
         os.chdir(current_directory)
           

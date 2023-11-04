@@ -155,6 +155,7 @@ class MainPage(ctk.CTkFrame):
     def afterRepoDataUpdate(self):
         response = self.controller.getStatusCodeFromLocalModel()
         # Accedi allo status_code e al body dell'oggetto HttpResponse
+        
         status_code = response.status_code
         body = response.body
         if self.controller.getRepoData() is not None and status_code == 200:
