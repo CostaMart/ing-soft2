@@ -1,13 +1,12 @@
 from typing import Callable, List
 from model.Domain import Repository
-from model import FilterProject
 import os
 from model.LocalRepoModel import LocalRepoModel
 from model.RepoModel import RepoModel
 import threading
 
 
-class mainPageController:
+class MainPageController:
    
     def __init__(self):
         super().__init__()

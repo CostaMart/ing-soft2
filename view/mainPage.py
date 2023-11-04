@@ -1,14 +1,13 @@
 import os
 import tkinter as tk
-from tkinter import PhotoImage, font, Toplevel
+from tkinter import font
 from typing import List
 import customtkinter as ctk
-from ttkthemes import ThemedTk
 from .widgets.ListBox import ListBox
 from model.Domain import Repository
 import time
 import threading
-from controller.mainPageContoller import mainPageController
+from controller.mainPageContoller import MainPageController
 from view.widgets.LoadingIcon import RotatingIcon
 from view.ProjectMetricsPage import ProjectMetricsPage 
 from view.widgets.SideButton import SideButton
@@ -19,7 +18,7 @@ class MainPage(ctk.CTkFrame):
     def __init__(self, master , gitv):
         
         self.loading = False
-        self.controller = mainPageController()
+        self.controller = MainPageController()
         self.text = tk.StringVar()
         self.master = master
         self.testRepoList = []

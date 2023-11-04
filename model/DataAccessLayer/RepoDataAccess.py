@@ -1,5 +1,5 @@
 from ..FilterProject import *
-
+from icecream import ic
 
 class CRUDRepo:
     
@@ -17,12 +17,14 @@ class CRUDRepo:
        
         response = requests.get(f'https://api.github.com/repos/{repoOwner}/{repoName}')
        
+        ic(response.json())
         
         if response.status_code == 200:
             repository_data = response.json()
             repository = Domain.MetadataRepository(repository_data)
             relesases = self._set_release_tags(repository.owner, repository.full_name)
             repository.tag_releases = relesases
+            
             return repository
         else:
             return None
@@ -39,6 +41,7 @@ class CRUDRepo:
             repository = Domain.MetadataRepository(repository_data)
             relesases = self._set_release_tags(repository.owner, repository.full_name)
             repository.tag_releases = relesases
+            ic(repository)
             return repository
         else:
             return None
