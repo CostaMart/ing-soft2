@@ -5,19 +5,29 @@ from view.widgets.Plot import PlotCartesian
 from controller.ProjectMetricsContoller import MetricsPageContoller
 import tkinter as tk
 from icecream import ic
+from .ControllerFalso import ControllerFalso
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
     
-    def __init__(self, master):
+    def __init__(self, master, debug = False):
         super().__init__(master = master)
         ctk.set_appearance_mode("dark")
-       
-        self.controller = MetricsPageContoller() 
-        self.repoData = self.controller.getLocalRepoData()
-        self.master = master
         
+        if debug == True:
+            self.controller = ControllerFalso()
+            self.repoData = self.controller.getLocalRepoData()
+        else:
+            self.controller = MetricsPageContoller() 
+            self.repoData = self.controller.getLocalRepoData()
+            self.master = master
+        
+        
+          
         self.initTopFrames()
+        self.externalProjectFrame.pack(pady = 12)
+        
         self.initOptionFrame()
+        self.optionFrameOut.pack(side = ctk.RIGHT, padx = 20, fill= "y", expand = True)
         
         p = PlotCartesian(self,  [1,2,3,4], [1,1,1,1])
         p.pack(fill = "x")
@@ -28,8 +38,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         ic(self.controller.getLocalRepoData().releases)
         
-        self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath=left_arrow)
-        self.backButton.place(x= -150, y= 10 )
+       # self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath=left_arrow)
+       # self.backButton.place(x= -150, y= 10 )
             
         
         
@@ -38,14 +48,14 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         my_font = ctk.CTkFont(weight= "bold", size= 16)
         my_font_big =  ctk.CTkFont(weight= "bold", size= 20)
         self.externalProjectFrame = ctk.CTkFrame(self)
-        self.externalProjectFrame.pack(pady = 12)
+        
         
         self.label = ctk.CTkLabel(self.externalProjectFrame, text= str(self.repoData.name).upper(), font = my_font_big)
         self.label.pack(pady = 2, anchor = "w")
         
 
         self.internalFrame = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
-        self.internalFrame.pack()
+        self.internalFrame.pack(side = ctk.LEFT)
         self.projectFrame = ctk.CTkFrame(self.internalFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.projectFrame.pack(pady= 10, padx = 10)
         
@@ -85,11 +95,14 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
        
     def initOptionFrame(self):
         
-        self.optionFrameOut = ctk.CTkFrame(self, border_width= 1, border_color= "red")
-        self.optionFrameOut.pack(anchor = ctk.NE)
+        self.optionFrameOut = ctk.CTkFrame(self.externalProjectFrame,  bg_color="#1d1e1e", fg_color="#1d1e1e", width = 200, height= 100)
         
-        self.optionFrame = ctk.CTkFrame(self.optionFrameOut)
-        self.optionFrame.pack(ctk.TOP)
+        self.optionFrame = ctk.CTkFrame(self.optionFrameOut, bg_color="#1d1e1e", fg_color="#1d1e1e", width = 80)
+        self.optionFrame.pack(fill = "x")
         
-        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame,values=self.controller.getLocalRepoData().releases)
-        self.optionMenu.pack()
+        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values=self.controller.getLocalRepoData().releases)
+        self.optionMenu.set(self.controller.getLocalRepoData().releases[0])
+        self.optionMenu.pack(padx = 10, pady = 5)
+        
+        self.button = ctk.CTkButton(self.optionFrame)
+        self.button.pack()

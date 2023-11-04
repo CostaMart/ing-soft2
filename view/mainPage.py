@@ -181,4 +181,3 @@ class MainPage(ctk.CTkFrame):
             self.showMessage("")
             self.loading = False
             
-           

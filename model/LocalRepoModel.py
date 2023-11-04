@@ -49,7 +49,7 @@ class LocalRepoModel:
             os.chdir(repoDir)
             
             result = subprocess.check_output(["git", "remote", "show", "origin"]).decode("utf-8")
-    
+        
             os.chdir(current_directory)
             print(os.getcwd())
             

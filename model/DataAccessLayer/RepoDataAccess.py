@@ -17,8 +17,7 @@ class CRUDRepo:
                 print("Impossibile impostare i tag delle release.")
      
     def getRepoByNameeAuthor(self, repoOwner, repoName): 
-       
-        response = requests.get(f'https://api.github.com/repos/{repoOwner}/{repoName}')
+        response = ic(requests.get(f'https://api.github.com/repos/{repoOwner}/{repoName}'))
 
         self.last_http_response = HttpResponse(response.status_code, response.json())
 
@@ -33,7 +32,6 @@ class CRUDRepo:
         else:
             return None
        
-      
     def getRepoByUrl(self, repoUrl: str):
         splitted = repoUrl.split("/")
         repoName = splitted[-1]
@@ -57,7 +55,7 @@ class CRUDRepo:
         response = requests.get(url)
         self.last_http_response = HttpResponse(response.status_code, response.json())
         risultati = response.json()["items"]
-
+        
         # Crea una lista di oggetti di tipo Repository
         repositories = []
         for risultato in risultati:
@@ -69,7 +67,6 @@ class CRUDRepo:
 
         return repositories
             
-
     def getJavaRepoList(self, repoName):
         url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
         response = requests.get(url)
@@ -116,7 +113,9 @@ class CRUDRepo:
             description = risultato["description"]
             repository = Repository(name, html_url, description)
             repositories.append(repository)
+            
         return repositories
+    
     def getRepoListByAuthor(self, author):
         url = f"https://api.github.com/search/repositories?q=user:{author}+language:java"
         response = requests.get(url)
