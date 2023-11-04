@@ -163,7 +163,7 @@ class MainPage(ctk.CTkFrame):
                 self.showMessage("done!")
                 self.icon.stop()
                 self.icon.pack_forget()
-                time.sleep(3)
+                time.sleep(4)
                 self.showMessage("")
                 self.loading = False
         else :
@@ -174,10 +174,10 @@ class MainPage(ctk.CTkFrame):
             elif "Not found" in str(body):
                 body = "Repo not found"
                  
-            self.showMessage(f"{str(status_code)}: {str(body['message'])}")
+            self.showMessage(f"{str(status_code)}: {str(body)}")
             self.icon.stop()
             self.icon.pack_forget()
-            time.sleep(3)
+            time.sleep(4)
             self.showMessage("")
             self.loading = False
             

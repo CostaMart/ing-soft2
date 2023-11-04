@@ -17,6 +17,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.master = master
         
         self.initTopFrames()
+        self.initOptionFrame()
         
         p = PlotCartesian(self,  [1,2,3,4], [1,1,1,1])
         p.pack(fill = "x")
@@ -40,7 +41,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.externalProjectFrame.pack(pady = 12)
         
         self.label = ctk.CTkLabel(self.externalProjectFrame, text= str(self.repoData.name).upper(), font = my_font_big)
-        self.label.pack(pady = 2)
+        self.label.pack(pady = 2, anchor = "w")
         
 
         self.internalFrame = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
@@ -60,9 +61,14 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.subFrame2.pack(anchor = "w", padx = 10)
         self.label = ctk.CTkLabel(self.subFrame2, text= f"project license: ", font = my_font)
         self.label.pack(side = ctk.LEFT)
-        self.label = ctk.CTkLabel(self.subFrame2, text= f"{self.repoData.license['name']}")
-        self.label.pack()
         
+        license = "None"
+        if self.repoData.license != None:
+            license = self.repoData.license['name']
+        
+        self.label = ctk.CTkLabel(self.subFrame2, text= f"{license}")
+        self.label.pack()
+            
         self.subFrame3 = ctk.CTkFrame(self.projectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.subFrame3.pack(anchor = "w", padx = 10)
         self.label = ctk.CTkLabel(self.subFrame3, text= f"Repo owner: ", font = my_font)
@@ -77,4 +83,13 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.label = ctk.CTkLabel(self.subFrame4, text= f"{self.repoData.owner['url']}")
         self.label.pack()
        
-
+    def initOptionFrame(self):
+        
+        self.optionFrameOut = ctk.CTkFrame(self, border_width= 1, border_color= "red")
+        self.optionFrameOut.pack(anchor = ctk.NE)
+        
+        self.optionFrame = ctk.CTkFrame(self.optionFrameOut)
+        self.optionFrame.pack(ctk.TOP)
+        
+        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame,values=self.controller.getLocalRepoData().releases)
+        self.optionMenu.pack()
