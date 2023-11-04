@@ -1,8 +1,10 @@
 from ..FilterProject import *
-
-
+from icecream import ic
+from model.Domain import HttpResponse
 class CRUDRepo:
-    
+    def __init__(self):
+        self.last_http_response = None
+
     def _set_release_tags(self, owner, repo_name):
            
             """Metodo che setta le versioni delle release nell'oggetto
@@ -16,9 +18,9 @@ class CRUDRepo:
     def getRepoByNameeAuthor(self, repoOwner, repoName): 
        
         response = requests.get(f'https://api.github.com/repos/{repoOwner}/{repoName}')
-       
-        
+        self.last_http_response = HttpResponse(response.status_code, response.json())
         if response.status_code == 200:
+            ic(response.json())
             repository_data = response.json()
             repository = Domain.MetadataRepository(repository_data)
             relesases = self._set_release_tags(repository.owner, repository.full_name)
@@ -33,7 +35,7 @@ class CRUDRepo:
         repoOwner = splitted[-2]
     
         response = requests.get(f'https://api.github.com/repos/{repoOwner}/{repoName}')
-        
+        self.last_http_response = HttpResponse(response.status_code, response.json())
         if response.status_code == 200:
             repository_data = response.json()
             repository = Domain.MetadataRepository(repository_data)
@@ -47,6 +49,7 @@ class CRUDRepo:
         #Solo i repository java
         url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
         response = requests.get(url)
+        self.last_http_response = HttpResponse(response.status_code, response.json())
         risultati = response.json()["items"]
 
         # Crea una lista di oggetti di tipo Repository
@@ -64,6 +67,7 @@ class CRUDRepo:
     def getJavaRepoList(self, repoName):
         url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
         response = requests.get(url)
+        self.last_http_response = HttpResponse(response.status_code, response.json())
         risultati = response.json()["items"]
 
         # Crea una lista di oggetti di tipo Repository

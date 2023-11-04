@@ -154,22 +154,25 @@ class MainPage(ctk.CTkFrame):
         self.showMessage("we are now analyzing this repo")
                    
     def afterRepoDataUpdate(self):
-        
-        if self.controller.getRepoData() != None:
-                
+        response = self.controller.getStatusCodeFromLocalModel()
+        # Accedi allo status_code e al body dell'oggetto HttpResponse
+        status_code = response.status_code
+        body = response.body
+        if self.controller.getRepoData() is not None and status_code == 200:
                 self.sideB.place(y = 10 ,relx = 0.9)
                 self.showMessage("done!")
                 self.icon.stop()
                 self.icon.pack_forget()
-                time.sleep(3)
+                time.sleep(10)
                 self.showMessage("")
                 self.loading = False
-        else:
-                self.showMessage("something wrong happened :(")
+        else :
+                self.showMessage(str(status_code) + str(body))
+                print(body)
                 self.icon.stop()
                 self.icon.pack_forget()
-                time.sleep(3)
+                time.sleep(10)
                 self.showMessage("")
                 self.loading = False
-    
+
     
