@@ -11,20 +11,26 @@ class LocalRepoModel:
     
     _instance = None
     repoData = None
-    
+
     def __new__(cls):
         
         if cls._instance is None:
             cls._instance = super(LocalRepoModel, cls).__new__(cls)
+            cls._instance.CRUD = CRUDRepo()
         return cls._instance
-    
+
+    def get_status_code(self):
+        # Accedi all'attributo last_http_code di CRUDRepo
+        status_code = self.CRUD.last_http_response
+        return status_code
+
     def getRepoData(self):
         """ ritorna i metadati del repository installato localente """
         return self.repoData
     
     def RepoDataUpdate(self):
         """ recupera i meta dati aggiornati relativi al repo installato localmente """
-        CRUD = CRUDRepo()
+        CRUD = self.CRUD
         self._CheckRepoDir()
         
         current_directory = os.getcwd()
