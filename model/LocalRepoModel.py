@@ -1,7 +1,7 @@
 import os
 import shutil
 import stat
-from .DataAccessLayer.DAODataAccess import DAORepo
+from .DataAccessLayer.DAORepo import DAORepo
 import subprocess
 
 class LocalRepoModel:
@@ -17,8 +17,6 @@ class LocalRepoModel:
             cls._instance = super(LocalRepoModel, cls).__new__(cls)
             cls._instance.CRUD = DAORepo()
         return cls._instance
-
-
 
     def getRepoData(self):
         """ ritorna i metadati del repository installato localente """
@@ -89,3 +87,7 @@ class LocalRepoModel:
         else:
             return
 
+    def get_status_code(self):
+        # Accedi all'attributo last_http_code di CRUDRepo
+        status_code = self.CRUD.last_http_response
+        return status_code

@@ -1,6 +1,8 @@
-from ..FilterProject import *
+import requests
 from icecream import ic
-from model.Domain import HttpResponse
+from model.Domain import HttpResponse, Repository, MetadataRepository 
+import os
+from ..FilterProject import  get_all_release_tag_repo
 
 
 class DAORepo:
@@ -26,7 +28,7 @@ class DAORepo:
         if response.status_code == 200:
             ic(response.json())
             repository_data = response.json()
-            repository = Domain.MetadataRepository(repository_data)
+            repository = MetadataRepository(repository_data)
             relesases = self._set_release_tags(repository.owner, repository.full_name)
             repository.tag_releases = relesases
 
@@ -43,7 +45,7 @@ class DAORepo:
         self.last_http_response = HttpResponse(response.status_code, response.json())
         if response.status_code == 200:
             repository_data = response.json()
-            repository = Domain.MetadataRepository(repository_data)
+            repository = MetadataRepository(repository_data)
             relesases = self._set_release_tags(repository.owner, repository.full_name)
             repository.tag_releases = relesases
             ic(repository)

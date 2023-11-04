@@ -157,6 +157,7 @@ class MainPage(ctk.CTkFrame):
         # Accedi allo status_code e al body dell'oggetto HttpResponse
         
         status_code = response.status_code
+        
         body = response.body
         if self.controller.getRepoData() is not None and status_code == 200:
                 self.sideB.place(y = 10 ,relx = 0.9)

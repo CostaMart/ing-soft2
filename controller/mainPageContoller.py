@@ -15,7 +15,7 @@ class MainPageController:
         self.repoModel = RepoModel()
     
     def getStatusCodeFromLocalModel(self):
-        return self.repoModel.get_status_code()
+        return self.globalModel.get_status_code()
 
     def getAllJavaClassByLocalRepoModel(self, rootDirectory):
         return self.repoModel.getAllJavaClassProject(rootDirectory=rootDirectory)
