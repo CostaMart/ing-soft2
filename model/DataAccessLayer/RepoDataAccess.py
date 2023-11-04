@@ -100,3 +100,35 @@ class CRUDRepo:
         else:
             print(f"Errore {response.status_code}: Impossibile ottenere le release del progetto.")
             return None
+
+    def getJavaRepoListForAuthorAndRepo(self,author, repo_name):
+        # Se l'autore è specificato, cerca per il nome del repository all'interno dell'account dell'autore
+        url = f"https://api.github.com/search/repositories?q=user:{author}+repo:{repo_name}+language:java"
+        response = requests.get(url)
+        self.last_http_response = HttpResponse(response.status_code, response.json())
+        risultati = response.json()["items"]
+
+        # Crea una lista di oggetti di tipo Repository
+        repositories = []
+        for risultato in risultati:
+            name = risultato["name"]
+            html_url = risultato["html_url"]
+            description = risultato["description"]
+            repository = Repository(name, html_url, description)
+            repositories.append(repository)
+        return repositories
+    def getRepoListByAuthor(self, author):
+        url = f"https://api.github.com/search/repositories?q=user:{author}+language:java"
+        response = requests.get(url)
+        self.last_http_response = HttpResponse(response.status_code, response.json())
+        repositories = []
+        if response.status_code == 200:
+            risultati = response.json()['items']  # Accedi alla lista dei repository dentro la chiave "items"
+            for risultato in risultati:
+                name = risultato['name']
+                html_url = risultato['html_url']
+                description = risultato['description']
+                repository = Repository(name, html_url, description)
+                repositories.append(repository)
+
+        return repositories
