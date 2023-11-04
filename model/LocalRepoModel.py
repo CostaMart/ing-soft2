@@ -1,8 +1,7 @@
 import os
 import shutil
 import stat
-import model.DataAccessLayer.RepoDataAccess
-from .DataAccessLayer.RepoDataAccess import CRUDRepo
+from .DataAccessLayer.DAODataAccess import DAORepo
 import subprocess
 
 class LocalRepoModel:
@@ -16,18 +15,15 @@ class LocalRepoModel:
         
         if cls._instance is None:
             cls._instance = super(LocalRepoModel, cls).__new__(cls)
-            cls._instance.CRUD = CRUDRepo()
+            cls._instance.CRUD = DAORepo()
         return cls._instance
 
-    def get_status_code(self):
-        # Accedi all'attributo last_http_code di CRUDRepo
-        status_code = self.CRUD.last_http_response
-        return status_code
+
 
     def getRepoData(self):
         """ ritorna i metadati del repository installato localente """
         return self.repoData
-    
+
     def RepoDataUpdate(self):
         """ recupera i meta dati aggiornati relativi al repo installato localmente """
         CRUD = self.CRUD
@@ -38,7 +34,7 @@ class LocalRepoModel:
         os.chdir("repository")
         repoDir = subprocess.check_output(["dir"]).decode("utf-8")
         
-        repoDir = os.path.join(current_directory,"repository",repoDir)
+        repoDir = os.path.join(current_directory, "repository", repoDir)
         repoDir = repoDir.replace("\n", "")
         
 
@@ -80,9 +76,6 @@ class LocalRepoModel:
         for dir in contenuto_directory:
             if dir != "repository":
                 shutil.rmtree( dir, onerror = on_rm_error )
-               
-        
-            
         subprocess.call(['git', 'clone', url])
         os.chdir(current_directory)
         
@@ -95,3 +88,4 @@ class LocalRepoModel:
                 print(f"Errore durante la creazione della cartella: {e}")
         else:
             return
+

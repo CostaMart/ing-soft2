@@ -15,8 +15,12 @@ class MainPageController:
         self.repoModel = RepoModel()
     
     def getStatusCodeFromLocalModel(self):
-        return self.globalModel.get_status_code()
-    
+        return self.repoModel.get_status_code()
+
+    def getAllJavaClassByLocalRepoModel(self, rootDirectory):
+        return self.repoModel.getAllJavaClassProject(rootDirectory=rootDirectory)
+
+
     def requestRepoUpdate(self, callbackBefore : Callable[[], None] = None, callbackAfter : Callable[[], None] = None):
         """ avvia una richiesta di update per i dati locali del repository, verrà eseguita su un thread apposito
         è possibile registrare una callback sia prima che dopo l'update,
@@ -73,5 +77,3 @@ class MainPageController:
                 return True
             else:
                 return False
-
-

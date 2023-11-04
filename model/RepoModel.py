@@ -1,11 +1,11 @@
-from model.DataAccessLayer.RepoDataAccess import CRUDRepo
+from model.DataAccessLayer.DAODataAccess import DAORepo
 
 
 class RepoModel:
     """Classe che recupera i repository utilizzando il layer
     di accesso ai dati"""
     def __init__(self):
-        self.CRUD= CRUDRepo()
+        self.CRUD= DAORepo()
 
     def getRepoListByName(self, name):
         return self.CRUD.getRepoList(name)
@@ -19,3 +19,10 @@ class RepoModel:
     def getRepoListByAuthor(self, author):
        return self.CRUD.getRepoListByAuthor(author)
 
+    def get_status_code(self):
+        # Accedi all'attributo last_http_code di CRUDRepo
+        status_code = self.CRUD.last_http_response
+        return status_code
+
+    def getAllJavaClassProject(self, rootDirectory):
+        return self.CRUD.trova_classi_java(rootDirectory)
