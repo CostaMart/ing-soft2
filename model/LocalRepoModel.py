@@ -58,7 +58,9 @@ class LocalRepoModel:
             repoName = firstLine.split("/")[-1]
             repodata = self.CRUD.getRepoByNameeAuthor(name, repoName)
             self.repoData = repodata
-            self.repoData.releases = self.CRUD.get_all_release_tag_repo(name, repoName)
+            
+            if self.repoData != None:
+                self.repoData.releases = self.CRUD.get_all_release_tag_repo(name, repoName)
 
         os.chdir(current_directory)
           

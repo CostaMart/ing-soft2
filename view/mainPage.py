@@ -167,13 +167,18 @@ class MainPage(ctk.CTkFrame):
                 self.showMessage("")
                 self.loading = False
         else :
+            
             if "API rate limit exceeded" in str(body):
                 body = "GIT API rate limit exceeded"
-                
-            self.showMessage(f"{str(status_code)}: {str(body)}")
+            
+            elif "Not found" in str(body):
+                body = "Repo not found"
+                 
+            self.showMessage(f"{str(status_code)}: {str(body['message'])}")
             self.icon.stop()
             self.icon.pack_forget()
             time.sleep(3)
             self.showMessage("")
             self.loading = False
-
+            
+           

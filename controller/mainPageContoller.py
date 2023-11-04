@@ -13,8 +13,10 @@ class MainPageController:
         self.process = None
         self.globalModel = LocalRepoModel()
         self.repoModel = RepoModel()
+    
     def getStatusCodeFromLocalModel(self):
         return self.globalModel.get_status_code()
+    
     def requestRepoUpdate(self, callbackBefore : Callable[[], None] = None, callbackAfter : Callable[[], None] = None):
         """ avvia una richiesta di update per i dati locali del repository, verrà eseguita su un thread apposito
         è possibile registrare una callback sia prima che dopo l'update,
