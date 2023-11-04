@@ -1,10 +1,7 @@
 from ..FilterProject import *
 from icecream import ic
-<<<<<<< HEAD
-
-=======
 from model.Domain import HttpResponse
->>>>>>> 48fa63d3ab584fc0138735d715a0ed1df421c964
+
 class CRUDRepo:
     def __init__(self):
         self.last_http_response = None
@@ -22,13 +19,9 @@ class CRUDRepo:
     def getRepoByNameeAuthor(self, repoOwner, repoName): 
        
         response = requests.get(f'https://api.github.com/repos/{repoOwner}/{repoName}')
-<<<<<<< HEAD
-       
-        ic(response.json())
-        
-=======
+
         self.last_http_response = HttpResponse(response.status_code, response.json())
->>>>>>> 48fa63d3ab584fc0138735d715a0ed1df421c964
+
         if response.status_code == 200:
             ic(response.json())
             repository_data = response.json()
@@ -39,6 +32,9 @@ class CRUDRepo:
             return repository
         else:
             return None
+       
+      
+        
         
     def getRepoByUrl(self, repoUrl: str):
         splitted = repoUrl.split("/")

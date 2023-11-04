@@ -34,13 +34,14 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
 # ----------------------------- GESTIONE UI METHODS -----------------------------        
     def initTopFrames(self):
+       
         self.externalProjectFrame = ctk.CTkFrame(self)
-        self.externalProjectFrame.pack(pady = 30)
+        self.externalProjectFrame.pack(pady = 12)
         
         self.label = ctk.CTkLabel(self.externalProjectFrame, text= self.repoData.name)
         self.label.pack()
-        my_font = ctk.CTkFont( weight= "bold", size=16)
-        
+        my_font = ctk.CTkFont(weight= "bold", size= 16)
+
         self.internalFrame = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.internalFrame.pack()
         self.projectFrame = ctk.CTkFrame(self.internalFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")

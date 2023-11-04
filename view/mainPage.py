@@ -162,16 +162,17 @@ class MainPage(ctk.CTkFrame):
                 self.showMessage("done!")
                 self.icon.stop()
                 self.icon.pack_forget()
-                time.sleep(10)
+                time.sleep(3)
                 self.showMessage("")
                 self.loading = False
         else :
-                self.showMessage(str(status_code) + str(body))
-                print(body)
-                self.icon.stop()
-                self.icon.pack_forget()
-                time.sleep(10)
-                self.showMessage("")
-                self.loading = False
+            if "API rate limit exceeded" in str(body):
+                body = "GIT API rate limit exceeded"
+                
+            self.showMessage(f"{str(status_code)}: {str(body)}")
+            self.icon.stop()
+            self.icon.pack_forget()
+            time.sleep(3)
+            self.showMessage("")
+            self.loading = False
 
-    
