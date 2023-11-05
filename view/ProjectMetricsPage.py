@@ -7,6 +7,7 @@ import tkinter as tk
 from icecream import ic
 from .ControllerFalso import ControllerFalso
 from icecream import ic
+import model.repo_utils as ru
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
     
@@ -104,7 +105,9 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         if len(self.controller.getLocalRepoData().releases) == 0:
             relList = ic(["no releases"])   
         else:
-            relList = ic(self.controller.getLocalRepoData().releases)
+            os.chdir("repository") ####
+            relList = ic(ru.get_git_tags(folder = os.listdir()[0])) #### DA MIGLIORARE 
+            os.chdir("..") ####
             
         self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values=relList)
         self.optionMenu.set(relList[0])

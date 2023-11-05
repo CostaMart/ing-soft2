@@ -22,7 +22,7 @@ class LocalDAO:
         current_directory = os.getcwd()
 
         os.chdir("repository")
-        repoDir = subprocess.check_output(["dir"]).decode("utf-8")
+        repoDir =os.listdir()[0]
         repoDir = os.path.join(current_directory, "repository", repoDir).replace("\n", "")
         checkDir = os.path.join(current_directory, "repository")
 
