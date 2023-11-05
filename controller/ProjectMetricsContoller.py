@@ -23,6 +23,6 @@ class ProjectMetricsController:
     def getClassesListR(self):
         dirs = os.listdir("repository")
         path = os.path.join("repository", dirs[0]) 
-        ic(model.repo_utils.cerca_file_java(path)) 
+        model.repo_utils.cerca_file_java(path) 
         return model.repo_utils.cerca_file_java(path) 
         

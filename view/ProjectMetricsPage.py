@@ -38,7 +38,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.but.pack()
         left_arrow = os.path.join("resources","left-arrow.png")
         
-        ic(self.controller.getLocalRepoData().releases)
+        self.controller.getLocalRepoData().releases
         
         self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath=left_arrow)
         self.backButton.place(x= -150, y= 10 )
@@ -103,10 +103,10 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.optionFrame.pack(fill = "x")
         
         if len(self.controller.getLocalRepoData().releases) == 0:
-            relList = ic(["no releases"])   
+            relList = ["no releases"]   
         else:
             os.chdir("repository") ####
-            relList = ic(ru.get_git_tags(folder = os.listdir()[0])) #### DA MIGLIORARE 
+            relList = ru.get_git_tags(folder = os.listdir()[0]) #### DA MIGLIORARE 
             os.chdir("..") ####
             
         self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values=relList)
@@ -119,7 +119,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             classList = self.controller.getClassesListR()
         
         self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values= classList)
-        self.optionMenu.set(ic(classList[0]))
+        self.optionMenu.set(classList[0])
         self.optionMenu.pack(padx = 10, pady = 2.5)
         
         self.optionButton = ctk.CTkButton(self.optionFrame, text= "start analysis")

@@ -12,7 +12,6 @@ class DAORepo:
 
 
     def _set_release_tags(self, owner, repo_name):
-
         """Metodo che setta le versioni delle release nell'oggetto
                 che modella i metadati del progetto github"""
         release_tags = get_all_release_tag_repo(owner, repo_name)
@@ -22,15 +21,12 @@ class DAORepo:
             print("Impossibile impostare i tag delle release.")
 
 
-
     def getRepoByNameeAuthor(self, repoOwner, repoName):
-
         response = requests.get(f'https://api.github.com/repos/{repoOwner}/{repoName}')
 
         self.last_http_response = HttpResponse(response.status_code, response.json())
 
         if response.status_code == 200:
-            ic(response.json())
             repository_data = response.json()
             repository = MetadataRepository(repository_data)
             relesases = self._set_release_tags(repository.owner, repository.full_name)
@@ -54,7 +50,7 @@ class DAORepo:
             repository = MetadataRepository(repository_data)
             relesases = self._set_release_tags(repository.owner, repository.full_name)
             repository.tag_releases = relesases
-            ic(repository)
+
             return repository
         else:
             return None
@@ -108,6 +104,7 @@ class DAORepo:
         if response.status_code == 200:
             releases = response.json()
             # Estrai solo i tag delle release dalla lista di release
+            
             release_tags = [release['tag_name'] for release in releases]
             return release_tags
         else:
