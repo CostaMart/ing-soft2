@@ -9,6 +9,8 @@ class DAORepo:
     def __init__(self):
         self.last_http_response = None
 
+
+
     def _set_release_tags(self, owner, repo_name):
 
         """Metodo che setta le versioni delle release nell'oggetto
@@ -18,6 +20,8 @@ class DAORepo:
             self.tag_releases = release_tags
         else:
             print("Impossibile impostare i tag delle release.")
+
+
 
     def getRepoByNameeAuthor(self, repoOwner, repoName):
 
@@ -36,6 +40,8 @@ class DAORepo:
         else:
             return None
 
+
+
     def getRepoByUrl(self, repoUrl: str):
         splitted = repoUrl.split("/")
         repoName = splitted[-1]
@@ -52,6 +58,8 @@ class DAORepo:
             return repository
         else:
             return None
+
+
 
     def getRepoList(self, repoName):
         # Solo i repository java
@@ -71,6 +79,8 @@ class DAORepo:
 
         return repositories
 
+
+
     def getJavaRepoList(self, repoName):
         url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
         response = requests.get(url)
@@ -88,6 +98,8 @@ class DAORepo:
 
         return repositories
 
+
+
     def get_all_release_tag_repo(self, owner, repo_name):
         """Metodo che ritorna tutte le  releases di uno specifico progetto"""
         url = f"https://api.github.com/repos/{owner}/{repo_name}/releases"
@@ -101,6 +113,8 @@ class DAORepo:
         else:
             print(f"Errore {response.status_code}: Impossibile ottenere le release del progetto.")
             return None
+
+
 
     def getJavaRepoListForAuthorAndRepo(self, author, repo_name):
         # Se l'autore è specificato, cerca per il nome del repository all'interno dell'account dell'autore
@@ -118,6 +132,8 @@ class DAORepo:
             repository = Repository(name, html_url, description)
             repositories.append(repository)
         return repositories
+
+
 
     def getRepoListByAuthor(self, author):
         url = f"https://api.github.com/search/repositories?q=user:{author}+language:java"
