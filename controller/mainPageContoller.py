@@ -18,7 +18,7 @@ class MainPageController:
         return self.globalModel.get_status_code()
 
     def getAllJavaClassByLocalRepoModel(self, rootDirectory):
-        return self.repoModel.getAllJavaClassProject(rootDirectory=rootDirectory)
+        return self.globalModel.getAllJavaClassProject(rootDirectory=rootDirectory)
 
 
     def requestRepoUpdate(self, callbackBefore : Callable[[], None] = None, callbackAfter : Callable[[], None] = None):
