@@ -110,8 +110,13 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.optionMenu.set(relList[0])
         self.optionMenu.pack(padx = 10, pady = 5)
         
-        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values= self.controller.getClassesListR())
-        self.optionMenu.set(ic(self.controller.getClassesListR()[0]))
+        if len(self.controller.getClassesListR()) == 0:
+            classList = ["no classes"]
+        else: 
+            classList = self.controller.getClassesListR()
+        
+        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values= classList)
+        self.optionMenu.set(ic(classList[0]))
         self.optionMenu.pack(padx = 10, pady = 2.5)
         
         self.optionButton = ctk.CTkButton(self.optionFrame, text= "start analysis")
