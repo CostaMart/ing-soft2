@@ -191,7 +191,7 @@ def checkout_tag(tag, folder = "repository"):
     if(folder == "repository"):
         checkout_commit(get_commit_hash_for_tag(tag))
     else:
-        checkout_commit(get_commit_hash_for_tag(tag, folder))
+        checkout_commit(get_commit_hash_for_tag(tag, folder), folder)
 
 
 
