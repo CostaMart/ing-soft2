@@ -1,16 +1,18 @@
 """ contains domain objects """
 
 
-
 class Repository:
-    def __init__(self, name, html_url, description,releases=None):
+    def __init__(self, name, html_url, description, releases=None):
         self.name = name
         self.url = html_url
         self.description = description
-        self.releases=releases
+        self.releases = releases
+
 
 class Commit:
-    def __init__(self, sha, node_id, author_name, author_email, author_date, committer_name, committer_email, committer_date, message, tree_sha, tree_url, commit_url, html_url, comments_url, author_login, author_id, author_avatar_url):
+    def __init__(self, sha, node_id, author_name, author_email, author_date, committer_name, committer_email,
+                 committer_date, message, tree_sha, tree_url, commit_url, html_url, comments_url, author_login,
+                 author_id, author_avatar_url):
         self.sha = sha
         self.node_id = node_id
         self.author = {
@@ -36,6 +38,7 @@ class Commit:
             "id": author_id,
             "avatar_url": author_avatar_url
         }
+
 
 class MetadataRepository:
     def __init__(self, data: dict):
@@ -82,19 +85,27 @@ class MetadataRepository:
         self.watchers = data['watchers']
         self.default_branch = data['default_branch']
         self.temp_clone_token = data['temp_clone_token']
-        
+
         # dava errore se non c'era un'organizzazione nel progetto, quindi prima di prendere questo dato si fa un controllo
         if "organization" in data.keys():
             self.organization = data['organization']
         else:
             data['organization'] = "no organization"
-            
+
         self.network_count = data['network_count']
         self.subscribers_count = data['subscribers_count']
         self.tag_releases = None  # Imposta l'attributo tag_releases come nullo all'inizio
-    
+
     def __str__(self) -> str:
         super().__str__()
         dict = self.__dict__
         for key in dict:
             print(f'{key}: {dict[key]}')
+
+
+class HttpResponse:
+    """Classe che modella la risposta HTTP o almeno quello che mi serve della risposta HTTP"""
+
+    def __init__(self, status_code, body):
+        self.status_code = status_code
+        self.body = body

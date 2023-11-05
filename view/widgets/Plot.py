@@ -4,12 +4,13 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class PlotCartesian(ctk.CTkFrame):
         
-    def __init__(self, master, name, Xcoordinates, Ycoordinates):
+    def __init__(self, master, Xcoordinates, Ycoordinates,  name = None):
         super().__init__(master, width= 400, height= 400)
             
-        self.name = name
-        label = ctk.CTkLabel(self, text = self.name)
-        label.pack()
+        if name != None:   
+            self.name = name
+            label = ctk.CTkLabel(self, text = self.name)
+            label.pack()
         # Creare un oggetto Figure di Matplotlib
         fig = Figure(figsize=(5, 4), dpi=100, facecolor= "#2b2b2b")
         

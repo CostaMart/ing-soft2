@@ -129,7 +129,7 @@ def cerca_file_java(cartella_name):
     
     for root, dirs, files in os.walk(cartella):
         for file in files:
-            if file.endswith(".java"):
+            if file.endswith(".java") or file.endswith(".py"):
                 risultati.append(file)
 
     return risultati

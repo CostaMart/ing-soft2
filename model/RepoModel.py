@@ -1,18 +1,22 @@
-from model.DataAccessLayer.RepoDataAccess import CRUDRepo
+from model.DataAccessLayer.DAORepo import DAORepo
 
 
 class RepoModel:
     """Classe che recupera i repository utilizzando il layer
     di accesso ai dati"""
+    def __init__(self):
+        self.CRUD= DAORepo()
 
-    @staticmethod
-    def getRepoListByName(name):
-        CRUD = CRUDRepo()
-        return CRUD.getRepoList(name)
+    def getRepoListByName(self, name):
+        return self.CRUD.getRepoList(name)
 
-    @staticmethod
-    def getRepoListByNameInJava(name):
-        CRUD = CRUDRepo()
-        return CRUD.getJavaRepoList(name)
+    def getRepoListByNameInJava(self, name):
+        return self.CRUD.getJavaRepoList(name)
+
+    def getRepoListByAuthorAndRepoName(self, author, repo_name):
+       return self.CRUD.getJavaRepoListForAuthorAndRepo(author, repo_name)
+
+    def getRepoListByAuthor(self, author):
+       return self.CRUD.getRepoListByAuthor(author)
 
 

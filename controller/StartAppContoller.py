@@ -2,7 +2,7 @@
 
 import os
 import subprocess
-from model.DataAccessLayer.RepoDataAccess import CRUDRepo
+from model.DataAccessLayer.DAORepo import DAORepo
 from model.LocalRepoModel import LocalRepoModel
 
 class StartAppController:

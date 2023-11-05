@@ -1,6 +1,6 @@
 
 from model.LocalRepoModel import LocalRepoModel
-
+from model import Domain
 
 class MetricsPageContoller:
     
@@ -8,5 +8,5 @@ class MetricsPageContoller:
        self.localModel = LocalRepoModel()
     
     
-    def getLocalRepoData(self):
+    def getLocalRepoData(self) -> Domain.Repository:
         return self.localModel.getRepoData()
