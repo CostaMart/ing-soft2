@@ -2,7 +2,7 @@ import os.path
 import customtkinter as ctk
 from view.widgets.SideButton import SideButton
 from view.widgets.Plot import PlotCartesian
-from controller.ProjectMetricsContoller import MetricsPageContoller
+from controller.ProjectMetricsContoller import ProjectMetricsController
 import tkinter as tk
 from icecream import ic
 from .ControllerFalso import ControllerFalso
@@ -17,7 +17,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.controller = ControllerFalso()
             self.repoData = self.controller.getLocalRepoData()
         else:
-            self.controller = MetricsPageContoller() 
+            self.controller = ProjectMetricsController() 
             self.repoData = self.controller.getLocalRepoData()
             self.master = master
         
@@ -38,8 +38,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         ic(self.controller.getLocalRepoData().releases)
         
-       # self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath=left_arrow)
-       # self.backButton.place(x= -150, y= 10 )
+        self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath=left_arrow)
+        self.backButton.place(x= -150, y= 10 )
             
         
         
@@ -104,7 +104,10 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.optionMenu.set(self.controller.getLocalRepoData().releases[0])
         self.optionMenu.pack(padx = 10, pady = 5)
         
-        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values=["calss1", "class2"])
-        self.optionMenu.set("calss1")
-        self.optionMenu.pack(padx = 10, pady = 5)
+        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values= self.controller.getClassesList())
+        self.optionMenu.set(self.controller.getClassesList()[0])
+        self.optionMenu.pack(padx = 10, pady = 2.5)
+        
+        self.optionButton = ctk.CTkButton(self.optionFrame, text= "start analysis")
+        self.optionButton.pack(pady = 10)
        

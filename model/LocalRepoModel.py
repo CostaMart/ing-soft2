@@ -25,6 +25,7 @@ class LocalRepoModel:
     def getRepoData(self):
         """ ritorna i metadati del repository installato localente """
         return self.repoData
+    
     def RepoDataUpdate(self):
         """Recupera i metadati aggiornati relativi al repository installato localmente."""
 
@@ -74,5 +75,6 @@ class LocalRepoModel:
         # Accedi all'attributo last_http_code di CRUDRepo
         status_code = self.CRUD.last_http_response
         return status_code
+    
     def getAllJavaClassProject(self, rootDirectory):
-        return self.LocalDAO.trova_classi_java(rootDirectory)
+        return self.LocalDAO.findJavaClass(rootDirectory)

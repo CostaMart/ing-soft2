@@ -4,14 +4,18 @@ import subprocess
 
 class LocalDAO:
 
-    def trova_classi_java(self, directory):
+    def findJavaClass(self, directory):
         """Metodo che trova tutte le classi di un progetto java"""
-        lista_classi = []
-        for root, dirs, files in os.walk(directory):
+        """ Questo metodo cerca tutti i file java in una cartella e ne restituisce una lista di nomi di file """
+        risultati = []
+        cartella = os.path.abspath(directory)
+
+        for root, dirs, files in os.walk(cartella):
             for file in files:
-                if file.endswith(".java"):
-                    lista_classi.append(os.path.join(root, file))
-        return lista_classi
+                if file.endswith(".java") or file.endswith(".py"):
+                    risultati.append(file)
+
+        return risultati
 
     def getRepoInfoFromGit(self):
         """Ottieni le informazioni del repository dal sistema Git."""

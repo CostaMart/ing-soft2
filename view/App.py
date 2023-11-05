@@ -2,7 +2,7 @@ import tkinter as tk
 import customtkinter as ctk
 import time
 from controller.StartAppContoller import StartAppController
-from view.mainPage import MainPage
+from .MainPage import MainPage
 
 
 class IngSoftApp(ctk.CTk):
