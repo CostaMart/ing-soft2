@@ -8,7 +8,12 @@ from controller.ProjectMetricsContoller import ProjectMetricsController
 import tkinter as tk
 from icecream import ic
 from .ControllerFalso import ControllerFalso
+
 from .widgets.Graphics.GridView import GridView
+
+
+from icecream import ic
+import model.repo_utils as ru
 
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
@@ -92,22 +97,41 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.label.pack(side = ctk.LEFT)
         self.label = ctk.CTkLabel(self.subFrame4, text= f"{self.repoData.owner['url']}")
         self.label.pack()
-       
+
     def initOptionFrame(self):
-        self.optionFrameOut = ctk.CTkFrame(self.externalProjectFrame,  bg_color="#1d1e1e", fg_color="#1d1e1e", width = 200, height= 100)
-        self.optionFrame = ctk.CTkFrame(self.optionFrameOut, bg_color="#1d1e1e", fg_color="#1d1e1e", width = 80)
-        self.optionFrame.pack(fill = "x")
+        self.optionFrameOut = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e", width=200,
+                                           height=100)
+        self.optionFrame = ctk.CTkFrame(self.optionFrameOut, bg_color="#1d1e1e", fg_color="#1d1e1e", width=80)
+        self.optionFrame.pack(fill="x")
 
-        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values=self.controller.getLocalRepoData().releases)
-        self.optionMenu.set(self.controller.getLocalRepoData().releases[0])
-        self.optionMenu.pack(padx = 10, pady = 5)
+        relList = self.controller.getLocalRepoData().releases
+        if len(relList) == 0:
+            relList = ["no releases"]
+        else:
+            os.chdir("repository")
+            relList = ru.get_git_tags(folder=os.listdir()[0])  # DA MIGLIORARE
+            os.chdir("..")
 
-        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values= self.controller.getClassesList())
-        self.optionMenu.set(self.controller.getClassesList()[0])
-        self.optionMenu.pack(padx = 10, pady = 2.5)
+        self.optionMenuRelease = ctk.CTkOptionMenu(self.optionFrame, values=relList)
+        if len(relList) > 0:
+            self.optionMenuRelease.set(relList[0])
+        else:
+            self.optionMenuRelease.set("Nessuna release disponibile")
+        self.optionMenuRelease.pack(padx=10, pady=5)
 
-        self.optionButton = ctk.CTkButton(self.optionFrame, text= "start analysis", command=self.on_option_button_click)
-        self.optionButton.pack(pady = 10)
+        classList = self.controller.getClassesListR()
+        if len(classList) == 0:
+            classList = ["no classes"]
+
+        self.optionMenuClass = ctk.CTkOptionMenu(self.optionFrame, values=classList)
+        if len(classList) > 0:
+            self.optionMenuClass.set(classList[0])
+        else:
+            self.optionMenuClass.set("Nessuna classe disponibile")
+        self.optionMenuClass.pack(padx=10, pady=2.5)
+
+        self.optionButton = ctk.CTkButton(self.optionFrame, text="start analysis", command=self.on_option_button_click)
+        self.optionButton.pack(pady=10)
 
     def on_option_button_click(self):
         grid_frame = ctk.CTkFrame(self.internalFrame)  # Crea un nuovo frame per la griglia

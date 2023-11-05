@@ -172,6 +172,9 @@ class MainPage(ctk.CTkFrame):
             elif "Not found" in str(body):
                 body = "Repo not found"
 
+            else:
+                body = "your repo dir is empty "
+                
             self.showMessage(f"{str(status_code)}: {str(body)}")
             self.icon.stop()
             self.icon.pack_forget()

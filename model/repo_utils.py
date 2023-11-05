@@ -186,12 +186,15 @@ def get_git_tags_commit(folder = "repository"):
 
 
 
-def checkout_tag(tag, folder = "repository"):
+def checkout_tag(tag=None, folder = "repository"):
     """Questo metodo prende il tag come parametro e fa il checkout"""
-    if(folder == "repository"):
-        checkout_commit(get_commit_hash_for_tag(tag))
-    else:
-        checkout_commit(get_commit_hash_for_tag(tag, folder))
+    if(tag != None):
+        if(folder == "repository"):
+            checkout_commit(get_commit_hash_for_tag(tag))
+        else:
+            checkout_commit(get_commit_hash_for_tag(tag, folder), folder)
+    
+
 
 
 
