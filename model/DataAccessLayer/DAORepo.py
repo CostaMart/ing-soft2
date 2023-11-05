@@ -135,10 +135,3 @@ class DAORepo:
 
         return repositories
 
-    def trova_classi_java(self, directory):
-        lista_classi = []
-        for root, dirs, files in os.walk(directory):
-            for file in files:
-                if file.endswith(".java"):
-                    lista_classi.append(os.path.join(root, file))
-        return lista_classi

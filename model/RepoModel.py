@@ -20,5 +20,3 @@ class RepoModel:
        return self.CRUD.getRepoListByAuthor(author)
 
 
-    def getAllJavaClassProject(self, rootDirectory):
-        return self.CRUD.trova_classi_java(rootDirectory)
