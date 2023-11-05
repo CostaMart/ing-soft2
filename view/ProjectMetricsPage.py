@@ -110,7 +110,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.optionMenu.set(relList[0])
         self.optionMenu.pack(padx = 10, pady = 5)
         
-        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values= self.controller.getClassesListR(relList[0]))
+        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values= self.controller.getClassesListR())
         self.optionMenu.set(ic(self.controller.getClassesListR()[0]))
         self.optionMenu.pack(padx = 10, pady = 2.5)
         
