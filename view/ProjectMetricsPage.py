@@ -100,8 +100,13 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.optionFrame = ctk.CTkFrame(self.optionFrameOut, bg_color="#1d1e1e", fg_color="#1d1e1e", width = 80)
         self.optionFrame.pack(fill = "x")
         
-        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values=self.controller.getLocalRepoData().releases)
-        self.optionMenu.set(self.controller.getLocalRepoData().releases[0])
+        if len(self.controller.getLocalRepoData().releases) == 0:
+            relList = ic(["no releases"])   
+        else:
+            relList = ic(self.controller.getLocalRepoData().releases)
+            
+        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values=relList)
+        self.optionMenu.set(relList[0])
         self.optionMenu.pack(padx = 10, pady = 5)
         
         self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values= self.controller.getClassesList())
