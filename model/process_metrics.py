@@ -1,6 +1,6 @@
 import git
 import os
-import repo_utils as ru
+import model.repo_utils as ru
 import pygit2
 import subprocess
 import datetime

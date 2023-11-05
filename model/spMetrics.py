@@ -1,5 +1,5 @@
-import process_metrics as pm
-import repo_utils as ru
+import model.process_metrics as pm
+import model.repo_utils as ru
 import pandas as pd
 
 def generate(hash_code, folder = "repository"):
