@@ -1,4 +1,6 @@
 import os.path
+from tkinter import ttk
+
 import customtkinter as ctk
 from view.widgets.SideButton import SideButton
 from view.widgets.Plot import PlotCartesian
@@ -6,6 +8,8 @@ from controller.ProjectMetricsContoller import ProjectMetricsController
 import tkinter as tk
 from icecream import ic
 from .ControllerFalso import ControllerFalso
+from .widgets.Graphics.GridView import GridView
+
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
     
@@ -20,27 +24,23 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.controller = ProjectMetricsController() 
             self.repoData = self.controller.getLocalRepoData()
             self.master = master
-        
-        
-          
+
         self.initTopFrames()
         self.externalProjectFrame.pack(pady = 12)
         
         self.initOptionFrame()
         self.optionFrameOut.pack(side = ctk.RIGHT, padx = 20, fill= "y", expand = True)
-        
-        p = PlotCartesian(self,  [1,2,3,4], [1,1,1,1])
-        p.pack(fill = "x")
-        
+
+
         self.but = ctk.CTkButton(self, command= lambda: print(master.repoData) )
         self.but.pack()
         left_arrow = os.path.join("resources","left-arrow.png")
-        
+
         ic(self.controller.getLocalRepoData().releases)
-        
+
         self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath=left_arrow)
         self.backButton.place(x= -150, y= 10 )
-            
+
         
         
 # ----------------------------- GESTIONE UI METHODS -----------------------------        
@@ -94,20 +94,31 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.label.pack()
        
     def initOptionFrame(self):
-        
         self.optionFrameOut = ctk.CTkFrame(self.externalProjectFrame,  bg_color="#1d1e1e", fg_color="#1d1e1e", width = 200, height= 100)
-        
         self.optionFrame = ctk.CTkFrame(self.optionFrameOut, bg_color="#1d1e1e", fg_color="#1d1e1e", width = 80)
         self.optionFrame.pack(fill = "x")
-        
+
         self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values=self.controller.getLocalRepoData().releases)
         self.optionMenu.set(self.controller.getLocalRepoData().releases[0])
         self.optionMenu.pack(padx = 10, pady = 5)
-        
+
         self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values= self.controller.getClassesList())
         self.optionMenu.set(self.controller.getClassesList()[0])
         self.optionMenu.pack(padx = 10, pady = 2.5)
-        
-        self.optionButton = ctk.CTkButton(self.optionFrame, text= "start analysis")
+
+        self.optionButton = ctk.CTkButton(self.optionFrame, text= "start analysis", command=self.on_option_button_click)
         self.optionButton.pack(pady = 10)
-       
+
+    def on_option_button_click(self):
+        grid_frame = ctk.CTkFrame(self.internalFrame)  # Crea un nuovo frame per la griglia
+        grid_frame.pack(side=tk.RIGHT, padx=20, fill="y", expand=True)
+
+        # Inizializza la GridView all'interno del frame con i dati del grafico
+        chart_data = [
+            [('pie', ['A', 'B'], [30, 70]), ('bar', ['X', 'Y'], [40, 60])],
+            [('line', [1, 2, 3, 4, 5], [10, 20, 15, 25, 30]), ('pie', ['C', 'D'], [45, 55])]
+        ]
+        grid_view = GridView(grid_frame)
+        grid_view.create_grid(chart_data)  # Passa i dati del grafico alla GridView
+
+
