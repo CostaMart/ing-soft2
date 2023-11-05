@@ -1,8 +1,9 @@
 
+from typing import List
 from model.LocalRepoModel import LocalRepoModel
 from model import Domain
 
-class MetricsPageContoller:
+class ProjectMetricsController:
     
     def __init__(self):
        self.localModel = LocalRepoModel()
@@ -10,3 +11,6 @@ class MetricsPageContoller:
     
     def getLocalRepoData(self) -> Domain.Repository:
         return self.localModel.getRepoData()
+    
+    def getClassesList(self) -> List[str]:
+        return self.localModel.getAllJavaClassProject("repository")
