@@ -1,11 +1,9 @@
 import subprocess
 import os
 from git import Repo 
-import repo_utils as ru
+import model.repo_utils as ru
 import pandas as pd
 from multiprocessing import Pool
-import model.ReturnReleaseProject
-from model import ReturnReleaseProject
 
 
 def ck_metrics_for_single_commit(commit_hash, output = None, folder = "repository"):

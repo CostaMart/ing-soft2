@@ -187,6 +187,14 @@ def get_git_tags_commit(folder = "repository"):
 
 
 
+def checkout_tag(tag, folder = "repository"):
+    if(folder is "repository"):
+        checkout_commit(get_commit_hash_for_tag(tag))
+    else:
+        checkout_commit(get_commit_hash_for_tag(tag, folder))
+
+
+
 def checkout_commit(commit_hash, folder = "repository"):
     """Questo metodo effettua il checkout a un commit specifico"""
     try:
