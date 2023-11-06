@@ -100,6 +100,19 @@ def dataCommitLink(rep):
 
 
 
+def dataCommitLinkYear(rep, year):
+    """Metodo che prende tutti i commit con relativa data in base all'anno e li inserisce in un dataframe che ritorna"""
+    
+    commit_data = []
+    for commit in get_commits(rep):
+        commit_hash = commit.hash
+        commit_date = commit.committer_date
+        if commit_date.year == year:
+            commit_data.append({'Commit Hash': commit_hash, 'Data del Commit': commit_date})
+    return pd.DataFrame(commit_data)
+
+
+
 def delete_garbage(keep, output=None, folder = "output"):
     """Elimina i file non utilizzabili creati con le metriche della classe"""
     if(output is None):
@@ -213,7 +226,7 @@ def checkout_commit(commit_hash, folder = "repository"):
 
 
 
-def inizia_analisi(tag = None, folder = "repository"):
+def inizia_analisi(tag = None, folder = "repository", year = 0):
     """Questo metodo prepara il processo alle operazioni da effettuare"""
     repo = repo_to_use(folder)
     if(tag is not None):
@@ -221,7 +234,8 @@ def inizia_analisi(tag = None, folder = "repository"):
         if(flag is not None):
             checkout_tag(tag, folder)
         return flag
-    
+    if(year != 0):
+       return dataCommitLinkYear(repo,year)
     return dataCommitLink(repo)
 
 
