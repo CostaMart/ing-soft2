@@ -20,6 +20,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
     
     def __init__(self, master, debug = False):
         super().__init__(master = master)
+        self.grid_frame = None  # Aggiungi una variabile per tenere traccia del frame della griglia
         ctk.set_appearance_mode("dark")
         
         if debug == True:
@@ -46,15 +47,12 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath=left_arrow)
         self.backButton.place(x= -150, y= 10 )
 
-        
-        
+
 # ----------------------------- GESTIONE UI METHODS -----------------------------        
     def initTopFrames(self):
         my_font = ctk.CTkFont(weight= "bold", size= 16)
         my_font_big =  ctk.CTkFont(weight= "bold", size= 20)
         self.externalProjectFrame = ctk.CTkFrame(self)
-        
-        
         self.label = ctk.CTkLabel(self.externalProjectFrame, text= str(self.repoData.name).upper(), font = my_font_big)
         self.label.pack(pady = 2, anchor = "w")
         
@@ -90,7 +88,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.label.pack(side = ctk.LEFT)
         self.label = ctk.CTkLabel(self.subFrame3, text= f"r{self.repoData.owner['login']}")
         self.label.pack()
-        
         self.subFrame4 = ctk.CTkFrame(self.projectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.subFrame4.pack(anchor = "w", padx = 10)
         self.label = ctk.CTkLabel(self.subFrame4, text= f"Repo owner URL: ", font = my_font)
@@ -133,16 +130,21 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.optionButton = ctk.CTkButton(self.optionFrame, text="start analysis", command=self.on_option_button_click)
         self.optionButton.pack(pady=10)
 
+
+
     def on_option_button_click(self):
-        grid_frame = ctk.CTkFrame(self.internalFrame)  # Crea un nuovo frame per la griglia
-        grid_frame.pack(side=tk.RIGHT, padx=20, fill="y", expand=True)
+        if self.grid_frame is not None:
+            self.grid_frame.destroy()  # Rimuovi il frame della griglia se esiste già
+
+        self.grid_frame = ctk.CTkFrame(self.internalFrame)  # Crea un nuovo frame per la griglia
+        self.grid_frame.pack(side=tk.RIGHT, padx=20, fill="y", expand=True)
 
         # Inizializza la GridView all'interno del frame con i dati del grafico
         chart_data = [
             [('pie', ['A', 'B'], [30, 70]), ('bar', ['X', 'Y'], [40, 60])],
             [('line', [1, 2, 3, 4, 5], [10, 20, 15, 25, 30]), ('pie', ['C', 'D'], [45, 55])]
         ]
-        grid_view = GridView(grid_frame)
+        grid_view = GridView(self.grid_frame)
         grid_view.create_grid(chart_data)  # Passa i dati del grafico alla GridView
 
-
+        self.grid_frame.update()  # Aggiorna il frame della griglia per mostrare i nuovi grafici
