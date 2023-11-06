@@ -15,10 +15,8 @@ class ProjectMetricsController:
     def getLocalRepoData(self) -> Domain.Repository:
         return self.localModel.getRepoData()
     
-    def getClassesList(self, tag) -> List[str]:
-        dirs = os.listdir("repository")
-        path = os.path.join("repository", dirs[0]) 
-        return model.repo_utils.checkout_tag(tag, path)
+    def getClassesList(self, tag) -> List[str]: 
+        return model.repo_utils.checkout_tag(tag, "repository")
         
     def getClassesListR(self):
         return model.repo_utils.cerca_file_java("repository") 

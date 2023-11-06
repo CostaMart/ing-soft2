@@ -102,24 +102,28 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.optionFrame.pack(fill="x")
 
         relList = self.controller.getLocalRepoData().releases
+        classList = self.controller.getClassesListR()
+        
+        
         if len(relList) == 0:
             relList = ["no releases"]
         else:
-            relList = ru.get_git_tags(folder="repository")  # DA MIGLIORARE
+            relList = ru.get_git_tags(folder="repository")
             
+        self.optionMenuClass = ctk.CTkOptionMenu(self.optionFrame, values=classList)
+        self.optionMenuRelease = ctk.CTkOptionMenu(self.optionFrame, values=relList, command= self.updateGUI)
+        
 
-        self.optionMenuRelease = ctk.CTkOptionMenu(self.optionFrame, values=relList)
         if len(relList) > 0:
             self.optionMenuRelease.set(relList[0])
         else:
             self.optionMenuRelease.set("Nessuna release disponibile")
         self.optionMenuRelease.pack(padx=10, pady=5)
 
-        classList = self.controller.getClassesListR()
+        
         if len(classList) == 0:
             classList = ["no classes"]
 
-        self.optionMenuClass = ctk.CTkOptionMenu(self.optionFrame, values=classList)
         if len(classList) > 0:
             self.optionMenuClass.set(classList[0])
         else:
@@ -147,3 +151,9 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         grid_view.create_grid(chart_data)  # Passa i dati del grafico alla GridView
 
         self.grid_frame.update()  # Aggiorna il frame della griglia per mostrare i nuovi grafici
+    
+    def updateGUI(self, release):
+        self.controller.getClassesList(release)
+        peto = ic(self.controller.getClassesListR())
+        self.optionMenuClass.configure(values = peto)
+        ic(release)

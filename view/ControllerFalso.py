@@ -1,5 +1,5 @@
 from model.Domain import Repository 
-
+import model.FilterProject
 
 class ControllerFalso:
     def getLocalRepoData(self):
@@ -10,3 +10,7 @@ class ControllerFalso:
                       "url": "ciao"}
         
         return repo
+    
+    
+    def getClassesListR(self):
+        return model.repo_utils.cerca_file_java("repository")
