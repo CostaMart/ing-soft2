@@ -3,7 +3,7 @@ import shutil
 import stat
 from .DataAccessLayer.DAORepo import DAORepo
 import subprocess
-
+from icecream import ic
 from .DataAccessLayer.LocalDAO import LocalDAO
 
 
@@ -43,23 +43,9 @@ class LocalRepoModel:
 
     def createLocalRepo(self, url):
         """A partire dall'URL fornito, installa localmente in una directory 'repository' il repo cercato."""
-        current_directory = os.getcwd()
-        folder_path = os.path.join(current_directory, "repository")
-        os.chdir(folder_path)
-
-        contenuto_directory = os.listdir()
-
-        def on_rm_error(func, path, exc_info):
-            os.chmod(path, stat.S_IWRITE)
-            os.unlink(path)
-
-        for dir in contenuto_directory:
-            if dir != "repository":
-                shutil.rmtree(dir, onerror=on_rm_error)
-
-        # Clone del repository usando Git
         self.LocalDAO.cloneRepository(url)
-        os.chdir(current_directory)
+
+      
 
     def _CheckRepoDir(self):
         "controlla se la directory repository esiste localmente, altrimenti la crea "

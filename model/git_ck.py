@@ -20,7 +20,6 @@ def ck_metrics_for_single_commit(commit_hash, output = None, folder = "repositor
         output_dir = os.path.abspath("output")
     file_name = commit_hash + "class.csv"
     file_path = os.path.join(output_dir, file_name)
-
     if not os.path.exists(file_path):
         os.chdir(repo_to_analyze)
         subprocess.call(['git', 'checkout', '-f', commit_hash])
@@ -100,6 +99,7 @@ def commit_measure_year(year, measures, folder= "repository"):
     return result_df
 
 
+
 def analyze_commits_for_release(folder = "repository"):
     """Questo metodo estare i commit corrispondenti ai tag release e li analizza"""
     commits = ru.get_git_tags_commit(folder)
@@ -136,10 +136,13 @@ def commit_measure_release(measures, folder = "repository"):
 def analyze_commits_for_interval(df, index, folder = "repository"):
     """Questo metodo estrae i commit corrispondenti all'intervallo scelto e li analizza"""
     commits = ru.sfoglia_commit(df, index)
+    if(commits.empty):
+        return pd.DataFrame()
     if not commits.empty:  # Controlla se il DataFrame non è vuoto
-        commit_messages = commits.iloc[:, 0]  # Estrai la seconda colonna
+        commit_messages = commits.iloc[:, 0] 
         for commit_message in commit_messages:
-                ck_metrics_for_single_commit(commit_message, folder = folder)
+
+            ck_metrics_for_single_commit(commit_message, folder = folder)
         ru.delete_garbage("class")
         return commits
     else:
@@ -150,6 +153,8 @@ def analyze_commits_for_interval(df, index, folder = "repository"):
 def commit_measure_interval(measures, df, index, folder = "repository"):
     """ Questo metodo calcola le metriche per l'intervallo e fa la media delle metriche richieste per ogni commit"""
     commit = analyze_commits_for_interval(df, index, folder)
+    if(commit.empty):
+        return pd.DataFrame
     commit['Commit Hash'] = commit['Commit Hash'] + 'class.csv'
     result_data = []
     path = os.path.abspath("output")

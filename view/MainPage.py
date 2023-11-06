@@ -156,7 +156,7 @@ class MainPage(ctk.CTkFrame):
         status_code = response.status_code
 
         body = response.body
-        if self.controller.getRepoData() is not None and status_code == 200:
+        if self.controller.getRepoData() is not None:
             self.sideB.place(y=10, relx=0.9)
             self.showMessage("done!")
             self.icon.stop()

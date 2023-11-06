@@ -1,6 +1,8 @@
 import os
 import subprocess
-
+from icecream import ic
+import shutil
+import stat
 
 class LocalDAO:
 
@@ -19,32 +21,37 @@ class LocalDAO:
 
     def getRepoInfoFromGit(self):
         """Ottieni le informazioni del repository dal sistema Git."""
-        current_directory = os.getcwd()
-
+        
         os.chdir("repository")
-        repoDir =os.listdir()[0]
-        repoDir = os.path.join(current_directory, "repository", repoDir).replace("\n", "")
-        checkDir = os.path.join(current_directory, "repository")
-
-        if os.getcwd() == checkDir:
-            os.chdir(repoDir)
-            result = subprocess.check_output(["git", "remote", "show", "origin"]).decode("utf-8")
-            os.chdir(current_directory)
-            print(os.getcwd())
-
-            firstLine = result.split("\n")[1]
-            name = firstLine.split("/")[-2]
-            repoName = firstLine.split("/")[-1]
-            return name, repoName
-
-        os.chdir(current_directory)
-        return None, None
+        result = subprocess.check_output(["git", "remote", "show", "origin"]).decode("utf-8")
+        firstLine = result.split("\n")[1]
+        name = firstLine.split("/")[-2]
+        repoName = firstLine.split("/")[-1]
+        os.chdir("..")
+        return name, repoName
+           
+        
 
     def cloneRepository(self, url):
         """Clona il repository usando il comando 'git clone'."""
+        
+        def on_rm_error( func, path, exc_info):
+            os.chmod(path, stat.S_IWRITE)
+            os.unlink( path )
+        
+        
+        shutil.rmtree( "repository", onerror = on_rm_error )
+            
         try:
-            subprocess.call(['git', 'clone', url])
-            # Esegui eventuali operazioni aggiuntive dopo il clone, se necessario
+            subprocess.call(['git', 'clone', url, "repository"])
+            
         except Exception as e:
             # Gestisci eccezioni in caso di fallimento del clone
             print(f"Errore durante il clone del repository: {e}")
+        
+      
+
+        
+
+
+        

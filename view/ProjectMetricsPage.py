@@ -1,4 +1,6 @@
 import os.path
+from tkinter import ttk
+
 import customtkinter as ctk
 from view.widgets.SideButton import SideButton
 from view.widgets.Plot import PlotCartesian
@@ -6,13 +8,19 @@ from controller.ProjectMetricsContoller import ProjectMetricsController
 import tkinter as tk
 from icecream import ic
 from .ControllerFalso import ControllerFalso
+
+from .widgets.Graphics.GridView import GridView
+
+
 from icecream import ic
 import model.repo_utils as ru
+
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
     
     def __init__(self, master, debug = False):
         super().__init__(master = master)
+        self.grid_frame = None  # Aggiungi una variabile per tenere traccia del frame della griglia
         ctk.set_appearance_mode("dark")
         
         if debug == True:
@@ -22,36 +30,29 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.controller = ProjectMetricsController() 
             self.repoData = self.controller.getLocalRepoData()
             self.master = master
-        
-        
-          
+
         self.initTopFrames()
         self.externalProjectFrame.pack(pady = 12)
         
         self.initOptionFrame()
         self.optionFrameOut.pack(side = ctk.RIGHT, padx = 20, fill= "y", expand = True)
-        
-        p = PlotCartesian(self,  [1,2,3,4], [1,1,1,1])
-        p.pack(fill = "x")
-        
+
+
         self.but = ctk.CTkButton(self, command= lambda: print(master.repoData) )
         self.but.pack()
         left_arrow = os.path.join("resources","left-arrow.png")
         
-        self.controller.getLocalRepoData().releases
-        
         self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath=left_arrow)
         self.backButton.place(x= -150, y= 10 )
-            
         
         
+
+
 # ----------------------------- GESTIONE UI METHODS -----------------------------        
     def initTopFrames(self):
         my_font = ctk.CTkFont(weight= "bold", size= 16)
         my_font_big =  ctk.CTkFont(weight= "bold", size= 20)
         self.externalProjectFrame = ctk.CTkFrame(self)
-        
-        
         self.label = ctk.CTkLabel(self.externalProjectFrame, text= str(self.repoData.name).upper(), font = my_font_big)
         self.label.pack(pady = 2, anchor = "w")
         
@@ -87,41 +88,63 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.label.pack(side = ctk.LEFT)
         self.label = ctk.CTkLabel(self.subFrame3, text= f"r{self.repoData.owner['login']}")
         self.label.pack()
-        
         self.subFrame4 = ctk.CTkFrame(self.projectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.subFrame4.pack(anchor = "w", padx = 10)
         self.label = ctk.CTkLabel(self.subFrame4, text= f"Repo owner URL: ", font = my_font)
         self.label.pack(side = ctk.LEFT)
         self.label = ctk.CTkLabel(self.subFrame4, text= f"{self.repoData.owner['url']}")
         self.label.pack()
-       
+
     def initOptionFrame(self):
-        
-        self.optionFrameOut = ctk.CTkFrame(self.externalProjectFrame,  bg_color="#1d1e1e", fg_color="#1d1e1e", width = 200, height= 100)
-        
-        self.optionFrame = ctk.CTkFrame(self.optionFrameOut, bg_color="#1d1e1e", fg_color="#1d1e1e", width = 80)
-        self.optionFrame.pack(fill = "x")
-        
-        if len(self.controller.getLocalRepoData().releases) == 0:
-            relList = ["no releases"]   
+        self.optionFrameOut = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e", width=200,
+                                           height=100)
+        self.optionFrame = ctk.CTkFrame(self.optionFrameOut, bg_color="#1d1e1e", fg_color="#1d1e1e", width=80)
+        self.optionFrame.pack(fill="x")
+
+        relList = self.controller.getLocalRepoData().releases
+        if len(relList) == 0:
+            relList = ["no releases"]
         else:
-            os.chdir("repository") ####
-            relList = ru.get_git_tags(folder = os.listdir()[0]) #### DA MIGLIORARE 
-            os.chdir("..") ####
-            
-        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values=relList)
-        self.optionMenu.set(relList[0])
-        self.optionMenu.pack(padx = 10, pady = 5)
-        
-        if len(self.controller.getClassesListR()) == 0:
+            os.chdir("repository")
+            relList = ru.get_git_tags(folder=os.listdir()[0])  # DA MIGLIORARE
+            os.chdir("..")
+
+        self.optionMenuRelease = ctk.CTkOptionMenu(self.optionFrame, values=relList)
+        if len(relList) > 0:
+            self.optionMenuRelease.set(relList[0])
+        else:
+            self.optionMenuRelease.set("Nessuna release disponibile")
+        self.optionMenuRelease.pack(padx=10, pady=5)
+
+        classList = self.controller.getClassesListR()
+        if len(classList) == 0:
             classList = ["no classes"]
-        else: 
-            classList = self.controller.getClassesListR()
-        
-        self.optionMenu = ctk.CTkOptionMenu(self.optionFrame, values= classList)
-        self.optionMenu.set(classList[0])
-        self.optionMenu.pack(padx = 10, pady = 2.5)
-        
-        self.optionButton = ctk.CTkButton(self.optionFrame, text= "start analysis")
-        self.optionButton.pack(pady = 10)
-       
+
+        self.optionMenuClass = ctk.CTkOptionMenu(self.optionFrame, values=classList)
+        if len(classList) > 0:
+            self.optionMenuClass.set(classList[0])
+        else:
+            self.optionMenuClass.set("Nessuna classe disponibile")
+        self.optionMenuClass.pack(padx=10, pady=2.5)
+
+        self.optionButton = ctk.CTkButton(self.optionFrame, text="start analysis", command=self.on_option_button_click)
+        self.optionButton.pack(pady=10)
+
+
+
+    def on_option_button_click(self):
+        if self.grid_frame is not None:
+            self.grid_frame.destroy()  # Rimuovi il frame della griglia se esiste già
+
+        self.grid_frame = ctk.CTkFrame(self.internalFrame)  # Crea un nuovo frame per la griglia
+        self.grid_frame.pack(side=tk.RIGHT, padx=20, fill="y", expand=True)
+
+        # Inizializza la GridView all'interno del frame con i dati del grafico
+        chart_data = [
+            [('pie', ['A', 'B'], [30, 70]), ('bar', ['X', 'Y'], [40, 60])],
+            [('line', [1, 2, 3, 4, 5], [10, 20, 15, 25, 30]), ('pie', ['C', 'D'], [45, 55])]
+        ]
+        grid_view = GridView(self.grid_frame)
+        grid_view.create_grid(chart_data)  # Passa i dati del grafico alla GridView
+
+        self.grid_frame.update()  # Aggiorna il frame della griglia per mostrare i nuovi grafici
