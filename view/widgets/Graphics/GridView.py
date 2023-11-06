@@ -34,24 +34,24 @@ class GridView(tk.Frame):
 
 
 
-# Inizializza la finestra principale
-root = tk.Tk()
-
-# Crea un frame per la GridView
-grid_frame = tk.Frame(root)
-grid_frame.pack()
-
-# Inizializza la GridView all'interno del frame
-grid_view = GridView(grid_frame)
-
-# Crea i dati del grafico
-chart_data = [
-    [('pie', ['A', 'B'], [30, 70]), ('bar', ['X', 'Y'], [40, 60])],
-    [('line', [1, 2, 3, 4, 5], [10, 20, 15, 25, 30]), ('pie', ['C', 'D'], [45, 55])]
-]
-
-# Passa i dati del grafico alla GridView
-grid_view.create_grid(chart_data)
-
-# Avvia il loop principale
-root.mainloop()
+# # Inizializza la finestra principale
+# root = tk.Tk()
+#
+# # Crea un frame per la GridView
+# grid_frame = tk.Frame(root)
+# grid_frame.pack()
+#
+# # Inizializza la GridView all'interno del frame
+# grid_view = GridView(grid_frame)
+#
+# # Crea i dati del grafico
+# chart_data = [
+#     [('pie', ['A', 'B'], [30, 70]), ('bar', ['X', 'Y'], [40, 60])],
+#     [('line', [1, 2, 3, 4, 5], [10, 20, 15, 25, 30]), ('pie', ['C', 'D'], [45, 55])]
+# ]
+#
+# # Passa i dati del grafico alla GridView
+# grid_view.create_grid(chart_data)
+#
+# # Avvia il loop principale
+# root.mainloop()
