@@ -3,6 +3,9 @@ import model.repo_utils as ru
 import pandas as pd
 import model.git_ck as ck
 from icecream import ic
+
+
+
 def generate_process_metrics(hash_code=None, folder = "repository"):
     """Genera le metriche di processo, è possibile specificare il commit da analizzare e il folder dove è conservata la repository"""
     """Questo metodo dovrà essere utilizzato per fare tutte le analisi disponibili con le metriche di processo, a parte i code churn"""
@@ -25,7 +28,7 @@ def generate_process_metrics(hash_code=None, folder = "repository"):
 
 
 
-def generate_ck_metrics(tag = None, df = None, index= 0, folder = "repository",measures = ["cbo", "wmc", "dit", "noc"]):
+def generate_ck_metrics_by_release(tag = None, df = None, index= 0, folder = "repository",measures = ["cbo", "wmc", "dit", "noc"]):
     """Genera le metriche ad oggetti , questo metodo prende la release da cui si vuole partire(opzionale), trova i commit e li inserisce in un dataframe"""
     """Una volta generato ,se generato(quindi nel caso di avvio dell'analisi da 0) prende 10 commit e li analizza globalmente restituendo un dataframe """
     """Con il commit_hash, la data e le misurazioni"""
@@ -36,7 +39,7 @@ def generate_ck_metrics(tag = None, df = None, index= 0, folder = "repository",m
         print("Non ci sono commit disponibili")
         return 0,0,0
     return commit, index+10, df
-    
+
 
 
 
