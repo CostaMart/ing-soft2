@@ -20,4 +20,5 @@ if isInstalled:
     IngSoftApp(gitv = version)
 else:   
     StartupPage()
+ 
 

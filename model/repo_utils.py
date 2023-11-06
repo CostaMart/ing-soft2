@@ -208,34 +208,23 @@ def checkout_commit(commit_hash, folder = "repository"):
 
 
 
-def inizia_analisi(tag = None):
+def inizia_analisi(tag = None, folder = "repository"):
     """Questo metodo prepara il processo alle operazioni da effettuare"""
-    if(tag is None):
-        check_repo()
-        check_folder()
-        folder = "repository"
-    else:
-        parsed_url = urllib.parse.urlparse(settings["repo"])
-        folder= parsed_url.path.strip('/').split('/')[-1]
-        check_folder()
-        if not os.path.exists(folder):
-            clone_git_repository_with_tag(tag)
-            
+    if(tag is not None):
+        checkout_tag(tag, folder)
     repo = repo_to_use(folder)
-    return dataCommitLink(repo), folder
+    return dataCommitLink(repo)
 
 
 
 def sfoglia_commit(df, index = 0):
     """Questo metodo richiede il dataframe ritornato dall'inizializzazione e sfoglia i commit 10 alla volta sulla base dell'indice passato"""
     if index >= df.shape[0]:
-        return pd.DataFrame()  # Se l'indice è troppo grande, restituisci un DataFrame vuoto
-    
+        return pd.DataFrame()
+    check_folder()
     start_index = index
     end_index = min(index + 10, df.shape[0])
-    
     subset_df = df.iloc[start_index:end_index]
-    
     return subset_df
         
 
