@@ -149,7 +149,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         ]
         grid_view = GridView(self.grid_frame)
         grid_view.create_grid(chart_data)  # Passa i dati del grafico alla GridView
-
         self.grid_frame.update()  # Aggiorna il frame della griglia per mostrare i nuovi grafici
     
     def updateGUI(self, release):
