@@ -215,9 +215,13 @@ def checkout_commit(commit_hash, folder = "repository"):
 
 def inizia_analisi(tag = None, folder = "repository"):
     """Questo metodo prepara il processo alle operazioni da effettuare"""
-    if(tag is not None):
-        checkout_tag(tag, folder)
     repo = repo_to_use(folder)
+    if(tag is not None):
+        flag=  intervallo_tra_release(dataCommitLink(repo),tag, folder)
+        if(flag is not None):
+            checkout_tag(tag, folder)
+        return flag
+    
     return dataCommitLink(repo)
 
 
@@ -231,6 +235,40 @@ def sfoglia_commit(df, index = 0):
     end_index = min(index + 10, df.shape[0])
     subset_df = df.iloc[start_index:end_index]
     return subset_df
+
+
+
+def confronta_release(tag, folder="repository"):
+    """Questo metodo ritorna , se presente, l'hash della release precedente a quella inserita"""
+    df =get_git_tags_commit(folder)
+    release_precedente = None
+    tag_index = df[df['Tag'] == tag].index[0] if tag in df['Tag'].values else -1
+    
+    if tag_index > 0:
+        # Se tag è positivo allora hai una release precedente
+        release_precedente = df.loc[tag_index - 1, 'Commit Hash']
+        return release_precedente
+    
+
+
+def intervallo_tra_release(df, tag, folder= "repository"):
+    """Questo metodo ritorna un dataframe con l'intervallo tra il tag specificato e quello precendete"""
+    hash1 = get_commit_hash_for_tag(tag)
+    hash2= confronta_release(tag, folder)
+    if hash2 is not None:
+        index_hash2 = df[df['Commit Hash'] == hash2].index[0]
+        index_hash1 = df[df['Commit Hash'] == hash1].index[0]
+        commit_indices = df.index[index_hash2 + 1:index_hash1 + 1]
+        intervallo_df = df.loc[commit_indices].reset_index(drop=True)
+        return intervallo_df
+    else:
+        return df
+
+
+    
+
+
+
         
 
     
