@@ -155,10 +155,11 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
     def updateGUI(self, release):
         self.controller.getClassesList(release)
         newList = ic(self.controller.getClassesListR())
-        if len(newList) != 0:
-            newList = ["no classes available"]        
+        if len(newList) == 0:
+            newList = ["no classes available"]  
+                  
         self.optionMenuClass.configure(values = newList)
-        self.optionMenuClass.set[newList[0]]
+        self.optionMenuClass.set([newList[0]])
         ic(release)
             
         
