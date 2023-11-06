@@ -21,8 +21,5 @@ class ProjectMetricsController:
         return model.repo_utils.checkout_tag(tag, path)
         
     def getClassesListR(self):
-        dirs = os.listdir("repository")
-        path = os.path.join("repository", dirs[0]) 
-        model.repo_utils.cerca_file_java(path) 
-        return model.repo_utils.cerca_file_java(path) 
+        return model.repo_utils.cerca_file_java("repository") 
         

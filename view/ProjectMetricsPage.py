@@ -105,9 +105,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         if len(relList) == 0:
             relList = ["no releases"]
         else:
-            os.chdir("repository")
-            relList = ru.get_git_tags(folder=os.listdir()[0])  # DA MIGLIORARE
-            os.chdir("..")
+            relList = ru.get_git_tags(folder="repository")  # DA MIGLIORARE
+            
 
         self.optionMenuRelease = ctk.CTkOptionMenu(self.optionFrame, values=relList)
         if len(relList) > 0:

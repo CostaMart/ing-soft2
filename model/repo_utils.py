@@ -4,6 +4,7 @@ import json
 from pydriller import Repository
 import subprocess
 import urllib.parse
+from icecream import ic
 
 setting = open("settings.json")
 settings = json.load(setting)
@@ -135,9 +136,13 @@ def cerca_file_java(cartella_name):
 
 
 
-def get_git_tags(folder = "repository"):
+def get_git_tags(folder = None):
     """Questo metodo restituisce i tag di una repository"""
-    repo_path = os.path.abspath(folder)+"\\.git" 
+    if folder != None:
+        repo_path = os.path.abspath(folder)+"\\.git"
+    
+  
+     
     try:
         result = subprocess.run(['git', '--git-dir', repo_path, 'tag'], capture_output=True, text=True)
         
