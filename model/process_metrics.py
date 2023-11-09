@@ -51,6 +51,24 @@ def calcola_numero_bug_fix(folder ="repository"):
 
 
 
+def calcola_numero_bug_fix_per_commit_specifico(folder="repository", commit_hash=None):
+    """Calcola il numero di bug fix per un commit specifico se documentati."""
+    repository_path = os.path.abspath(folder)
+    repo = git.Repo(repository_path)
+
+    commit = repo.commit(commit_hash)
+    numero_bug_fix = 0
+
+    parole_chiave = ['fix', 'bug', 'correggi']
+
+    for parola_chiave in parole_chiave:
+        if parola_chiave in commit.message.lower():
+            numero_bug_fix += 1
+
+    return numero_bug_fix
+
+
+
 def calcola_code_churn(commit_hash1, commit_hash2, folder="repository"):
     """Metodo che calcola i code churn tra 2 commit, praticamente le linee modificate """
     repository_path = os.path.abspath(folder)
@@ -68,10 +86,10 @@ def calcola_code_churn(commit_hash1, commit_hash2, folder="repository"):
 
 
 
-def calcola_loc(classe_filename):
+def calcola_loc(classe_filename, folder = "repository"):
     """Questo metodo calcola le misure LOC di un codice restituendo il 
        numero di linee di codice il numero di linee vuote e il numero di commenti"""
-    classe_file_path = ru.trova_file_classe(classe_filename)
+    classe_file_path = ru.trova_file_classe(classe_filename, folder)
     with open(classe_file_path, 'rb') as raw_file:
         raw_data = raw_file.read()
         encoding_info = chardet.detect(raw_data)
@@ -188,3 +206,5 @@ def calcola_settimane_repo(folder = "repository"):
     for element in list:
         class_data.append({'Nome della Classe': element, 'Settimane file': calcola_settimane_file(element)})
     return pd.DataFrame(class_data)
+
+

@@ -100,6 +100,19 @@ def dataCommitLink(rep):
 
 
 
+def dataCommitLinkYear(rep, year):
+    """Metodo che prende tutti i commit con relativa data in base all'anno e li inserisce in un dataframe che ritorna"""
+    
+    commit_data = []
+    for commit in get_commits(rep):
+        commit_hash = commit.hash
+        commit_date = commit.committer_date
+        if commit_date.year == year:
+            commit_data.append({'Commit Hash': commit_hash, 'Data del Commit': commit_date})
+    return pd.DataFrame(commit_data)
+
+
+
 def delete_garbage(keep, output=None, folder = "output"):
     """Elimina i file non utilizzabili creati con le metriche della classe"""
     if(output is None):
@@ -207,34 +220,33 @@ def checkout_commit(commit_hash, folder = "repository"):
     """Questo metodo effettua il checkout a un commit specifico"""
     try:
         subprocess.run(['git', 'checkout', commit_hash], cwd=os.path.abspath(folder), check=True)
-        print(f"Checkout effettuato con successo al commit {commit_hash}.")
     except subprocess.CalledProcessError as e:
         print(f"Errore durante il checkout al commit {commit_hash}: {e.stderr}")
 
 
 
-def inizia_analisi(tag = None, folder = "repository"):
+def inizia_analisi(tag = None, folder = "repository", year = 0):
     """Questo metodo prepara il processo alle operazioni da effettuare"""
     repo = repo_to_use(folder)
     if(tag is not None):
+        checkout_tag(tag, folder)
         flag=  intervallo_tra_release(dataCommitLink(repo),tag, folder)
-        if(flag is not None):
-            checkout_tag(tag, folder)
         return flag
-    
+    if(year != 0):
+       return dataCommitLinkYear(repo,year)
     return dataCommitLink(repo)
 
 
-
-def sfoglia_commit(df, index = 0):
-    """Questo metodo richiede il dataframe ritornato dall'inizializzazione e sfoglia i commit 10 alla volta sulla base dell'indice passato"""
-    if index >= df.shape[0]:
-        return pd.DataFrame()
-    check_folder()
-    start_index = index
-    end_index = min(index + 10, df.shape[0])
-    subset_df = df.iloc[start_index:end_index]
-    return subset_df
+# DEPRECATO
+# def sfoglia_commit(df, index = 0):
+#     """Questo metodo richiede il dataframe ritornato dall'inizializzazione e sfoglia i commit 10 alla volta sulla base dell'indice passato"""
+#     if index >= df.shape[0]:
+#         return pd.DataFrame()
+#     check_folder()
+#     start_index = index
+#     end_index = min(index + 10, df.shape[0])
+#     subset_df = df.iloc[start_index:end_index]
+#     return subset_df
 
 
 
@@ -263,6 +275,24 @@ def intervallo_tra_release(df, tag, folder= "repository"):
         return intervallo_df
     else:
         return df
+
+
+
+def filtro(df, hash1, hash2):
+    """Questo metodo ritorna un dataframe con l'intervallo tra 2 hash"""
+    index_hash2 = df[df['Commit Hash'] == hash2].index[0]
+    index_hash1 = df[df['Commit Hash'] == hash1].index[0]
+    if(index_hash1 < index_hash2):
+        commit_indices = df.index[index_hash1 :index_hash2 + 1]
+    else:
+        commit_indices = df.index[index_hash2 :index_hash1 + 1]
+    intervallo_df = df.loc[commit_indices].reset_index(drop=True)
+    return intervallo_df
+
+
+
+
+
 
 
     

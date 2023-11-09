@@ -133,9 +133,9 @@ def commit_measure_release(measures, folder = "repository"):
 
 
 
-def analyze_commits_for_interval(df, index, folder = "repository"):
+def analyze_commits_for_interval(df, folder = "repository"):
     """Questo metodo estrae i commit corrispondenti all'intervallo scelto e li analizza"""
-    commits = ru.sfoglia_commit(df, index)
+    commits = df
     if(commits.empty):
         return pd.DataFrame()
     if not commits.empty:  # Controlla se il DataFrame non è vuoto
@@ -150,9 +150,9 @@ def analyze_commits_for_interval(df, index, folder = "repository"):
 
 
 
-def commit_measure_interval(measures, df, index, folder = "repository"):
+def commit_measure_interval(measures, df, folder = "repository"):
     """ Questo metodo calcola le metriche per l'intervallo e fa la media delle metriche richieste per ogni commit"""
-    commit = analyze_commits_for_interval(df, index, folder)
+    commit = analyze_commits_for_interval(df, folder)
     if(commit.empty):
         return pd.DataFrame
     commit['Commit Hash'] = commit['Commit Hash'] + 'class.csv'
