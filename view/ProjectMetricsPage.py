@@ -1,6 +1,5 @@
 import os.path
 from tkinter import ttk
-
 import customtkinter as ctk
 from view.widgets.SideButton import SideButton
 from view.widgets.Plot import PlotCartesian
@@ -8,10 +7,7 @@ from controller.ProjectMetricsContoller import ProjectMetricsController
 import tkinter as tk
 from icecream import ic
 from .ControllerFalso import ControllerFalso
-
 from .widgets.Graphics.GridView import GridView
-
-
 from icecream import ic
 import model.repo_utils as ru
 
@@ -33,7 +29,13 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.controller = ProjectMetricsController() 
             self.repoData = self.controller.getLocalRepoData()
             self.master = master
-
+        
+        font = ctk.CTkFont(size= 40)
+        self.topFrame = ctk.CTkFrame(self, bg_color="#1d1e1e", fg_color="#1d1e1e" )
+        self.topFrame.pack(fill = "x", expand = True)
+        self.repoName = ctk.CTkLabel(self.topFrame, text= self.controller.getLocalRepoData().name.upper(), font= font, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        self.repoName.pack()
+         
         self.initTopFrames()
         self.externalProjectFrame.pack(pady = 12)
         
@@ -50,7 +52,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         left_arrow = os.path.join("resources","left-arrow.png")
         
         self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath=left_arrow)
-        self.backButton.place(x= -150, y= 10 )
+        self.backButton.place(x= -150, y= 80)
         
         
 
@@ -59,26 +61,27 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
     def initTopFrames(self):
         my_font = ctk.CTkFont(weight= "bold", size= 16)
         my_font_big =  ctk.CTkFont(weight= "bold", size= 20)
-        self.externalProjectFrame = ctk.CTkFrame(self)
-        self.label = ctk.CTkLabel(self.externalProjectFrame, text= str(self.repoData.name).upper(), font = my_font_big)
-        self.label.pack(pady = 2, anchor = "w")
         
-
+        self.externalProjectFrame = ctk.CTkFrame(self)
+        self.label = ctk.CTkLabel(self.externalProjectFrame, text= "Repo general info", font = my_font_big)
+        self.label.pack(anchor = "w")
+        
         self.internalFrame = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
-        self.internalFrame.pack(side = ctk.LEFT)
+        self.internalFrame.pack(side = ctk.LEFT, fill = "y", expand = True)
+        
         self.projectFrame = ctk.CTkFrame(self.internalFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
-        self.projectFrame.pack(pady= 10, padx = 10)
+        self.projectFrame.pack(padx = 10)
         
         
         self.subFrame1 = ctk.CTkFrame(self.projectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
-        self.subFrame1.pack(anchor = "w", padx = 10)
+        self.subFrame1.pack(anchor = "w", padx = 10, pady = 10)
         self.label = ctk.CTkLabel(self.subFrame1, text= f"Git URL: ", font = my_font)
         self.label.pack(side = ctk.LEFT)
         self.label = ctk.CTkLabel(self.subFrame1, text= f"{self.repoData.git_url}")
         self.label.pack()
         
         self.subFrame2 = ctk.CTkFrame(self.projectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
-        self.subFrame2.pack(anchor = "w", padx = 10)
+        self.subFrame2.pack(anchor = "w", padx = 10, pady = 10)
         self.label = ctk.CTkLabel(self.subFrame2, text= f"project license: ", font = my_font)
         self.label.pack(side = ctk.LEFT)
         
@@ -90,13 +93,13 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.label.pack()
             
         self.subFrame3 = ctk.CTkFrame(self.projectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
-        self.subFrame3.pack(anchor = "w", padx = 10)
+        self.subFrame3.pack(anchor = "w", padx = 10, pady = 10)
         self.label = ctk.CTkLabel(self.subFrame3, text= f"Repo owner: ", font = my_font)
         self.label.pack(side = ctk.LEFT)
         self.label = ctk.CTkLabel(self.subFrame3, text= f"r{self.repoData.owner['login']}")
         self.label.pack()
         self.subFrame4 = ctk.CTkFrame(self.projectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
-        self.subFrame4.pack(anchor = "w", padx = 10)
+        self.subFrame4.pack(anchor = "w", padx = 10, pady = 10)
         self.label = ctk.CTkLabel(self.subFrame4, text= f"Repo owner URL: ", font = my_font)
         self.label.pack(side = ctk.LEFT)
         self.label = ctk.CTkLabel(self.subFrame4, text= f"{self.repoData.owner['url']}")
@@ -141,26 +144,15 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.optionButton.pack(pady=10)
 
     def updateClassList(self, release):
-        self.controller.getClassesList(release)
-        newList = ic(self.controller.getClassesListR())
-        if len(newList) == 0:
-            newList = ["no classes available"]  
-        self.optionMenuClass.configure(values = newList)
-        self.optionMenuClass.set([newList[0]])
-        ic(release)
-        
-    def initComputationModeSelector(self):
-        self.computationFrame = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e", width=200,
-                                           height=200, border_width=40, border_color= "#1d1e1e", corner_radius= 40)
-        self.computationFrame.pack(padx = 10)
+        if release != "no releases":
+            self.controller.getClassesList(release)
+            newList = ic(self.controller.getClassesListR())
+            if len(newList) == 0:
+                newList = ["no classes available"]  
+            self.optionMenuClass.configure(values = newList)
+            self.optionMenuClass.set([newList[0]])
+            ic(release)
 
-        self.segmentedButton = ctk.CTkSegmentedButton(self.computationFrame, values = ["product metrics","process metrics"], variable= self.mode)
-        self.segmentedButton.pack(padx = 10, pady = 10)
-        
-        self.start = ctk.CTkButton(self.computationFrame, text= "start")
-        self.start.pack()
-        
-    
     def on_option_button_click(self):
         if self.grid_frame is not None:
             self.grid_frame.destroy()  # Rimuovi il frame della griglia se esiste già
@@ -177,6 +169,51 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         grid_view.create_grid(chart_data)  # Passa i dati del grafico alla GridView
 
         self.grid_frame.update()  # Aggiorna il frame della griglia per mostrare i nuovi grafici
+    
+    def initComputationModeSelector(self):
+        self.computationFrame = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e", 
+                                           height=200)
+        self.computationFrame.pack(padx = 10)
+ 
+        self.segmentedButton = ctk.CTkSegmentedButton(self.computationFrame, values = ["product metrics","process metrics"], variable= self.mode)
+        self.segmentedButton.pack(padx = 10, pady = 10)
+        self.segmentedButton.set("product metrics")
+        
+        relList = self.controller.getLocalRepoData().releases
+        classList = self.controller.getClassesListR()
+        
+        
+        if len(relList) == 0:
+            relList = ["no releases"]
+        else:
+            relList = ru.get_git_tags(folder="repository")
+            
+        self.optionMenuClass = ctk.CTkOptionMenu(self.computationFrame, values=classList, command= self.controller.getCommitWithClassList)
+        self.optionMenuRelease = ctk.CTkOptionMenu(self.computationFrame, values=relList, command= self.updateClassList)
+        
+
+        if len(relList) > 0:
+            self.optionMenuRelease.set(relList[0])
+        else:
+            self.optionMenuRelease.set("Nessuna release disponibile")
+        self.optionMenuRelease.pack(padx=10, pady=5)
+
+        
+        if len(classList) == 0:
+            classList = ["no classes"]
+
+        if len(classList) > 0:
+            self.optionMenuClass.set(classList[0])
+        else:
+            self.optionMenuClass.set("Nessuna classe disponibile")
+        self.optionMenuClass.pack(padx=10, pady=2.5)
+        
+        
+        self.start = ctk.CTkButton(self.computationFrame, text= "start")
+        self.start.pack(pady= 30)
+        
+    
+    
     
     
                   

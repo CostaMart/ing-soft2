@@ -45,8 +45,6 @@ class LocalRepoModel:
         """A partire dall'URL fornito, installa localmente in una directory 'repository' il repo cercato."""
         self.LocalDAO.cloneRepository(url)
 
-      
-
     def _CheckRepoDir(self):
         "controlla se la directory repository esiste localmente, altrimenti la crea "
         if not os.path.exists("repository"):
@@ -64,3 +62,7 @@ class LocalRepoModel:
     
     def getAllJavaClassProject(self, rootDirectory):
         return self.LocalDAO.findJavaClass(rootDirectory)
+    
+    def getCommitWithClassList(self, className):
+        """ dato il nomoe di una classe recupera tutti i commit in cui questa è presente """
+        return self.LocalDAO.get_commits_with_class(className, "repository")

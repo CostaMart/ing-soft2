@@ -21,3 +21,5 @@ class ProjectMetricsController:
     def getClassesListR(self):
         return model.repo_utils.cerca_file_java("repository") 
         
+    def getCommitWithClassList(self, className):
+        return ic(self.localModel.getCommitWithClassList(className= className))

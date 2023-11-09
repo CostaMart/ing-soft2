@@ -3,6 +3,7 @@ import subprocess
 from icecream import ic
 import shutil
 import stat
+import git
 
 class LocalDAO:
 
@@ -30,8 +31,6 @@ class LocalDAO:
         os.chdir("..")
         return name, repoName
            
-        
-
     def cloneRepository(self, url):
         """Clona il repository usando il comando 'git clone'."""
         
@@ -48,10 +47,31 @@ class LocalDAO:
         except Exception as e:
             # Gestisci eccezioni in caso di fallimento del clone
             print(f"Errore durante il clone del repository: {e}")
+    
+    def _class_exists_in_commit(self, commit, class_name):
+        try:
+            tree = commit.tree
+            file_blob = tree[class_name]
+            return True
+        except KeyError:
+            return False
+                
+    def get_commits_with_class(self, class_name, repo_path):
+        """ recupera nel repo specificato una lista dei commit in cui era presente la calsse dal nome passato come parametro """
         
-      
+        ic(repo_path)
+        ic(class_name)
+        repo = git.Repo(repo_path)
+        commit_list = []
 
-        
+        for commit in repo.iter_commits():
+            
+            if self._class_exists_in_commit(commit, class_name):
+                commit_list.append(commit)
+
+        return commit_list  
+
+      
 
 
         
