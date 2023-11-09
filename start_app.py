@@ -5,6 +5,8 @@ import customtkinter as ctk
 from ttkthemes import ThemedTk
 from model.Domain import Repository
 from controller.StartAppContoller import StartAppController
+from icecream import ic
+import time
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
@@ -14,10 +16,18 @@ from view.StartupPage import StartupPage
 
 start = StartAppController()
 
-isInstalled, version = start.isGitInstalled()
 
-if isInstalled:
-    IngSoftApp(gitv = version)
+status = start.startHttpEnpoint()
+time.sleep(5)
+
+
+isInstalled, version = start.isGitInstalled()
+response = start.isHTTPEndpointActive()
+ic(response)
+
+
+if isInstalled and response.status_code == 200 and status != "error":
+    IngSoftApp(gitv = version, endpointStatus = status)
 else:   
     StartupPage()
  

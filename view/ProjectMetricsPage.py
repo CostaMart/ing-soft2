@@ -22,6 +22,9 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         super().__init__(master = master)
         self.grid_frame = None  # Aggiungi una variabile per tenere traccia del frame della griglia
         ctk.set_appearance_mode("dark")
+       
+        self.mode = tk.StringVar()       
+       
         
         if debug == True:
             self.controller = ControllerFalso()
@@ -34,8 +37,12 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.initTopFrames()
         self.externalProjectFrame.pack(pady = 12)
         
-        self.initOptionFrame()
-        self.optionFrameOut.pack(side = ctk.RIGHT, padx = 20, fill= "y", expand = True)
+        self.initComputationModeSelector()
+        
+        # self.initComputationBox()
+        
+        # self.initOptionFrame()
+        # self.optionFrameOut.pack(side = ctk.RIGHT, padx = 20, fill= "y", expand = True)
 
 
         self.but = ctk.CTkButton(self, command= lambda: print(master.repoData) )
@@ -48,7 +55,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
 
 
-# ----------------------------- GESTIONE UI METHODS -----------------------------        
+# ----------------------------- UI METHODS -----------------------------        
     def initTopFrames(self):
         my_font = ctk.CTkFont(weight= "bold", size= 16)
         my_font_big =  ctk.CTkFont(weight= "bold", size= 20)
@@ -111,7 +118,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             relList = ru.get_git_tags(folder="repository")
             
         self.optionMenuClass = ctk.CTkOptionMenu(self.optionFrame, values=classList)
-        self.optionMenuRelease = ctk.CTkOptionMenu(self.optionFrame, values=relList, command= self.updateGUI)
+        self.optionMenuRelease = ctk.CTkOptionMenu(self.optionFrame, values=relList, command= self.updateClassList)
         
 
         if len(relList) > 0:
@@ -133,8 +140,27 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.optionButton = ctk.CTkButton(self.optionFrame, text="start analysis", command=self.on_option_button_click)
         self.optionButton.pack(pady=10)
 
+    def updateClassList(self, release):
+        self.controller.getClassesList(release)
+        newList = ic(self.controller.getClassesListR())
+        if len(newList) == 0:
+            newList = ["no classes available"]  
+        self.optionMenuClass.configure(values = newList)
+        self.optionMenuClass.set([newList[0]])
+        ic(release)
+        
+    def initComputationModeSelector(self):
+        self.computationFrame = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e", width=200,
+                                           height=200, border_width=40, border_color= "#1d1e1e", corner_radius= 40)
+        self.computationFrame.pack(padx = 10)
 
-
+        self.segmentedButton = ctk.CTkSegmentedButton(self.computationFrame, values = ["product metrics","process metrics"], variable= self.mode)
+        self.segmentedButton.pack(padx = 10, pady = 10)
+        
+        self.start = ctk.CTkButton(self.computationFrame, text= "start")
+        self.start.pack()
+        
+    
     def on_option_button_click(self):
         if self.grid_frame is not None:
             self.grid_frame.destroy()  # Rimuovi il frame della griglia se esiste già
@@ -152,14 +178,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
 
         self.grid_frame.update()  # Aggiorna il frame della griglia per mostrare i nuovi grafici
     
-    def updateGUI(self, release):
-        self.controller.getClassesList(release)
-        newList = ic(self.controller.getClassesListR())
-        if len(newList) == 0:
-            newList = ["no classes available"]  
+    
                   
-        self.optionMenuClass.configure(values = newList)
-        self.optionMenuClass.set([newList[0]])
-        ic(release)
             
         

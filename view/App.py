@@ -8,8 +8,9 @@ from view.MainPage import MainPage
 class IngSoftApp(ctk.CTk):
     """ rappresenta l'intera applicazione, gestisce la navigazione tra le pagine e l'accesso ai dati globali dell'applicazione """
 
-    def __init__(self, gitv):
-
+    def __init__(self, gitv, endpointStatus):
+        
+        self.edpointStatus = endpointStatus
         self.contoller = StartAppController()
         self.testRepoList = []
         self.pageStack = []
