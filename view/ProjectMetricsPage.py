@@ -224,7 +224,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.commitSelectorFrame.columnconfigure(1, minsize= 200)
         self.commitSelectorFrame.columnconfigure(3, minsize= 200)
         
-        self.optionMenuCommitStart = ctk.CTkOptionMenu(self.commitSelectorSubFrame, values= ["from"], dynamic_resizing= False)
+        self.optionMenuCommitArrive = ctk.CTkOptionMenu(self.commitSelectorSubFrame, values= ["to"], dynamic_resizing= False)
+        self.optionMenuCommitStart = ctk.CTkOptionMenu(self.commitSelectorSubFrame, values= ["from"], dynamic_resizing= False, command= lambda x: self.optionMenuCommitArrive.configure(state = "normal"))
         self.optionMenuCommitStart.grid(column = 1, row = 0, sticky= "w")
         
         img = open("resources\\right-arrow-white.png")
@@ -233,8 +234,9 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         arrowLabel.grid(column = 2, row = 0, padx = 20)
         
-        self.optionMenuCommitArrive = ctk.CTkOptionMenu(self.commitSelectorSubFrame, values= ["to"], dynamic_resizing= False)
+        
         self.optionMenuCommitArrive.grid(column = 3, row = 0, pady = 30, sticky= "e")
+        self.optionMenuCommitArrive.configure(state = "disabled")
         
     
         
