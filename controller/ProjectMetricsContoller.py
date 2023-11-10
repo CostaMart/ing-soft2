@@ -3,7 +3,6 @@ from typing import List
 from model.LocalRepoModel import LocalRepoModel
 from model import Domain
 import model.repo_utils
-import os
 from icecream import ic
 
 class ProjectMetricsController:

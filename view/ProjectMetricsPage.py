@@ -10,7 +10,8 @@ from .ControllerFalso import ControllerFalso
 from .widgets.Graphics.GridView import GridView
 from icecream import ic
 import model.repo_utils as ru
-
+import git
+from PIL.Image import open
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
     
@@ -47,8 +48,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         # self.optionFrameOut.pack(side = ctk.RIGHT, padx = 20, fill= "y", expand = True)
 
 
-        self.but = ctk.CTkButton(self, command= lambda: print(master.repoData) )
-        self.but.pack()
+        
         left_arrow = os.path.join("resources","left-arrow.png")
         
         self.backButton = SideButton(self, self.master.previousPage, side = "left", imgpath=left_arrow)
@@ -153,6 +153,14 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.optionMenuClass.set([newList[0]])
             ic(release)
 
+    def updateCommitList(self, classToSearch):
+        commitList = ic(self.controller.getCommitWithClassList(classToSearch))
+        commitHashes = [commit.hexsha for commit in commitList]
+        self.optionMenuCommitStart.configure(values = commitHashes)
+        self.optionMenuCommitStart.update()
+        self.optionMenuCommitArrive.configure(values = commitHashes)
+        self.optionMenuCommitArrive.update()
+        
     def on_option_button_click(self):
         if self.grid_frame is not None:
             self.grid_frame.destroy()  # Rimuovi il frame della griglia se esiste già
@@ -187,7 +195,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         else:
             relList = ru.get_git_tags(folder="repository")
             
-        self.optionMenuClass = ctk.CTkOptionMenu(self.computationFrame, values=classList, command= self.controller.getCommitWithClassList)
+        self.optionMenuClass = ctk.CTkOptionMenu(self.computationFrame, values=classList, command= self.updateCommitList)
         self.optionMenuRelease = ctk.CTkOptionMenu(self.computationFrame, values=relList, command= self.updateClassList)
         
 
@@ -195,7 +203,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.optionMenuRelease.set(relList[0])
         else:
             self.optionMenuRelease.set("Nessuna release disponibile")
-        self.optionMenuRelease.pack(padx=10, pady=5)
+        self.optionMenuRelease.pack(padx=10, pady=10)
 
         
         if len(classList) == 0:
@@ -205,13 +213,36 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.optionMenuClass.set(classList[0])
         else:
             self.optionMenuClass.set("Nessuna classe disponibile")
-        self.optionMenuClass.pack(padx=10, pady=2.5)
+        self.optionMenuClass.pack(padx=10, pady=10)
         
+        self.commitSelectorFrame = ctk.CTkFrame(self, height=100, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        self.commitSelectorFrame.pack(fill= "x", expand = True)
         
-        self.start = ctk.CTkButton(self.computationFrame, text= "start")
-        self.start.pack(pady= 30)
+        self.commitSelectorSubFrame = ctk.CTkFrame(self.commitSelectorFrame, width= 400, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        self.commitSelectorSubFrame.pack(expand = True)
+        
+        self.commitSelectorFrame.columnconfigure(1, minsize= 200)
+        self.commitSelectorFrame.columnconfigure(3, minsize= 200)
+        
+        self.optionMenuCommitStart = ctk.CTkOptionMenu(self.commitSelectorSubFrame, values= ["from"], dynamic_resizing= False)
+        self.optionMenuCommitStart.grid(column = 1, row = 0, sticky= "w")
+        
+        img = open("resources\\right-arrow-white.png")
+        arrow = ctk.CTkImage(img)
+        arrowLabel = ctk.CTkLabel(self.commitSelectorSubFrame, image = arrow, text= "")
+        
+        arrowLabel.grid(column = 2, row = 0, padx = 20)
+        
+        self.optionMenuCommitArrive = ctk.CTkOptionMenu(self.commitSelectorSubFrame, values= ["to"], dynamic_resizing= False)
+        self.optionMenuCommitArrive.grid(column = 3, row = 0, pady = 30, sticky= "e")
         
     
+        
+
+    
+    
+    
+
     
     
     
