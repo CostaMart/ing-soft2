@@ -1,5 +1,6 @@
 import os.path
 from tkinter import ttk
+from typing import List
 import customtkinter as ctk
 from view.widgets.SideButton import SideButton
 from view.widgets.Plot import PlotCartesian
@@ -21,7 +22,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         ctk.set_appearance_mode("dark")
        
         self.mode = tk.StringVar()       
-       
+        self.commitList = []
         
         if debug == True:
             self.controller = ControllerFalso()
@@ -153,12 +154,16 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.optionMenuClass.set([newList[0]])
             ic(release)
 
-    def updateCommitList(self, classToSearch):
-        commitList = ic(self.controller.getCommitWithClassList(classToSearch))
-        commitHashes = [commit.hexsha for commit in commitList]
+    def updateStartCommitList(self, classToSearch):
+        self.commitList = ic(self.controller.getCommitWithClassList(classToSearch))
+        commitHashes = [commit.hexsha for commit in self.commitList]
         self.optionMenuCommitStart.configure(values = commitHashes)
         self.optionMenuCommitStart.update()
-        self.optionMenuCommitArrive.configure(values = commitHashes)
+            
+    def updateArriveCommitList(self, startCommit: git.Commit):
+        theCommit = ic([commit for commit in self.commitList if commit.hexsha == startCommit])
+        commits = [commit.hexsha for commit in self.commitList if commit.authored_date > theCommit[0].authored_date]
+        self.optionMenuCommitArrive.configure(values = commits, state = "active")
         self.optionMenuCommitArrive.update()
         
     def on_option_button_click(self):
@@ -195,7 +200,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         else:
             relList = ru.get_git_tags(folder="repository")
             
-        self.optionMenuClass = ctk.CTkOptionMenu(self.computationFrame, values=classList, command= self.updateCommitList)
+        self.optionMenuClass = ctk.CTkOptionMenu(self.computationFrame, values=classList, command= self.updateStartCommitList)
         self.optionMenuRelease = ctk.CTkOptionMenu(self.computationFrame, values=relList, command= self.updateClassList)
         
 
@@ -225,7 +230,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.commitSelectorFrame.columnconfigure(3, minsize= 200)
         
         self.optionMenuCommitArrive = ctk.CTkOptionMenu(self.commitSelectorSubFrame, values= ["to"], dynamic_resizing= False)
-        self.optionMenuCommitStart = ctk.CTkOptionMenu(self.commitSelectorSubFrame, values= ["from"], dynamic_resizing= False, command= lambda x: self.optionMenuCommitArrive.configure(state = "normal"))
+        self.optionMenuCommitStart = ctk.CTkOptionMenu(self.commitSelectorSubFrame, values= ["from"], dynamic_resizing= False, command= self.updateArriveCommitList)
         self.optionMenuCommitStart.grid(column = 1, row = 0, sticky= "w")
         
         img = open("resources\\right-arrow-white.png")
