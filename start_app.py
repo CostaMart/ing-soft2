@@ -23,7 +23,7 @@ time.sleep(5)
 
 isInstalled, version = start.isGitInstalled()
 response = start.isHTTPEndpointActive()
-ic(response)
+
 
 
 if isInstalled and response.status_code == 200 and status != "error":

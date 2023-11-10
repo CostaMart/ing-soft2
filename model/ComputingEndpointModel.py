@@ -15,8 +15,8 @@ class ComputingEndpointModel:
     def activateLocal(self):
         """ richiede attivazione del servizio locale """
         try:
-            p = subprocess.Popen(["python", "start_endpoint.py"], cwd= "backend")
-            ic(p.pid)
+            subprocess.Popen(["python", "start_endpoint.py"], cwd= "backend")
+    
         except  subprocess.SubprocessError as e:
             print(f"error while activating process: {e.with_traceback()}")
             raise

@@ -47,7 +47,6 @@ class IngSoftApp(ctk.CTk):
         page.place(relwidth=1, relheight=1, rely=0, relx=1)
         self._newPageAnimation(self.pageStack[-1], page, 0)
         self.pageStack[-1].place_forget()
-
         self.pageStack.append(page)
 
         # ----------------------------- METODI PER LA GESTIONE DELLA GRAFICA -----------------------------

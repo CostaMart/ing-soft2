@@ -63,3 +63,12 @@ class LocalRepoModel:
     def getCommitWithClassList(self, className):
         """ dato il nomoe di una classe recupera tutti i commit in cui questa è presente """
         return self.LocalDAO.get_commits_with_class(className, "repository")
+    
+    def getYearList(self):
+        return self.LocalDAO.extract_years_from_commits()
+    
+    def getClassListFromGivenCommit(self, commit):
+        return self.LocalDAO.getClassListFromGivenCommit(commit)
+    
+    def getCommiListByYear(self, year):
+        return self.LocalDAO.dataCommitLinkYear(year)

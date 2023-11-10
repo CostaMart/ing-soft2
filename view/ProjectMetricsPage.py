@@ -12,6 +12,7 @@ from .widgets.Graphics.GridView import GridView
 from icecream import ic
 import model.repo_utils as ru
 import git
+from pydriller import Repository, Commit
 from PIL.Image import open
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
@@ -60,6 +61,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
 
 # ----------------------------- UI METHODS -----------------------------        
     def initTopFrames(self):
+        """ inizializza la parte superiore della GUI come il nome del repo e le informazioni generali """
+        
         my_font = ctk.CTkFont(weight= "bold", size= 16)
         my_font_big =  ctk.CTkFont(weight= "bold", size= 20)
         
@@ -97,7 +100,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.subFrame3.pack(anchor = "w", padx = 10, pady = 10)
         self.label = ctk.CTkLabel(self.subFrame3, text= f"Repo owner: ", font = my_font)
         self.label.pack(side = ctk.LEFT)
-        self.label = ctk.CTkLabel(self.subFrame3, text= f"r{self.repoData.owner['login']}")
+        self.label = ctk.CTkLabel(self.subFrame3, text= f"{self.repoData.owner['login']}")
         self.label.pack()
         self.subFrame4 = ctk.CTkFrame(self.projectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.subFrame4.pack(anchor = "w", padx = 10, pady = 10)
@@ -106,64 +109,29 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.label = ctk.CTkLabel(self.subFrame4, text= f"{self.repoData.owner['url']}")
         self.label.pack()
 
-    def initOptionFrame(self):
-        self.optionFrameOut = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e", width=200,
-                                           height=100)
-        self.optionFrame = ctk.CTkFrame(self.optionFrameOut, bg_color="#1d1e1e", fg_color="#1d1e1e", width=80)
-        self.optionFrame.pack(fill="x")
-
-        relList = self.controller.getLocalRepoData().releases
-        classList = self.controller.getClassesListR()
-        
-        
-        if len(relList) == 0:
-            relList = ["no releases"]
-        else:
-            relList = ru.get_git_tags(folder="repository")
-            
-        self.optionMenuClass = ctk.CTkOptionMenu(self.optionFrame, values=classList)
-        self.optionMenuRelease = ctk.CTkOptionMenu(self.optionFrame, values=relList, command= self.updateClassList)
-        
-
-        if len(relList) > 0:
-            self.optionMenuRelease.set(relList[0])
-        else:
-            self.optionMenuRelease.set("Nessuna release disponibile")
-        self.optionMenuRelease.pack(padx=10, pady=5)
-
-        
-        if len(classList) == 0:
-            classList = ["no classes"]
-
-        if len(classList) > 0:
-            self.optionMenuClass.set(classList[0])
-        else:
-            self.optionMenuClass.set("Nessuna classe disponibile")
-        self.optionMenuClass.pack(padx=10, pady=2.5)
-
-        self.optionButton = ctk.CTkButton(self.optionFrame, text="start analysis", command=self.on_option_button_click)
-        self.optionButton.pack(pady=10)
-
     def updateClassList(self, release):
+        """ esegue l'update della lista delle classi """
         if release != "no releases":
             self.controller.getClassesList(release)
-            newList = ic(self.controller.getClassesListR())
+            newList = self.controller.getClassesListR()
             if len(newList) == 0:
                 newList = ["no classes available"]  
             self.optionMenuClass.configure(values = newList)
             self.optionMenuClass.set([newList[0]])
-            ic(release)
-
-    def updateStartCommitList(self, classToSearch):
-        self.commitList = ic(self.controller.getCommitWithClassList(classToSearch))
-        commitHashes = [commit.hexsha for commit in self.commitList]
+            
+    def updateStartCommitList(self, year):
+        """ esegue l'update della lista di commit di partenza dell'analisi """
+        self.commitList = self.controller.getCommitsByYear(year)
+        ic(self.commitList)
+        commitHashes = [commit.hash for commit in self.commitList]
         self.optionMenuCommitStart.configure(values = commitHashes)
         self.optionMenuCommitStart.update()
             
-    def updateArriveCommitList(self, startCommit: git.Commit):
-        theCommit = ic([commit for commit in self.commitList if commit.hexsha == startCommit])
-        commits = [commit.hexsha for commit in self.commitList if commit.authored_date > theCommit[0].authored_date]
-        self.optionMenuCommitArrive.configure(values = commits, state = "active")
+    def updateArriveCommitList(self, startCommit):
+        """ esegue l'update della lista di commit di arrivo dell'analisi """
+        theCommit = [commit for commit in self.commitList if commit.hash == startCommit]
+        commitsAfter = [commit.hash for commit in self.commitList if commit.committer_date >= theCommit[0].committer_date]
+        self.optionMenuCommitArrive.configure(values = commitsAfter, state = "active")
         self.optionMenuCommitArrive.update()
         
     def on_option_button_click(self):
@@ -183,6 +151,44 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.grid_frame.update()  # Aggiorna il frame della griglia per mostrare i nuovi grafici
     
     def initComputationModeSelector(self):
+        """ inizializza alcune componenti della GUI: i due selettori di classi e release e quelli dei commit """
+        
+        self.optionFrameOut = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e", width=200,
+                                           height=100)
+        self.optionFrame = ctk.CTkFrame(self.optionFrameOut, bg_color="#1d1e1e", fg_color="#1d1e1e", width=80)
+        self.optionFrame.pack(fill="x")
+
+        yearList = self.controller.getRepoYearList()
+        classList = self.controller.getClassesListR()
+        
+        
+        if len(yearList) == 0:
+            yearList = ["no releases"]
+        else:
+            yearList = ru.get_git_tags(folder="repository")
+            
+        self.optionMenuClass = ctk.CTkOptionMenu(self.optionFrame, values=classList)
+        self.optionMenuYear = ctk.CTkOptionMenu(self.optionFrame, values=yearList, command= self.updateClassList)
+        
+
+        if len(yearList) > 0:
+            self.optionMenuYear.set(yearList[0])
+        else:
+            self.optionMenuYear.set("Nessuna release disponibile")
+        self.optionMenuYear.pack(padx=10, pady=5)
+
+        
+        if len(classList) == 0:
+            classList = ["no classes"]
+
+        if len(classList) > 0:
+            self.optionMenuClass.set(classList[0])
+        else:
+            self.optionMenuClass.set("Nessuna classe disponibile")
+        self.optionMenuClass.pack(padx=10, pady=2.5)
+
+        self.optionButton = ctk.CTkButton(self.optionFrame, text="start analysis", command=self.on_option_button_click)
+        self.optionButton.pack(pady=10)
         self.computationFrame = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e", 
                                            height=200)
         self.computationFrame.pack(padx = 10)
@@ -191,24 +197,25 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.segmentedButton.pack(padx = 10, pady = 10)
         self.segmentedButton.set("product metrics")
         
-        relList = self.controller.getLocalRepoData().releases
+        yearList = self.controller.getRepoYearList()
         classList = self.controller.getClassesListR()
         
         
-        if len(relList) == 0:
-            relList = ["no releases"]
+        if len(yearList) == 0:
+            yearList = ["no releases"]
         else:
-            relList = ru.get_git_tags(folder="repository")
+            yearList = self.controller.getRepoYearList()
+            yearList = [str(year) for year in yearList]
             
-        self.optionMenuClass = ctk.CTkOptionMenu(self.computationFrame, values=classList, command= self.updateStartCommitList)
-        self.optionMenuRelease = ctk.CTkOptionMenu(self.computationFrame, values=relList, command= self.updateClassList)
+        self.optionMenuYear = ctk.CTkOptionMenu(self.computationFrame, values=yearList, command= self.updateStartCommitList)
+        
         
 
-        if len(relList) > 0:
-            self.optionMenuRelease.set(relList[0])
+        if len(yearList) > 0:
+            self.optionMenuYear.set(yearList[0])
         else:
-            self.optionMenuRelease.set("Nessuna release disponibile")
-        self.optionMenuRelease.pack(padx=10, pady=10)
+            self.optionMenuYear.set("Nessuna release disponibile")
+        self.optionMenuYear.pack(padx=10, pady=10)
 
         
         if len(classList) == 0:
@@ -223,6 +230,9 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.commitSelectorFrame = ctk.CTkFrame(self, height=100, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.commitSelectorFrame.pack(fill= "x", expand = True)
         
+        label = ctk.CTkLabel(self.commitSelectorFrame, text = "choose start and arrive commits of your analysis")
+        label.pack()
+        
         self.commitSelectorSubFrame = ctk.CTkFrame(self.commitSelectorFrame, width= 400, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.commitSelectorSubFrame.pack(expand = True)
         
@@ -233,6 +243,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.optionMenuCommitStart = ctk.CTkOptionMenu(self.commitSelectorSubFrame, values= ["from"], dynamic_resizing= False, command= self.updateArriveCommitList)
         self.optionMenuCommitStart.grid(column = 1, row = 0, sticky= "w")
         
+        
         img = open("resources\\right-arrow-white.png")
         arrow = ctk.CTkImage(img)
         arrowLabel = ctk.CTkLabel(self.commitSelectorSubFrame, image = arrow, text= "")
@@ -242,7 +253,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         self.optionMenuCommitArrive.grid(column = 3, row = 0, pady = 30, sticky= "e")
         self.optionMenuCommitArrive.configure(state = "disabled")
-        
+        self.updateStartCommitList(ic(yearList[0]))
     
         
 

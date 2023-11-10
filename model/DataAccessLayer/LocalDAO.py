@@ -4,6 +4,9 @@ from icecream import ic
 import shutil
 import stat
 import git
+import pandas as pd
+from pydriller import Repository, Commit
+from model.repo_utils import get_commits, repo_to_use
 
 class LocalDAO:
 
@@ -58,9 +61,7 @@ class LocalDAO:
                 
     def get_commits_with_class(self, class_name, repo_path):
         """ recupera nel repo specificato una lista dei commit in cui era presente la calsse dal nome passato come parametro """
-        
-        ic(repo_path)
-        ic(class_name)
+
         repo = git.Repo(repo_path)
         commit_list = []
 
@@ -71,7 +72,47 @@ class LocalDAO:
 
         return commit_list  
 
-      
+    def extract_years_from_commits(self, folder = "repository"):
+        """ ritorna una lista di tutti gli anni in cui è stato effettuato almeno un commit """
+        repo = repo_to_use(folder)
+        
+        years = set()
+
+        for commit in get_commits(repo):
+            commit_date = commit.committer_date
+            year = commit_date.year
+            years.add(year)
+            # Converti il set in una lista e restituiscila
+            
+        return list(years)
+        
+    def getClassListFromGivenCommit(self, commit_hash, repo_path = "repository"):
+        repo = git.Repo(repo_path)
+        commit = repo.commit(commit_hash)
+        lista_file = []
+        albero_commit = commit.tree
+        for blob in albero_commit.traverse():
+            if isinstance(blob, git.Blob):
+                lista_file.append(blob.path)
+
+        return lista_file
+        
+    def dataCommitLinkYear(self, year, rep = "repository"):
+        """Metodo che prende tutti i commit con relativa data in base all'anno e li inserisce in un dataframe che ritorna"""
+        
+        rep = Repository(rep)
+        commit_data = []
+        for commit in rep.traverse_commits():
+            ic(commit)
+            commit_date = commit.committer_date
+            ic(commit_date)
+            if str(commit_date.year) == year:
+                commit_data.append(commit)
+        return commit_data
+
+        
+
+       
 
 
         

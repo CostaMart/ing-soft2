@@ -30,8 +30,10 @@ class MainPage(ctk.CTkFrame):
         self._initSearchBlock()
 
         # inizializza la lista a centro pagina
-        self.listBox = ListBox(self)
-        self.listBox.pack(padx=10, fill=ctk.X, expand=True)
+        self.centralbox = ctk.CTkFrame(self)
+        self.centralbox.pack(fill=ctk.BOTH, expand=True)
+        self.listBox = ListBox(self.centralbox)
+        self.listBox.pack(padx=10, pady= 40, fill=ctk.BOTH, expand=True)
 
         # inizializza il frame di status di git (barra in basso)
         self.gitStatusFrame = tk.Frame(self, height=15)
@@ -70,7 +72,7 @@ class MainPage(ctk.CTkFrame):
         searchBut = ctk.CTkButton(self, text="Search", command=self._start_request)
         searchBut.pack(pady=10)
 
-        self.sideB = SideButton(self.master, self.master.newPage, ProjectMetricsPage)
+        self.sideB = SideButton(self.master, self.onSideButtonPress, ProjectMetricsPage)
 
         # finalizza inizializzazione del modulo di centro pagina
 
@@ -106,6 +108,10 @@ class MainPage(ctk.CTkFrame):
         self._recoverRepoData()
 
     # ----------------------------- callbacks -----------------------------
+    def onSideButtonPress(self, param):
+        self.listBox.cleanList()
+        self.master.newPage(param)
+             
     def _updateRepoList(self, repolist: List[Repository]):
         """ medoto che esegue l'update della list, passato come callback alla funzione asincrona del controller,
         tramite generateCommand assegna ad ogni elemento della lista una callback per il download del repo assegnato"""
