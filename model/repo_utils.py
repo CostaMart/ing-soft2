@@ -291,6 +291,21 @@ def filtro(df, hash1, hash2):
 
 
 
+def extract_years_from_commits(folder = "repository"):
+    repo = repo_to_use(folder)
+    
+    years = set()
+
+    for commit in get_commits(repo):
+        commit_date = commit.committer_date
+        year = commit_date.year
+        years.add(year)
+        # Converti il set in una lista e restituiscila
+        
+    return list(years)
+
+
+
 
 
 
