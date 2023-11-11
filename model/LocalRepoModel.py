@@ -3,7 +3,7 @@ from typing import List
 from .DataAccessLayer.DAORepo import DAORepo
 from icecream import ic
 from .DataAccessLayer.LocalDAO import LocalDAO
-
+from pydriller import Commit
 
 class LocalRepoModel:
     """SINGLETON: modella le interazioni e il recupero dei dati locali (come il repo locale) necessari all app """
@@ -73,5 +73,8 @@ class LocalRepoModel:
     
     def getCommiListByYear(self, year):
         return self.LocalDAO.dataCommitLinkYear(year)
+    
+    def getCommitByHash(self, hash) -> Commit:
+        return self.LocalDAO.getCommit(hash)
     
     

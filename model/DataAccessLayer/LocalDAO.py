@@ -102,12 +102,18 @@ class LocalDAO:
         rep = Repository(rep)
         commit_data = []
         for commit in rep.traverse_commits():
-            ic(commit)
+            
             commit_date = commit.committer_date
-            ic(commit_date)
+          
             if str(commit_date.year) == year:
                 commit_data.append(commit)
         return commit_data
+        
+    def getCommit(self, hash : str, rep: str = "repository") -> Commit:
+        for commit in Repository(rep).traverse_commits():
+            if commit.hash == hash:
+                return commit
+
         
 
 

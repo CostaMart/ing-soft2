@@ -109,64 +109,126 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.label = ctk.CTkLabel(self.subFrame4, text= f"{self.repoData.owner['url']}")
         self.label.pack()
 
-    # metodi per la gestione delle liste centrali, sono scritti nell'ordine in cui verranno chiamati----------
-    def updateStartingYearList(self):
+
+    # -----------------------------gli update si chiamano a catena tra di loro quando viene aggioranto un componetne -----------------------------
+    
+    # -----------------------------update anno di inizio-----------------------------
+    def start_updateStartingYearList(self):
         """esegue l'update della lista degli anni di partenza dell'analisi"""
         self.disableSelectorPanel()
-        startYearList = self.controller.getRepoYearList()
-        newYears = [str(year) for year in startYearList]
-        self.startYearSelector.configure(values = newYears)
-        self.startYearSelector.set(newYears[0])
-        self.startYearSelector.update()
-        self.updateStartCommitList(str(startYearList[0]))
-        self.enableSelectorPanel()
+        me = self
+        
+        def _end_updateStartingYearList(startYearList): 
+            newYears = [year for year in startYearList]
+            newYears = newYears.sort()
+            newYears = [str(year) for year in startYearList]
+            me.startYearSelector.configure(values = newYears)
+            me.startYearSelector.set(newYears[0])
+            me.startYearSelector.update()
+            me.start_updateStartCommitList(str(startYearList[0]))
+            me.start_updateArriveYearList(self.startYearSelector.get())
+        
             
-    def updateStartCommitList(self, year):
-        """ esegue l'update della lista di commit di partenza dell'analisi """
-        self.commitList = ic(self.controller.getCommitsByYear(year))
-        commitHashes = [commit.hash for commit in self.commitList]
-        self.startCommitSelector.configure(values = commitHashes, state= "normal")
-        self.startCommitSelector.update()
-        self.updateClassList(commitHashes[0])
+        
+        self.controller.updateRepoYearList(0, callback= _end_updateStartingYearList)
+        
+
+       
     
+    # -----------------------------update start commit list-----------------------------   
+    def start_updateStartCommitList(self, year):
+        """ esegue l'update della lista di commit di partenza dell'analisi """
+        me = self
+        
+        def _end_updateStartCommitList(commitList):    
+            commitHashes = [commit.hash for commit in commitList]
+            me.startCommitSelector.configure(values = commitHashes)
+            me.startCommitSelector.update()
+            me.startCommitSelector.set(commitHashes[0])
+            me.updateClassList(commitHashes[0])
+
+    
+        self.disableSelectorPanel()
+        self.controller.updateCommitsListByYear(year, callback = _end_updateStartCommitList)
+        
+    
+    
+    # -----------------------------update lista classi-----------------------------
     def updateClassList(self, hash):
         """ esegue l'update della lista delle classi """
+        
+        self.disableSelectorPanel()
         newList = self.controller.getClassesList(hash)
         if len(newList) == 0:
             newList = ["no classes available"]  
-        self.classSelector.configure(values = newList, state = "normal")
+        self.classSelector.configure(values = newList)
         self.classSelector.set([newList[0]])
-        self.updateArriveYearList()
+        self.start_updateArriveYearList(self.startYearSelector.get())
     
-    def updateArriveYearList(self):
-        arriveYears = self.controller.getRepoYearList()
-        arriveYears = [str(year) for year in arriveYears if year >= int(self.startYearSelector.get())]
-        self.arriveYearSelector.configure(values = arriveYears, state = "normal") 
-        self.arriveYearSelector.update()      
+    # -----------------------------update anno di arrivo-----------------------------
+    def start_updateArriveYearList(self, startingYear):
         
-    def updateArriveCommitList(self, startCommit):
+        self.disableSelectorPanel()
+
+        
+        def _end_updateArriveYearList(arriveYears):
+            startingYear = int(self.startYearSelector.get())
+            arriveYears = [str(year) for year in arriveYears if ic(int(year)) >= int(startingYear)]
+            self.arriveYearSelector.configure(values = arriveYears) 
+            self.arriveYearSelector.update()
+            self.arriveYearSelector.set(arriveYears[0])
+            self.start_updateArriveCommitList(self.classSelector.get()) 
+        
+        
+        self.controller.updateRepoYearList(startingYear, callback= _end_updateArriveYearList)
+    
+         
+    
+    # -----------------------------update commit di arrivo -----------------------------    
+    def start_updateArriveCommitList(self, className):
         """ esegue l'update della lista di commit di arrivo dell'analisi """
-        theCommit = [commit for commit in self.commitList if commit.hash == startCommit]
-        commitsAfter = [commit.hash for commit in self.commitList if commit.committer_date >= theCommit[0].committer_date]
-        self.optionMenuCommitArrive.configure(values = commitsAfter, state = "normal")
-        self.optionMenuCommitArrive.update()
+        self.disableSelectorPanel()
+        
+        def _end_updateArriveCommitList(commitList: List[Commit]):
+            className = self.classSelector.get()      
+            startCommit = self.controller.getCommitByhash(self.startCommitSelector.get())
+            ic(className)
+            finalList = [commit.hash for commit in commitList if commit.committer_date >= startCommit.committer_date and className in ic(self.controller.getClassesList(commit.hash))]
+            
+            if len(finalList) == 0:
+                finalList =["select a class"]
+            
+            self.arriveCommitSelector.configure(values = finalList)
+            self.arriveCommitSelector.update()
+            self.arriveCommitSelector.set(finalList[0])
+            self.enableSelectorPanel()
+        
+        self.controller.updateCommitsListByYear(self.arriveYearSelector.get(), callback= ic(_end_updateArriveCommitList))
     
+
+    
+       
+        
+        
+       
+       
+   
     #-------------------------------
-    
-    
     def disableSelectorPanel(self):
-        self.startYearSelector(state= "disabled")
-        self.startCommitSelector(state= "disabled")
-        self.classSelector(state= "disabled")
-        self.arriveYearSelector(state= "disabled")
-        self.arriveCommitSelector(state= "disabled")
+        """disabilita il pannello di selezione dei commit"""
+        self.startYearSelector.configure(state= "disabled")
+        self.startCommitSelector.configure(state= "disabled")
+        self.classSelector.configure(state= "disabled")
+        self.arriveYearSelector.configure(state= "disabled")
+        self.arriveCommitSelector.configure(state= "disabled")
         
     def enableSelectorPanel(self):
-        self.startYearSelector(state= "normal")
-        self.startCommitSelector(state= "normal")
-        self.classSelector(state= "normal")
-        self.arriveYearSelector(state= "normal")
-        self.arriveCommitSelector(state= "normal")
+        """abilita il pannello di selezione dei commit"""
+        self.startYearSelector.configure(state= "normal")
+        self.startCommitSelector.configure(state= "normal")
+        self.classSelector.configure(state= "normal")
+        self.arriveYearSelector.configure(state= "normal")
+        self.arriveCommitSelector.configure(state= "normal")
         
     def on_option_button_click(self):
         if self.grid_frame is not None:
@@ -185,36 +247,39 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.grid_frame.update()  # Aggiorna il frame della griglia per mostrare i nuovi grafici
     
     def initComputationModeSelector(self):
-        self.lowerFrame = ctk.CTkFrame(self, bg_color= "#1d1e1e")
+        self.lowerFrame = ctk.CTkFrame(self, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.lowerFrame.pack(fill = "x", expand = True)
-        self.optionFrame = ctk.CTkFrame(self.lowerFrame)
+        
+        self.lowerFrameLabel = ctk.CTkLabel(self.lowerFrame, text = """select where to start and where to finish your analysis \n keep in mind: long therm analysis will require more time""")
+        self.lowerFrameLabel.pack()
+        
+        self.optionFrame = ctk.CTkFrame(self.lowerFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.optionFrame.pack()
         
         # selettore di inizio analisi
-        startYearSelectorSubFrame = ctk.CTkFrame(self.optionFrame)
+        startYearSelectorSubFrame = ctk.CTkFrame(self.optionFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         startYearSelectorSubFrame.grid(column = 0, row = 0)
-        self.startYearSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values= ["start year"], command= self.updateStartCommitList, dynamic_resizing= False)
+        self.startYearSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values= ["start year"], command= self.start_updateStartCommitList, dynamic_resizing= False)
         self.startYearSelector.pack(pady = 10)
         self.startCommitSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values= ["start commit"], command= self.updateClassList, dynamic_resizing= False)
         self.startCommitSelector.pack()
         self.startCommitSelector.configure(state ="disabled")
         
         # selettore di classe
-        self.classSelector = ctk.CTkOptionMenu(self.optionFrame, values= ["class"], dynamic_resizing= False)
+        self.classSelector = ctk.CTkOptionMenu(self.optionFrame, values= ["class"], command= self.start_updateArriveCommitList, dynamic_resizing= False)
         self.classSelector.grid(column = 1, row = 0, padx = 20)
         self.classSelector.configure(state ="disabled")
         
-        
         # selettore di arrivo
-        arriveYearSelectorSubFrame = ctk.CTkFrame(self.optionFrame)
-        arriveYearSelectorSubFrame.grid(column = 2, row = 0)
-        self.arriveYearSelector = ctk.CTkOptionMenu(arriveYearSelectorSubFrame, values= ["arrive year"], dynamic_resizing= False)
-        self.arriveYearSelector.pack(pady = 10)
+        arriveYearSelectorSubFrame = ctk.CTkFrame(self.optionFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        arriveYearSelectorSubFrame.grid(column = 2, row = 0, pady = 10)
+        self.arriveYearSelector = ctk.CTkOptionMenu(arriveYearSelectorSubFrame, values= ["arrive year"], dynamic_resizing= False, command = self.start_updateArriveCommitList)
+        self.arriveYearSelector.pack()
         self.arriveCommitSelector = ctk.CTkOptionMenu(arriveYearSelectorSubFrame, values= ["arrive commit"], dynamic_resizing= False)
         self.arriveCommitSelector.pack()
 
         # configurazione iniziale selettori
-        self.updateStartingYearList()
+        self.start_updateStartingYearList()
     
     
 
