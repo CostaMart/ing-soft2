@@ -14,11 +14,11 @@ class ProjectMetricsController:
     def getLocalRepoData(self) -> Domain.Repository:
         return self.localModel.getRepoData()
     
-    def getClassesList(self, tag) -> List[str]: 
-        return model.repo_utils.checkout_tag(tag, "repository")
-        
-    def getClassesListR(self):
-        return model.repo_utils.cerca_file_java("repository") 
+    def getClassesList(self, commitHash) -> List[str]: 
+        files = self.localModel.getClassListFromGivenCommit(commitHash)
+        allFileList= ic([file.split("/")[-1] for file in files])
+        classList = [file for file in allFileList if ".java" in file]
+        return classList
         
     def getCommitWithClassList(self, className):
         return self.localModel.getCommitWithClassList(className= className)

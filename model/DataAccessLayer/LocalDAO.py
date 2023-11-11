@@ -99,7 +99,6 @@ class LocalDAO:
         
     def dataCommitLinkYear(self, year, rep = "repository"):
         """Metodo che prende tutti i commit con relativa data in base all'anno e li inserisce in un dataframe che ritorna"""
-        
         rep = Repository(rep)
         commit_data = []
         for commit in rep.traverse_commits():
@@ -109,8 +108,12 @@ class LocalDAO:
             if str(commit_date.year) == year:
                 commit_data.append(commit)
         return commit_data
-
         
+
+
+
+
+
 
        
 

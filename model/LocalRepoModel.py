@@ -1,4 +1,5 @@
 import os
+from typing import List
 from .DataAccessLayer.DAORepo import DAORepo
 from icecream import ic
 from .DataAccessLayer.LocalDAO import LocalDAO
@@ -67,8 +68,10 @@ class LocalRepoModel:
     def getYearList(self):
         return self.LocalDAO.extract_years_from_commits()
     
-    def getClassListFromGivenCommit(self, commit):
+    def getClassListFromGivenCommit(self, commit) -> List[str]:
         return self.LocalDAO.getClassListFromGivenCommit(commit)
     
     def getCommiListByYear(self, year):
         return self.LocalDAO.dataCommitLinkYear(year)
+    
+    

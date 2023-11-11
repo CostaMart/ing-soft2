@@ -109,30 +109,64 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.label = ctk.CTkLabel(self.subFrame4, text= f"{self.repoData.owner['url']}")
         self.label.pack()
 
-    def updateClassList(self, release):
-        """ esegue l'update della lista delle classi """
-        if release != "no releases":
-            self.controller.getClassesList(release)
-            newList = self.controller.getClassesListR()
-            if len(newList) == 0:
-                newList = ["no classes available"]  
-            self.optionMenuClass.configure(values = newList)
-            self.optionMenuClass.set([newList[0]])
+    # metodi per la gestione delle liste centrali, sono scritti nell'ordine in cui verranno chiamati----------
+    def updateStartingYearList(self):
+        """esegue l'update della lista degli anni di partenza dell'analisi"""
+        self.disableSelectorPanel()
+        startYearList = self.controller.getRepoYearList()
+        newYears = [str(year) for year in startYearList]
+        self.startYearSelector.configure(values = newYears)
+        self.startYearSelector.set(newYears[0])
+        self.startYearSelector.update()
+        self.updateStartCommitList(str(startYearList[0]))
+        self.enableSelectorPanel()
             
     def updateStartCommitList(self, year):
         """ esegue l'update della lista di commit di partenza dell'analisi """
-        self.commitList = self.controller.getCommitsByYear(year)
-        ic(self.commitList)
+        self.commitList = ic(self.controller.getCommitsByYear(year))
         commitHashes = [commit.hash for commit in self.commitList]
-        self.optionMenuCommitStart.configure(values = commitHashes)
-        self.optionMenuCommitStart.update()
-            
+        self.startCommitSelector.configure(values = commitHashes, state= "normal")
+        self.startCommitSelector.update()
+        self.updateClassList(commitHashes[0])
+    
+    def updateClassList(self, hash):
+        """ esegue l'update della lista delle classi """
+        newList = self.controller.getClassesList(hash)
+        if len(newList) == 0:
+            newList = ["no classes available"]  
+        self.classSelector.configure(values = newList, state = "normal")
+        self.classSelector.set([newList[0]])
+        self.updateArriveYearList()
+    
+    def updateArriveYearList(self):
+        arriveYears = self.controller.getRepoYearList()
+        arriveYears = [str(year) for year in arriveYears if year >= int(self.startYearSelector.get())]
+        self.arriveYearSelector.configure(values = arriveYears, state = "normal") 
+        self.arriveYearSelector.update()      
+        
     def updateArriveCommitList(self, startCommit):
         """ esegue l'update della lista di commit di arrivo dell'analisi """
         theCommit = [commit for commit in self.commitList if commit.hash == startCommit]
         commitsAfter = [commit.hash for commit in self.commitList if commit.committer_date >= theCommit[0].committer_date]
-        self.optionMenuCommitArrive.configure(values = commitsAfter, state = "active")
+        self.optionMenuCommitArrive.configure(values = commitsAfter, state = "normal")
         self.optionMenuCommitArrive.update()
+    
+    #-------------------------------
+    
+    
+    def disableSelectorPanel(self):
+        self.startYearSelector(state= "disabled")
+        self.startCommitSelector(state= "disabled")
+        self.classSelector(state= "disabled")
+        self.arriveYearSelector(state= "disabled")
+        self.arriveCommitSelector(state= "disabled")
+        
+    def enableSelectorPanel(self):
+        self.startYearSelector(state= "normal")
+        self.startCommitSelector(state= "normal")
+        self.classSelector(state= "normal")
+        self.arriveYearSelector(state= "normal")
+        self.arriveCommitSelector(state= "normal")
         
     def on_option_button_click(self):
         if self.grid_frame is not None:
@@ -151,113 +185,36 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.grid_frame.update()  # Aggiorna il frame della griglia per mostrare i nuovi grafici
     
     def initComputationModeSelector(self):
-        """ inizializza alcune componenti della GUI: i due selettori di classi e release e quelli dei commit """
+        self.lowerFrame = ctk.CTkFrame(self, bg_color= "#1d1e1e")
+        self.lowerFrame.pack(fill = "x", expand = True)
+        self.optionFrame = ctk.CTkFrame(self.lowerFrame)
+        self.optionFrame.pack()
         
-        self.optionFrameOut = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e", width=200,
-                                           height=100)
-        self.optionFrame = ctk.CTkFrame(self.optionFrameOut, bg_color="#1d1e1e", fg_color="#1d1e1e", width=80)
-        self.optionFrame.pack(fill="x")
+        # selettore di inizio analisi
+        startYearSelectorSubFrame = ctk.CTkFrame(self.optionFrame)
+        startYearSelectorSubFrame.grid(column = 0, row = 0)
+        self.startYearSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values= ["start year"], command= self.updateStartCommitList, dynamic_resizing= False)
+        self.startYearSelector.pack(pady = 10)
+        self.startCommitSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values= ["start commit"], command= self.updateClassList, dynamic_resizing= False)
+        self.startCommitSelector.pack()
+        self.startCommitSelector.configure(state ="disabled")
+        
+        # selettore di classe
+        self.classSelector = ctk.CTkOptionMenu(self.optionFrame, values= ["class"], dynamic_resizing= False)
+        self.classSelector.grid(column = 1, row = 0, padx = 20)
+        self.classSelector.configure(state ="disabled")
+        
+        
+        # selettore di arrivo
+        arriveYearSelectorSubFrame = ctk.CTkFrame(self.optionFrame)
+        arriveYearSelectorSubFrame.grid(column = 2, row = 0)
+        self.arriveYearSelector = ctk.CTkOptionMenu(arriveYearSelectorSubFrame, values= ["arrive year"], dynamic_resizing= False)
+        self.arriveYearSelector.pack(pady = 10)
+        self.arriveCommitSelector = ctk.CTkOptionMenu(arriveYearSelectorSubFrame, values= ["arrive commit"], dynamic_resizing= False)
+        self.arriveCommitSelector.pack()
 
-        yearList = self.controller.getRepoYearList()
-        classList = self.controller.getClassesListR()
-        
-        
-        if len(yearList) == 0:
-            yearList = ["no releases"]
-        else:
-            yearList = ru.get_git_tags(folder="repository")
-            
-        self.optionMenuClass = ctk.CTkOptionMenu(self.optionFrame, values=classList)
-        self.optionMenuYear = ctk.CTkOptionMenu(self.optionFrame, values=yearList, command= self.updateClassList)
-        
-
-        if len(yearList) > 0:
-            self.optionMenuYear.set(yearList[0])
-        else:
-            self.optionMenuYear.set("Nessuna release disponibile")
-        self.optionMenuYear.pack(padx=10, pady=5)
-
-        
-        if len(classList) == 0:
-            classList = ["no classes"]
-
-        if len(classList) > 0:
-            self.optionMenuClass.set(classList[0])
-        else:
-            self.optionMenuClass.set("Nessuna classe disponibile")
-        self.optionMenuClass.pack(padx=10, pady=2.5)
-
-        self.optionButton = ctk.CTkButton(self.optionFrame, text="start analysis", command=self.on_option_button_click)
-        self.optionButton.pack(pady=10)
-        self.computationFrame = ctk.CTkFrame(self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e", 
-                                           height=200)
-        self.computationFrame.pack(padx = 10)
- 
-        self.segmentedButton = ctk.CTkSegmentedButton(self.computationFrame, values = ["product metrics","process metrics"], variable= self.mode)
-        self.segmentedButton.pack(padx = 10, pady = 10)
-        self.segmentedButton.set("product metrics")
-        
-        yearList = self.controller.getRepoYearList()
-        classList = self.controller.getClassesListR()
-        
-        
-        if len(yearList) == 0:
-            yearList = ["no releases"]
-        else:
-            yearList = self.controller.getRepoYearList()
-            yearList = [str(year) for year in yearList]
-            
-        self.optionMenuYear = ctk.CTkOptionMenu(self.computationFrame, values=yearList, command= self.updateStartCommitList)
-        
-        
-
-        if len(yearList) > 0:
-            self.optionMenuYear.set(yearList[0])
-        else:
-            self.optionMenuYear.set("Nessuna release disponibile")
-        self.optionMenuYear.pack(padx=10, pady=10)
-
-        
-        if len(classList) == 0:
-            classList = ["no classes"]
-
-        if len(classList) > 0:
-            self.optionMenuClass.set(classList[0])
-        else:
-            self.optionMenuClass.set("Nessuna classe disponibile")
-        self.optionMenuClass.pack(padx=10, pady=10)
-        
-        self.commitSelectorFrame = ctk.CTkFrame(self, height=100, bg_color="#1d1e1e", fg_color="#1d1e1e")
-        self.commitSelectorFrame.pack(fill= "x", expand = True)
-        
-        label = ctk.CTkLabel(self.commitSelectorFrame, text = "choose start and arrive commits of your analysis")
-        label.pack()
-        
-        self.commitSelectorSubFrame = ctk.CTkFrame(self.commitSelectorFrame, width= 400, bg_color="#1d1e1e", fg_color="#1d1e1e")
-        self.commitSelectorSubFrame.pack(expand = True)
-        
-        self.commitSelectorFrame.columnconfigure(1, minsize= 200)
-        self.commitSelectorFrame.columnconfigure(3, minsize= 200)
-        
-        self.optionMenuCommitArrive = ctk.CTkOptionMenu(self.commitSelectorSubFrame, values= ["to"], dynamic_resizing= False)
-        self.optionMenuCommitStart = ctk.CTkOptionMenu(self.commitSelectorSubFrame, values= ["from"], dynamic_resizing= False, command= self.updateArriveCommitList)
-        self.optionMenuCommitStart.grid(column = 1, row = 0, sticky= "w")
-        
-        
-        img = open("resources\\right-arrow-white.png")
-        arrow = ctk.CTkImage(img)
-        arrowLabel = ctk.CTkLabel(self.commitSelectorSubFrame, image = arrow, text= "")
-        
-        arrowLabel.grid(column = 2, row = 0, padx = 20)
-        
-        
-        self.optionMenuCommitArrive.grid(column = 3, row = 0, pady = 30, sticky= "e")
-        self.optionMenuCommitArrive.configure(state = "disabled")
-        self.updateStartCommitList(ic(yearList[0]))
-    
-        
-
-    
+        # configurazione iniziale selettori
+        self.updateStartingYearList()
     
     
 
