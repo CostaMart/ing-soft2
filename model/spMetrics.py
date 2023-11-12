@@ -2,9 +2,6 @@ import model.process_metrics as pm
 import model.repo_utils as ru
 import pandas as pd
 import model.git_ck as ck
-from icecream import ic
-
-
 
 # def generate_process_metrics(hash_code=None, folder = "repository"):
 #     """Genera le metriche di processo, è possibile specificare il commit da analizzare e il folder dove è conservata la repository"""
@@ -29,23 +26,22 @@ from icecream import ic
 
 
 
-def generate_process_metrics(nome_classe, df, hash1, hash2, folder = "repository"):
+def generate_process_metrics(nome_classe, json_list, folder = "repository"):
     """Genera le metriche di processo, è possibile specificare il commit da analizzare e il folder dove è conservata la repository"""
     """Questo metodo dovrà essere utilizzato per fare tutte le analisi disponibili con le metriche di processo, a parte i code churn"""
-    df_filtrato = ru.filtro(df, hash1, hash2)
-    df_finale= pd.DataFrame(columns=['Commit_hash', 'Data del Commit', 'Numero di Revisioni', 'Linee di Codice', 'Linee vuote', 'Commenti', 'Autori Distinti', 'Settimane file', 'Bugfix commit', 'Code churn con hash1'])
+    df_filtrato = ru.estrai_parametri(json_list)
+    hash1 = df_filtrato.loc[0, "Commit Hash"]
+    df_finale= pd.DataFrame(columns=['Commit_hash', 'Data del Commit', 'Numero di Revisioni', 'Linee di Codice', 'Linee vuote', 'Commenti', 'Autori Distinti', 'Settimane file', 'Bugfix commit', 'Code churn'])
     for index, element in enumerate(df_filtrato["Commit Hash"]):
         ru.checkout_commit(element)
-    
-        if (ru.trova_file_classe(nome_classe, folder) is not None):
-            nr = pm.controlla_numero_revisioni_per_classe(nome_classe, folder)
-            rig, rigv, com = pm.calcola_loc(nome_classe, folder)
-            ad = pm.calcola_autori_distinti_per_file(nome_classe, folder)
-            sf = pm.calcola_settimane_file(nome_classe, folder)
-            bf = pm.calcola_numero_bug_fix(folder)
-            cc = pm.calcola_code_churn(hash1, element, folder)
+        nr = pm.controlla_numero_revisioni_per_classe(nome_classe, folder)
+        rig, rigv, com = pm.calcola_loc(nome_classe, folder)
+        ad = pm.calcola_autori_distinti_per_file(nome_classe, folder)
+        sf = pm.calcola_settimane_file(nome_classe, folder)
+        bf = pm.calcola_numero_bug_fix(folder)
+        cc = pm.calcola_code_churn(hash1, element, folder)
                
-            temp_df = pd.DataFrame({'Commit_hash': element,
+        temp_df = pd.DataFrame({'Commit_hash': element,
                                 'Data del Commit': df_filtrato.loc[index, 'Data del Commit'],  
                                 'Numero di Revisioni': nr,
                                 'Linee di Codice': rig,
@@ -54,9 +50,9 @@ def generate_process_metrics(nome_classe, df, hash1, hash2, folder = "repository
                                 'Autori Distinti': [ad],
                                 'Settimane file': sf,
                                 'Bugfix commit': bf,
-                                'Code churn con hash1': cc}, index=[0])
-            df_finale = pd.concat([df_finale, temp_df], ignore_index=True)
-        return df_finale
+                                'Code churn': cc}, index=[0])
+        df_finale = pd.concat([df_finale, temp_df], ignore_index=True)
+    return df_finale
 
 
 # PER ORA DEPRECATO
@@ -84,12 +80,12 @@ def generate_process_metrics(nome_classe, df, hash1, hash2, folder = "repository
 
 
 
-def generate_metrics_ck(df, hash1, hash2, folder = "repository", measures =["cbo", "wmc", "dit", "noc", "rfc", "lcom"]):
+def generate_metrics_ck(json_list, folder = "repository", measures =["cbo", "wmc", "dit", "noc", "rfc", "lcom"]):
     """Genera le metriche ad oggetti , questo metodo prende la release da cui si vuole partire(opzionale), trova i commit e li inserisce in un dataframe"""
     """Poi li filtra dal commit dopo la release precedente, alla release scelta e ritorna il primo dataframe filtrato,"""
     """Una volta richiamato il metodo, se gli si passa il dataframe e i due hash per cui si vuole avere l'intervallo di analisi, filtra di nuovo il df e analizza"""
 
-    df_filtrato = ru.filtro(df, hash1, hash2)
+    df_filtrato = ru.estrai_parametri(json_list)
     commit=ck.commit_measure_interval(measures, df_filtrato, folder)
     if(commit.empty): 
         print("Non ci sono commit disponibili")

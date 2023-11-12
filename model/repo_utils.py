@@ -214,8 +214,6 @@ def checkout_tag(tag=None, folder = "repository"):
     
 
 
-
-
 def checkout_commit(commit_hash, folder = "repository"):
     """Questo metodo effettua il checkout a un commit specifico"""
     try:
@@ -279,8 +277,9 @@ def intervallo_tra_release(df, tag, folder= "repository"):
 
 
 
-def filtro(df, hash1, hash2):
+def filtro(hash1, hash2):
     """Questo metodo ritorna un dataframe con l'intervallo tra 2 hash"""
+    df = dataCommitLink(repo_to_use())
     index_hash2 = df[df['Commit Hash'] == hash2].index[0]
     index_hash1 = df[df['Commit Hash'] == hash1].index[0]
     if(index_hash1 < index_hash2):
@@ -289,6 +288,21 @@ def filtro(df, hash1, hash2):
         commit_indices = df.index[index_hash2 :index_hash1 + 1]
     intervallo_df = df.loc[commit_indices].reset_index(drop=True)
     return intervallo_df
+
+
+
+def estrai_parametri(json_list):
+    result = []
+    for obj in json_list:
+        commit_hash = obj.get("Commit_Hash")
+        data_commit = obj.get("Data_del_Commit")
+        
+        # Verifica se entrambi i parametri sono presenti prima di aggiungere alla lista
+        if commit_hash is not None and data_commit is not None:
+            result.append({"Commit Hash": commit_hash, "Data del Commit": data_commit})
+    
+    return pd.DataFrame(result)
+
 
 
 
