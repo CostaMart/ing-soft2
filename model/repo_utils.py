@@ -232,8 +232,9 @@ def inizia_analisi(tag = None, folder = "repository", year = 0):
         checkout_tag(tag, folder)
         flag=  intervallo_tra_release(dataCommitLink(repo),tag, folder)
         return flag
-    if(year != 0):
-       return dataCommitLinkYear(repo,year)
+    else:
+        if(year != 0):
+            return dataCommitLinkYear(repo,year)
     return dataCommitLink(repo)
 
 
