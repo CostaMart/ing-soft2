@@ -74,6 +74,9 @@ class LocalRepoModel:
     def getCommiListByYear(self, year):
         return self.LocalDAO.dataCommitLinkYear(year)
     
+    def getCommiListFromDate(self, date, yearToArrive):
+        return self.LocalDAO.getCommitsFromDate(date, yearToArrive, "repository")
+    
     def getCommitByHash(self, hash) -> Commit:
         return self.LocalDAO.getCommit(hash)
     

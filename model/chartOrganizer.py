@@ -1,7 +1,7 @@
 import pandas as pd
 
 def revision_number(df):
-    """Da utilizzare con grafico a barre X = Nome della Classe, Y = Numero di Revisioni"""
+    """Da utilizzare con grafico a barre X = Data del Commit, Y = Numero di Revisioni"""
     return df[["Data del Commit", "Numero di Revisioni"]]
 
 def loc_number(df):
@@ -39,3 +39,11 @@ def dit(df):
 def noc(df):
     """Da utilizzare con grafico a linea X = Data Del Commit Y = noc"""
     return df[["Data del Commit", "noc"]]
+
+def rfc(df):
+    """Da utilizzare con grafico a linea X = Data Del Commit Y = rfc"""
+    return df[["Data del Commit", "rfc"]]
+
+def lcom(df):
+    """Da utilizzare con grafico a linea X = Data Del Commit Y = lcom"""
+    return df[["Data del Commit", "lcom"]]
