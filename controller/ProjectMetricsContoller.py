@@ -19,45 +19,52 @@ class ProjectMetricsController:
     def getLocalRepoData(self) -> Domain.Repository:
         return self.localModel.getRepoData()
     
-    def getClassesList(self, commitHash) -> List[str]: 
+    def getClassesList(self, commitHash) -> set[str]: 
         files = self.localModel.getClassListFromGivenCommit(commitHash)
-        allFileList= [file.split("/")[-1] for file in files]
-        classList = [file for file in allFileList if ".java" in file]
-        return classList
+        ic(files)
+        return files
         
     def getCommitWithClassList(self, className):
         return self.localModel.getCommitWithClassList(className= className)
 
-    def updateRepoYearList(self, year, callback):
+    def updateRepoYearList(self, callback):
+        Thread(target = callback).start()
         
-        def target():
-            self.my_lock.acquire()
-            yearList = self.localModel.getYearList()
-            callback(yearList)
-            self.my_lock.release()
-            
-        Thread(target = target).start()
-    
+        
     def updateCommitsListByYear(self, year, callback):
+        """ recupera una lista di tutti i commit avvenuti in un dato anno e la passa
+        come parametro a callback """
         myYear = year
-        
         def target():
-            self.my_lock.acquire()
             commitList = self.localModel.getCommiListByYear(myYear)
             callback(commitList)
-            self.my_lock.release()
-            
         Thread(target = target).start()    
-
-    def updateArriveCommitList(self, year, callback):
         
-        def target():
-            self.my_lock.acquire()
-            commitList = self.localModel.getCommiListByYear(year)
-            callback(commitList)
-            self.my_lock.release()
-            
-        Thread(target = target).start()    
+    def getYearList(self):
+        return self.localModel.getYearList()
     
     def getCommitByhash(self, hash) -> Commit:
         return self.localModel.getCommitByHash(hash)
+    
+    def getCommiListFromDate(self, date, yearToArrive, callback):
+        """ recupera la lista dei commit a partire da date fino ad arrivare all'ultimo
+        giorno di yearToArrive. La lista recuperata viene passata alla callback """
+        def target():
+            commitList = self.localModel.getCommiListFromDate(date, yearToArrive)
+            callback(commitList)
+            
+        Thread(target = target).start()
+            
+        
+        
+        
+        
+        
+            
+            
+
+        
+            
+            
+    
+        

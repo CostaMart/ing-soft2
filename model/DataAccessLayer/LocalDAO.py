@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import subprocess
 from icecream import ic
@@ -89,33 +90,25 @@ class LocalDAO:
     def getClassListFromGivenCommit(self, commit_hash, repo_path = "repository"):
         repo = git.Repo(repo_path)
         commit = repo.commit(commit_hash)
-        lista_file = []
+        dict_file = set()
         albero_commit = commit.tree
         for blob in albero_commit.traverse():
-            if isinstance(blob, git.Blob):
-                lista_file.append(blob.path)
+            if isinstance(blob, git.Blob) and ".java" in blob.path:
+                dict_file.add(blob.path.split("/")[-1])
+                
 
-        return lista_file
+        return dict_file
         
     def dataCommitLinkYear(self, year, rep = "repository"):
         """Metodo che prende tutti i commit con relativa data in base all'anno e li inserisce in un dataframe che ritorna"""
-        rep = Repository(rep)
-        commit_data = []
-        for commit in rep.traverse_commits():
-            
-            commit_date = commit.committer_date
-          
-            if str(commit_date.year) == year:
-                commit_data.append(commit)
-        return commit_data
-        
+        year = int(year)
+        return list(   Repository(rep, since= datetime(year,1,1), to= datetime(year,12,31)).traverse_commits())
+              
     def getCommit(self, hash : str, rep: str = "repository") -> Commit:
-        for commit in Repository(rep).traverse_commits():
-            if commit.hash == hash:
-                return commit
-
-        
-
+       return next(Repository(rep, single= hash).traverse_commits())
+       
+    def getCommitsFromDate(self, date: datetime, yearToArrive, repo):
+        return list(Repository(repo, since= date, to= datetime(int(yearToArrive), 12, 31)).traverse_commits())
 
 
 
