@@ -8,27 +8,28 @@ from controller.StartAppContoller import StartAppController
 from icecream import ic
 import time
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
+if __name__ == "__main__":
 
-from view.App import IngSoftApp
-from view.StartupPage import StartupPage
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    sys.path.append(os.path.dirname(SCRIPT_DIR))
 
-start = StartAppController()
+    from view.App import IngSoftApp
+    from view.StartupPage import StartupPage
 
-
-status = start.startHttpEnpoint()
-time.sleep(5)
+    start = StartAppController()
 
 
-isInstalled, version = start.isGitInstalled()
-response = start.isHTTPEndpointActive()
+    status = start.startComputationEndpiont()
+    time.sleep(5)
 
 
+    isInstalled, version = start.isGitInstalled()
+    response = start.isComputeEndpointActive()
 
-if isInstalled and response.status_code == 200 and status != "error":
-    IngSoftApp(gitv = version, endpointStatus = status)
-else:   
-    StartupPage()
- 
+
+    if isInstalled:
+        IngSoftApp(gitv = version, endpointStatus = status)
+    else:   
+        StartupPage()
+    
 

@@ -1,5 +1,6 @@
 {
     "python.analysis.extraPaths": [
-        "./project/view"
+        "./project/view",
+        "./backend/presentation_layer"
     ]
 }

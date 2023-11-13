@@ -1,46 +1,60 @@
 import time
 from multiprocessing import Process, Pipe
+from multiprocessing.connection import PipeConnection
+from icecream import ic
+import inspect
+from .presentation_layer import compute
 
 # Descrizione della classe:
 
 """ Classe che permette di inviare un messaggio tramite la pipe bidirezionale a un processo 
     che esegue il calcolo delle metriche"""
 
-class MyClass:
-    def __init__(self):
+class computationEndpoint:
+    
+    """ inizializza l'endpoint """
+    def __init__(self, connection : PipeConnection):
+
         # In questo modo si crea un canale bidirezionale ovvero la pipe
         # che è un oggetto che permette di comunicare tra processi
-        self.parent_conn, self.child_conn = Pipe()
-
-    def execute_some_task(self, request):
-        """ Metodo che rappresenta il lavoro da eseguire"""
-        # TODO: Implementare il lavoro da eseguire con il calcolo delle metriche
-        time.sleep(5)
-        return f"Task eseguito con successo: {request}"
-
+        self.functList = dict(inspect.getmembers(compute, predicate= inspect.isfunction))
+      
+        self.pipe = connection
+        self.worker()
+        
     def worker(self):
-        """Metodo che controlla se è arrivato un messaggio sulla pipe"""
+        """ metodo di lavoro: il processo si mette in attesa di ricevere un messaggio da quello principale
+        recupera una lista di metodi e invoca il metodo con il nome corrispondente al contenuto del messaggio
+        se si vuole inviare dei dati con il messaggio è necessario formattarli come json, inserendoli dopo il nome della funzione da invocare 
+        separati da '---' ESEMPIO:
+        (le singole funzioni dovranno occuparsi della deserializzazione del json)
+        sum --- {
+                 num1: 1,
+                 num2: 2 
+                 }"""
+        
         while True:
             # Attende un messaggio dalla pipe
-            message = self.child_conn.recv()
-            # Chiamata del metodo che esegue il lavoro
-            result = self.execute_some_task(request=message)
+            
+            
+            message = self.pipe.recv()
+            message = message.split("---")
+            name = message[0]
+            json = message [1]
+            name = name.strip()
+            json = json.strip()
+            
+            if name in self.functList.keys():
+                print(f"{name}")
+                
+                funct = self.functList[name]
+                funct(self.pipe, json)
+            
+            else:
+                self.pipe.send(f"nessuna corrispondenza con una funzione disponibile: messaggio {message}, metodo chiamato ")
 
-            # Invia la risposta attraverso la pipe
-            self.child_conn.send(result)
-
-    def start_worker(self):
-        """Metodo che avvia il processo di lavoro"""
-        worker_process = Process(target=self.worker)
-        worker_process.start()
-
-    def make_request(self, request):
-        """Metodo utilizzato dai chiamanti per inviare un messaggio sulla pipe"""
-        self.parent_conn.send(request)
-
-        # in questo modo il processo di lavoro può ricevere il messaggio
-        response = self.parent_conn.recv()
-
-        # ritorna il risultato
-        return response
-
+def startEndpoint(connection : PipeConnection ):
+    """ questo metodo viene invocato dall'altro processo per avviare questo endpoint. Funziona sostanzialmente da main """
+    computationEndpoint(connection)
+    
+   

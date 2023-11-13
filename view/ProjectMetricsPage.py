@@ -44,7 +44,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         
         self.yearList = self.controller.getYearList()
-        self.initComputationModeSelector()
+        self.computationPanel()
         
         # self.initComputationBox()
         
@@ -113,12 +113,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
 
 
     # -----------------------------gli update si chiamano a catena tra di loro quando viene aggioranto un componetne -----------------------------
-    
-    
-  
-            
-        
-    # -----------------------------update start commit list-----------------------------   
+          
+   # -----------------------------update start commit list-----------------------------   
     def start_updateStartCommitList(self, year):
         """ esegue l'update della lista di commit di partenza dell'analisi """
         me = self
@@ -185,25 +181,9 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.enableSelectorPanel()
         
         self.controller.getCommiListFromDate(startCommit.committer_date, self.arriveYearSelector.get(), callback= ic(_end_updateArriveCommitList))
-    
-        
-
-       
-    
-    
-        
-    
          
-    
-
-    
-       
-        
-        
-       
-       
    
-    #-------------------------------
+    # ----------------------------- GUI MANAGEMENT METHODS -----------------------------
     def disableSelectorPanel(self):
         """disabilita il pannello di selezione dei commit"""
         self.startYearSelector.configure(state= "disabled")
@@ -236,7 +216,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         grid_view.create_grid(chart_data)  # Passa i dati del grafico alla GridView
         self.grid_frame.update()  # Aggiorna il frame della griglia per mostrare i nuovi grafici
     
-    def initComputationModeSelector(self):
+    def computationPanel(self):
         self.lowerFrame = ctk.CTkFrame(self, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.lowerFrame.pack(fill = "x", expand = True)
         
@@ -274,6 +254,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
     
 
     
+       
+        
     
     
                   

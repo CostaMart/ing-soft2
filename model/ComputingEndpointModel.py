@@ -1,7 +1,9 @@
 
 import requests
-import subprocess
+import multiprocessing
 from icecream import ic
+import backend.start_endpoint
+from backend.start_endpoint import computationEndpoint
 
 class ComputingEndpointModel:
     
@@ -13,14 +15,25 @@ class ComputingEndpointModel:
         return cls._instance   
     
     def activateLocal(self):
+    
         """ richiede attivazione del servizio locale """
         try:
-            subprocess.Popen(["python", "start_endpoint.py"], cwd= "backend")
-    
-        except  subprocess.SubprocessError as e:
+           self.parent_conn, child_conn = multiprocessing.Pipe()
+           p = multiprocessing.Process(target= backend.start_endpoint.startEndpoint, args = [child_conn])
+           p.start()
+           print(p.pid)
+        except  multiprocessing.ProcessError as e:
             print(f"error while activating process: {e.with_traceback()}")
             raise
     
     def isActiveLocal(self):
-        " controlla se il servizio è attivo localmente "
-        return requests.get("http://localhost:8080/ping")
+           
+            self.parent_conn.send('ping --- {"num1": 5, "num2": 10}')
+            
+            result = self.parent_conn.recv()
+            ic(f"la risposta ottenuta è: {result}")
+       
+    
+   
+    
+    
