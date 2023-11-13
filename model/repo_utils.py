@@ -316,8 +316,9 @@ def extract_years_from_commits(folder = "repository"):
         year = commit_date.year
         years.add(year)
         # Converti il set in una lista e restituiscila
-        
-    return list(years)
+    ordered_list= list(years)
+    ordered_list.sort()
+    return ordered_list
 
 
 
