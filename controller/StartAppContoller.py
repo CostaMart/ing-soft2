@@ -1,5 +1,3 @@
-
-
 from model.ComputingEndpointModel import ComputingEndpointModel
 import subprocess
 from model.DataAccessLayer.DAORepo import DAORepo
@@ -31,7 +29,7 @@ class StartAppController:
         """ controlla se l'endpoint HTTP è attivo localmente """
         return self.ComputeEnd.isActiveLocal()
 
-    def startComputationEndpiont(self):
+    def startComputationEndpoint(self):
         "   attiva l'endpoint locale "
         try: 
             self.ComputeEnd.activateLocal()

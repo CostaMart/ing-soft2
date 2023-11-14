@@ -1,5 +1,7 @@
 
 from typing import List
+
+from model.ComputingEndpointModel import ComputingEndpointModel
 from model.LocalRepoModel import LocalRepoModel
 from model import Domain
 from icecream import ic
@@ -13,7 +15,7 @@ class ProjectMetricsController:
     
     def __init__(self):
        self.localModel = LocalRepoModel()
-    
+       self.computingEndPointModel = ComputingEndpointModel()
     def getLocalRepoData(self) -> Domain.Repository:
         """ ritorna dati basilari sul repository locale installato """
         return self.localModel.getRepoData()
@@ -57,14 +59,16 @@ class ProjectMetricsController:
             callback(commitList)
             
         Thread(target = target).start()
-            
-        
-        
-        
-        
-        
-            
-            
+
+
+    def getCommitsBetweenHashes(self, hash_start, hash_end):
+        return self.localModel.getCommitInInterval(hash_start, hash_end)
+
+    def sendMessage(self, message):
+        self.computingEndPointModel.sendMessageToEndpoint(message)
+
+    def receiveMessage(self):
+        return self.computingEndPointModel.receiveMessageFromEndpoint()
 
         
             

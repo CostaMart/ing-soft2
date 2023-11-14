@@ -248,16 +248,39 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.arriveCommitSelector = ctk.CTkOptionMenu(arriveYearSelectorSubFrame, values= ["arrive commit"], dynamic_resizing= False)
         self.arriveCommitSelector.pack()
 
+        # bottone di start dell'analisi affidata ad un altro processo
+        start_button = ctk.CTkButton(self, text="Start Analysis", command=self.start_endpoint)
+        start_button.pack()
+
         # configurazione iniziale selettori
         self.start_updateStartCommitList(self.yearList[0])
     
-    
 
-    
-       
+    def start_endpoint(self):
+        """Viene chiamata la classe ComputationEndpoint per iniziare l'analisi delle metriche"""
+        """gli vengono passate le funzioni per calcolare le metriche e i parametri necessari per eseguire l'analisi"""
+        """utilizzo i metodi del controller per passargli le funzioni che deve eseguire come messaggi"""
+
+        # prende il nome della classe dal selettore
+        class_name = self.classSelector.get()
+
+        # lista di commit dall'inizio alla fine dell'analisi
+        start_commit_hash = self.startCommitSelector.get()
+        arrive_commit_hash = self.arriveCommitSelector.get()
+
+        commit_list = self.controller.getCommitsBetweenHashes(start_commit_hash, arrive_commit_hash)
+        # prima di inviare il messaggio si fa una verifica che la lista non è vuota
+        if commit_list:
+            self.controller.sendMessage(
+                {
+                    "fun": "generate_metrics",
+                    "nome_classe": class_name,
+                    "commits_dict": commit_list
+                }
+            )
+        else:
+            print("La lista di commit è vuota o non valida. Impossibile avviare l'analisi.")
         
-    
-    
-                  
-            
-        
+        # a questo punto otteniamo il dizionario di output dalla funzione tramite la rcv del controller
+        process_dict = self.controller.receiveMessage()
+        ic(process_dict)

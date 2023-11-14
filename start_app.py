@@ -19,7 +19,7 @@ if __name__ == "__main__":
     start = StartAppController()
 
 
-    status = start.startComputationEndpiont()
+    status = start.startComputationEndpoint()
     time.sleep(5)
 
 

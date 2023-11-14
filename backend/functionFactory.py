@@ -10,9 +10,12 @@ class FunctionFactory:
     
     
     def __init__(self):
+         """ inizializza il factory pattern con le funzioni presenti nel modulo 'compute'"""
          self.functList = dict(inspect.getmembers(compute, predicate= inspect.isfunction))
-         
+    
+    
     def getFunct(self, functName):
+        """ ritorna la funzione con il nome specificato, se non esiste ritorna None"""
         if functName not in self.functList:
             return None
         return self.functList[functName]

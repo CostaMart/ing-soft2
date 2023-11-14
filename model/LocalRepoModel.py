@@ -80,4 +80,6 @@ class LocalRepoModel:
     def getCommitByHash(self, hash) -> Commit:
         return self.LocalDAO.getCommit(hash)
     
-    
+    def getCommitInInterval(self, start_hash, end_hash):
+        """Recupera la lista di commit tra start_hash e end_hash."""
+        return self.LocalDAO.getCommitInInterval(start_hash, end_hash)
