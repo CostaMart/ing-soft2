@@ -28,7 +28,7 @@ class ComputingEndpointModel:
     
     def isActiveLocal(self):
            
-            self.parent_conn.send('ping --- {"num1": 5, "num2": 10}')
+            self.parent_conn.send({"fun" : "ping", "num1": 1, "num2": 2})
             
             result = self.parent_conn.recv()
             ic(f"la risposta ottenuta è: {result}")

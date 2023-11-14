@@ -1,12 +1,13 @@
 from multiprocessing.connection import PipeConnection
-import json
+""" tutte le funzioni devono accettare il dictionary come parametro (usando **args) così i 
+parametri possono essere passati come coppie chiave valore """
 
-def ping(pipe : PipeConnection, jsonFile : str ):
-    """ le funzioni devono prendere il parametro pipe e jsonFile per poter prendere i parametri e rispondere
-    questo è un esempio di come si può creare una funzione """
+def ping(**kwargs):
     
-    result = json.loads(jsonFile)
-    a = result["num1"]
-    b = result["num2"]
-    c = a + b
-    pipe.send(f"mi piace perchè sta funzionando, sappi che ho calcolato la somma ed è: {c}")
+    if "num1" not in kwargs or "num2" not in kwargs:
+        print("necessari parametri num1 e num2")
+        return
+    a = kwargs["num1"]
+    b = kwargs["num2"]
+    return a + b
+    
