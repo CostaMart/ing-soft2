@@ -3,8 +3,12 @@ import matplotlib.pyplot as plt
 
 
 
+######### INIZIO METODI PER METRICHE DI PROCESSO QUINDI DA USARE IL DATFRAME RESTITUITO DA generate_process_metrics in spMetrics ###########
+
+
+
 def revision_number(df):
-    """Genera e restituisce un grafico a barre con X = Data del Commit, Y = Numero di Revisioni"""
+    """Genera e restituisce un grafico a barre con il numero totale di autori per data del commit"""
     plt.figure(figsize=(10, 6))
     plt.bar(df["Data del Commit"], df["Numero di Revisioni"], color='blue')
     plt.xlabel('Data del Commit')
@@ -16,7 +20,7 @@ def revision_number(df):
 
 
 def loc_number(df):
-    """Genera e restituisce un grafico a linee con l'indice basato sulla data del commit"""
+    """Genera e restituisce un grafico a linee LOC con l'indice basato sulla data del commit"""
     df.set_index("Data del Commit", inplace=True)
     df = df.sort_index()
     plt.figure(figsize=(10, 6))
@@ -48,7 +52,7 @@ def authors(df):
     
 
 def weeks(df):
-    """Da utilizzare con grafico a barre X = Data del Commit, Y = Settimane File"""
+    """Genera e restituisce un grafico a barre con il numero di settimane del file per data del commit"""
     plt.figure(figsize=(10, 6))
     plt.bar(df["Data del Commit"], df["Settimane file"], color='blue')
     plt.xlabel('Data del Commit')
@@ -60,7 +64,7 @@ def weeks(df):
 
 
 def codeC(df):
-    """Da utilizzare grafico a barre per quantità quindi X= Data del Commit, Y = Code Churn"""
+    """Genera e restituisce un grafico a barre con il numero di codechurn per  data del commit"""
     plt.figure(figsize=(10, 6))
     plt.bar(df["Data del Commit"], df["Code churn"], color='blue')
     plt.xlabel('Data del Commit')
@@ -72,7 +76,7 @@ def codeC(df):
 
 
 def bugfix(df):
-    """Da utilizzare con grafico a barre vicino alle metriche di ck però X = Data del Commit, Y = bugfix commit"""
+    """Genera e restituisce un grafico a barre con il numero di bugfix per data del commit"""
     plt.figure(figsize=(10, 6))
     plt.bar(df["Data del Commit"], df["Bugfix commit"], color='blue')
     plt.xlabel('Data del Commit')
@@ -83,8 +87,16 @@ def bugfix(df):
 
 
 
+######### FINE METODI PER METRICHE DI PROCESSO QUINDI DA USARE IL DATFRAME RESTITUITO DA generate_process_metrics #####################
+
+
+
+######### INIZIO METODI PER METRICHE DI PROGETTO QUINDI DA USARE IL DATFRAME RESTITUITO DA generate_metrics_ck in spMetrics ###########
+
+
+
 def wmc(df):
-    """Da utilizzare con grafico a linea X = Data Del Commit Y = wmc"""
+    """Genera e restituisce un grafico a linee con il valore di wmc per data del commit"""
     plt.figure(figsize=(10, 6))
     plt.plot(df["Data del Commit"], df["wmc"], marker='o', linestyle='-', color='green', label='WMC')
     plt.xlabel('Data del Commit')
@@ -97,7 +109,7 @@ def wmc(df):
 
 
 def cbo(df):
-    """Da utilizzare con grafico a linea X = Data Del Commit Y = cbo"""
+    """Genera e restituisce un grafico a linee con il valore di cbo per data del commit"""
     plt.figure(figsize=(10, 6))
     plt.plot(df["Data del Commit"], df["wmc"], marker='o', linestyle='-', color='green', label='WMC')
     plt.xlabel('Data del Commit')
@@ -109,7 +121,7 @@ def cbo(df):
 
 
 def dit(df):
-    """Da utilizzare con grafico a linea X = Data Del Commit Y = dit"""
+    """Genera e restituisce un grafico a linee con il valore di dit per data del commit"""
     plt.figure(figsize=(10, 6))
     plt.plot(df["Data del Commit"], df["dit"], marker='o', linestyle='-', color='green', label='WMC')
     plt.xlabel('Data del Commit')
@@ -121,7 +133,7 @@ def dit(df):
 
 
 def noc(df):
-    """Da utilizzare con grafico a linea X = Data Del Commit Y = noc"""
+    """Genera e restituisce un grafico a linee con il valore di noc per data del commit"""
     plt.figure(figsize=(10, 6))
     plt.plot(df["Data del Commit"], df["noc"], marker='o', linestyle='-', color='green', label='WMC')
     plt.xlabel('Data del Commit')
@@ -133,7 +145,7 @@ def noc(df):
 
 
 def rfc(df):
-    """Da utilizzare con grafico a linea X = Data Del Commit Y = rfc"""
+    """Genera e restituisce un grafico a linee con il valore di rfc per data del commit"""
     plt.figure(figsize=(10, 6))
     plt.plot(df["Data del Commit"], df["rfc"], marker='o', linestyle='-', color='green', label='WMC')
     plt.xlabel('Data del Commit')
@@ -145,7 +157,7 @@ def rfc(df):
 
 
 def lcom(df):
-    """Da utilizzare con grafico a linea X = Data Del Commit Y = lcom"""
+    """Genera e restituisce un grafico a linee con il valore di lcom per data del commit"""
     plt.figure(figsize=(10, 6))
     plt.plot(df["Data del Commit"], df["lcom"], marker='o', linestyle='-', color='green', label='WMC')
     plt.xlabel('Data del Commit')
@@ -153,3 +165,6 @@ def lcom(df):
     plt.title('Andamento della Metrica LCOM nel Tempo')
     plt.xticks(rotation=45)
     return plt
+
+
+######### FINE METODI PER METRICHE DI PROGETTO QUINDI DA USARE IL DATFRAME RESTITUITO DA generate_metrics_ck #################

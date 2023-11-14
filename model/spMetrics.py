@@ -26,12 +26,13 @@ import model.git_ck as ck
 
 
 
-def generate_process_metrics(nome_classe, json_list, folder = "repository"):
+def generate_process_metrics(nome_classe, commits_dict, folder = "repository"):
     """Genera le metriche di processo, è possibile specificare il commit da analizzare e il folder dove è conservata la repository"""
     """Questo metodo dovrà essere utilizzato per fare tutte le analisi disponibili con le metriche di processo, a parte i code churn"""
-    df_filtrato = ru.estrai_parametri(json_list)
+    # df_filtrato = ru.estrai_parametri(json_list)
+    df_filtrato = pd.DataFrame(list(commits_dict.items()), columns=['Commit Hash', 'Data del Commit'])
     hash1 = df_filtrato.loc[0, "Commit Hash"]
-    df_finale= pd.DataFrame(columns=['Commit_hash', 'Data del Commit', 'Numero di Revisioni', 'Linee di Codice', 'Linee vuote', 'Commenti', 'Autori Distinti', 'Settimane file', 'Bugfix commit', 'Code churn'])
+    df_finale= pd.DataFrame(columns=['Commit hash', 'Data del Commit', 'Numero di Revisioni', 'Linee di Codice', 'Linee vuote', 'Commenti', 'Autori Distinti', 'Settimane file', 'Bugfix commit', 'Code churn'])
     for index, element in enumerate(df_filtrato["Commit Hash"]):
         ru.checkout_commit(element)
         nr = pm.controlla_numero_revisioni_per_classe(nome_classe, folder)
@@ -41,7 +42,7 @@ def generate_process_metrics(nome_classe, json_list, folder = "repository"):
         bf = pm.calcola_numero_bug_fix(folder)
         cc = pm.calcola_code_churn(hash1, element, folder)
                
-        temp_df = pd.DataFrame({'Commit_hash': element,
+        temp_df = pd.DataFrame({'Commit hash': element,
                                 'Data del Commit': df_filtrato.loc[index, 'Data del Commit'],  
                                 'Numero di Revisioni': nr,
                                 'Linee di Codice': rig,
@@ -80,12 +81,12 @@ def generate_process_metrics(nome_classe, json_list, folder = "repository"):
 
 
 
-def generate_metrics_ck(json_list, folder = "repository", measures =["cbo", "wmc", "dit", "noc", "rfc", "lcom"]):
+def generate_metrics_ck(commits_dict, folder = "repository", measures =["cbo", "wmc", "dit", "noc", "rfc", "lcom"]):
     """Genera le metriche ad oggetti , questo metodo prende la release da cui si vuole partire(opzionale), trova i commit e li inserisce in un dataframe"""
     """Poi li filtra dal commit dopo la release precedente, alla release scelta e ritorna il primo dataframe filtrato,"""
     """Una volta richiamato il metodo, se gli si passa il dataframe e i due hash per cui si vuole avere l'intervallo di analisi, filtra di nuovo il df e analizza"""
 
-    df_filtrato = ru.estrai_parametri(json_list)
+    df_filtrato = pd.DataFrame(list(commits_dict.items()), columns=['Commit Hash', 'Data del Commit'])
     commit=ck.commit_measure_interval(measures, df_filtrato, folder)
     if(commit.empty): 
         print("Non ci sono commit disponibili")
