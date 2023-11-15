@@ -28,8 +28,14 @@ class LocGraph():
         self.ax_loc.tick_params(axis='y', colors='white')
         self.ax_loc.legend()
         self.ax_loc.set_title("Amount (in LOC) of previous changes", color="white")
-    
-
+        self.ax_loc.set_xticklabels(y2, rotation=30, ha='right')
+        
+        if len(y2) < 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        self.ax_loc.set_xlim(left = y2[0], right = y2[right])
+        
         self.canvas_loc = FigureCanvasTkAgg(fig_loc, master=master)
 
     def draw(self):
@@ -70,7 +76,11 @@ class RevisionGraph():
         self.ax_revision.set_xticklabels(y2, rotation=30, ha='right')
 
         
-        
+        if len(y2) < 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        self.ax_revision.set_xlim(left = y2[0], right = y2[right])
         
         self.canvas_revision = FigureCanvasTkAgg(fig_revision, master=master)
         self.canvaswidgt = self.canvas_revision.get_tk_widget()
@@ -108,6 +118,11 @@ class BugFixGraph():
 
         self.canvas_bugfix = FigureCanvasTkAgg(self.fig_bugfix, master=master)
         
+        if len(y2) < 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        self.ax_bugfix.set_xlim(left = y2[0], right = y2[right])
 
        
 
@@ -143,6 +158,11 @@ class ChurnGraph():
 
         self.canvas_codechurn = FigureCanvasTkAgg(self.fig_codechurn, master=master)
         
+        if len(y2) < 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        self.ax_codechurn.set_xlim(left = y2[0], right = y2[right])
       
     def draw(self):
         self.canvas_codechurn.draw()
@@ -173,6 +193,13 @@ class WeeksGraph():
         self.ax_weeks.set_xticklabels(y2, rotation=30, ha='right')
 
         self.canvas_weeks = FigureCanvasTkAgg(self.fig_weeks, master=master)
+        if len(y2) < 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        self.ax_weeks.set_xlim(left = y2[0], right = y2[right])
+       
+       
        
     def draw(self):
         self.canvas_weeks.draw()
@@ -201,8 +228,13 @@ class AuthorsGraph():
         self.ax_authors.set_xticklabels(y2, rotation=30, ha='right')
 
         self.canvas_authors = FigureCanvasTkAgg(self.fig_authors, master=master)
-     
 
+        if len(y2) < 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        self.ax_authors.set_xlim(left = y2[0], right = y2[right])
+        
         
     def draw(self):
         self.canvas_authors.draw()

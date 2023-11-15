@@ -34,7 +34,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
        
         self.mode = tk.StringVar()       
         self.commitList = []
-        self.graphList = []
+        self.panelCreated = False
         
         if debug == True:
             self.controller = ControllerFalso()
@@ -138,8 +138,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.classSelector.configure(state= "normal")
         self.arriveYearSelector.configure(state= "normal")
         self.arriveCommitSelector.configure(state= "normal")
-        
-        
+            
     def computationPanel(self):
         """ inizializza il pannello centrale con le sue componenti """
         
@@ -183,7 +182,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         # configurazione iniziale selettori
         self.start_updateStartCommitList(self.yearList[0])
     
-
     def start_endpoint(self):
         """Viene chiamata la classe ComputationEndpoint per iniziare l'analisi delle metriche"""
         """gli vengono passate le funzioni per calcolare le metriche e i parametri necessari per eseguire l'analisi"""
@@ -211,23 +209,24 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         process_dict = self.controller.receiveMessage()
         print(process_dict)
-        self.paned_window = tk.PanedWindow(self, orient=tk.VERTICAL, sashwidth=10)
-        self.paned_window.pack(expand=True, fill="both")
-
-        graphFrame = ctk.CTkFrame(self, bg_color= "#1d1e1e", fg_color= "#1d1e1e")
-        graphFrame.pack()
         
-        graphFrame.columnconfigure(0, minsize=100)
+        if self.panelCreated:
+            self.graphFrame.destroy()
+            self.panelCreated = False
+        
+        
+        
+        self.graphFrame = ctk.CTkFrame(self, bg_color= "#1d1e1e", fg_color= "#1d1e1e")
+        self.graphFrame.pack(pady = 30)
+        self.panelCreated= True
+
+        self.graphFrame.columnconfigure(0, minsize=100)
         # Imposta l'altezza della riga 1 a 50 pixel
-        graphFrame.rowconfigure(1, minsize=50)
+        self.graphFrame.rowconfigure(1, minsize=50)
 
-        
-        if len(self.graphList) !=0:
-            for graph in self.graphList:
-                graph.destroy()
-        
+       
         # Grafico Loc
-        locFrame = ctk.CTkFrame(graphFrame)
+        locFrame = ctk.CTkFrame(self.graphFrame)
         locFrame.grid(column= 0, row = 0, padx= 20, pady = 20)
         loc = LocGraph(locFrame, process_dict)
         loc.draw()
@@ -235,10 +234,10 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_loc = NavigationToolbar2Tk(loc.canvas_loc, locFrame)
         toolbar_loc.update()
         toolbar_loc.pack(side=tk.TOP, fill=tk.X)
-        self.graphList.append(locFrame)
+       
 
         # Grafico revisioni
-        revisionFrame = ctk.CTkFrame(graphFrame)
+        revisionFrame = ctk.CTkFrame(self.graphFrame)
         revisionFrame.grid(column= 1, row = 0, padx= 20, pady = 20)
         revision = RevisionGraph(revisionFrame, process_dict)
         revision.draw()
@@ -246,10 +245,10 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_revision = NavigationToolbar2Tk(revision.canvas_revision, revisionFrame)
         toolbar_revision.update()
         toolbar_revision.pack(side=tk.TOP, fill=tk.X)
-        self.graphList.append(revisionFrame)
+    
         
         # Grafico bugfix
-        bugFrame = ctk.CTkFrame(graphFrame)
+        bugFrame = ctk.CTkFrame(self.graphFrame)
         bugFrame.grid(column= 0, row = 1, padx= 20, pady = 20)
         bug = BugFixGraph(bugFrame, process_dict)
         bug.draw()
@@ -257,10 +256,10 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_bugfix = NavigationToolbar2Tk(bug.canvas_bugfix, bugFrame)
         toolbar_bugfix.update()
         toolbar_bugfix.pack(side=tk.TOP, fill=tk.X)
-        self.graphList.append(bugFrame)
+       
         
         # Grafico code churn
-        churnFrame = ctk.CTkFrame(graphFrame)
+        churnFrame = ctk.CTkFrame(self.graphFrame)
         churnFrame.grid(column= 1, row = 1, padx= 20, pady = 20)
         churn = ChurnGraph(churnFrame, process_dict)
         churn.draw()
@@ -268,10 +267,10 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_cc = NavigationToolbar2Tk(churn.canvas_codechurn, churnFrame)
         toolbar_cc.update()
         toolbar_cc.pack(side=tk.TOP, fill=tk.X)
-        self.graphList.append(churnFrame)
+   
         
         # Grafico weeks
-        weeksFrame = ctk.CTkFrame(graphFrame)
+        weeksFrame = ctk.CTkFrame(self.graphFrame)
         weeksFrame.grid(column= 0, row = 2, padx= 20, pady = 20)
         weeks = WeeksGraph(weeksFrame, process_dict)
         weeks.draw()
@@ -279,10 +278,10 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_weeks = NavigationToolbar2Tk(weeks.canvas_weeks, weeksFrame)
         toolbar_weeks.update()
         toolbar_weeks.pack(side=tk.TOP, fill=tk.X)
-        self.graphList.append(weeksFrame)
+      
         
         # Grafico authors
-        authorsFrame = ctk.CTkFrame(graphFrame)
+        authorsFrame = ctk.CTkFrame(self.graphFrame)
         authorsFrame.grid(column= 1, row = 2, padx= 20, pady = 20)
         authors = AuthorsGraph(authorsFrame, process_dict)
         authors.draw()
@@ -290,10 +289,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_authors = NavigationToolbar2Tk(authors.canvas_authors, authorsFrame)
         toolbar_authors.update()
         toolbar_authors.pack(side=tk.TOP, fill=tk.X)
-        self.graphList.append(authorsFrame)
+       
     
-    
-
     def start_endpointCK(self):
         """Viene chiamata la classe ComputationEndpoint per iniziare l'analisi delle metriche"""
         """gli vengono passate le funzioni per calcolare le metriche e i parametri necessari per eseguire l'analisi"""
@@ -317,9 +314,12 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         process_dict = self.controller.receiveMessage()
         print(process_dict)
-        self.paned_window = tk.PanedWindow(self, orient=tk.VERTICAL, sashwidth=10)
-        self.paned_window.pack(expand=True, fill="both")
-
+       
+        if self.panelCreated:
+            self.graphFrame.destroy()
+            self.panelCreated = False
+            
+        self.panelCreated = True  
         # Grafico Cbo
         cbo = CboGraph(self, process_dict)
         cbo.draw()
@@ -327,7 +327,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_cbo = NavigationToolbar2Tk(cbo.canvas_cbo, self)
         toolbar_cbo.update()
         toolbar_cbo.pack(side=tk.TOP, fill=tk.X)
-
+        
         # Grafico rfc
         rfc = RfcGraph(self, process_dict)
         rfc.draw()
@@ -335,7 +335,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_rfc = NavigationToolbar2Tk(rfc.canvas_rfc, self)
         toolbar_rfc.update()
         toolbar_rfc.pack(side=tk.TOP, fill=tk.X)
-
+       
         # Grafico wmc
         wmc = WmcGraph(self, process_dict)
         wmc.draw()
@@ -343,7 +343,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_wmc = NavigationToolbar2Tk(wmc.canvas_wmc, self)
         toolbar_wmc.update()
         toolbar_wmc.pack(side=tk.TOP, fill=tk.X)
-
+      
          # Grafico noc
         noc = NocGraph(self, process_dict)
         noc.draw()
@@ -351,7 +351,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_noc = NavigationToolbar2Tk(noc.canvas_noc, self)
         toolbar_noc.update()
         toolbar_noc.pack(side=tk.TOP, fill=tk.X)
-
+       
          # Grafico dit
         dit = DitGraph(self, process_dict)
         dit.draw()
@@ -359,7 +359,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_dit = NavigationToolbar2Tk(dit.canvas_dit, self)
         toolbar_dit.update()
         toolbar_dit.pack(side=tk.TOP, fill=tk.X)
-
+  
           # Grafico dit
         lcom = LcomGraph(self, process_dict)
         lcom.draw()
@@ -367,7 +367,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_lcom = NavigationToolbar2Tk(lcom.canvas_lcom, self)
         toolbar_lcom.update()
         toolbar_lcom.pack(side=tk.TOP, fill=tk.X)
-
+    
 
 
     
