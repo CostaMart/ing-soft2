@@ -1,15 +1,16 @@
 
  
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-import tkinter
 from matplotlib.figure import Figure
 import model.chartOrganizer as co
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import tkinter as tk
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+ # Assicurati di importare correttamente il modulo co con la funzione loc_number
 
 class LocGraph():
-    
-    
-    def __init__(self,master, process_dict):
+    def __init__(self, master, process_dict):
         fig_loc = Figure(figsize=(5, 5), dpi=100)
         self.ax_loc = fig_loc.add_subplot(111)
         fig_loc.set_facecolor("#2b2b2b")
@@ -26,19 +27,19 @@ class LocGraph():
         self.ax_loc.tick_params(axis='x', colors='white')
         self.ax_loc.tick_params(axis='y', colors='white')
         self.ax_loc.legend()
-        self.ax_loc.set_title("Amount (in LOC) of previous changes", color= "white")
-        self.ax_loc.set_xticklabels(y2, rotation=30, ha='right')
+        self.ax_loc.set_title("Amount (in LOC) of previous changes", color="white")
+    
+
         self.canvas_loc = FigureCanvasTkAgg(fig_loc, master=master)
-
-
 
     def draw(self):
         self.canvas_loc.draw()
-        
-    def pack(self,**args):
+
+    def pack(self, **args):
         self.canvas_loc.get_tk_widget().pack(**args)
+
     
-          
+      
         
 
 class RevisionGraph():
@@ -60,12 +61,17 @@ class RevisionGraph():
         self.ax_revision.spines['right'].set_visible(False)
         self.ax_revision.spines['bottom'].set_color('#2b2b2b')
         self.ax_revision.spines['left'].set_color('#2b2b2b')
+        self.ax_revision.spines['bottom'].set_color("white")
+        self.ax_revision.spines['left'].set_color("white")
         self.ax_revision.tick_params(axis='x', colors='white')
         self.ax_revision.tick_params(axis='y', colors='white')
         self.ax_revision.legend()
         self.ax_revision.set_title("Number of revisions", color= "white")
         self.ax_revision.set_xticklabels(y2, rotation=30, ha='right')
 
+        
+        
+        
         self.canvas_revision = FigureCanvasTkAgg(fig_revision, master=master)
         self.canvaswidgt = self.canvas_revision.get_tk_widget()
         

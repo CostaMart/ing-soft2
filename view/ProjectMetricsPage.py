@@ -34,6 +34,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
        
         self.mode = tk.StringVar()       
         self.commitList = []
+        self.graphList = []
         
         if debug == True:
             self.controller = ControllerFalso()
@@ -220,6 +221,11 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         # Imposta l'altezza della riga 1 a 50 pixel
         graphFrame.rowconfigure(1, minsize=50)
 
+        
+        if len(self.graphList) !=0:
+            for graph in self.graphList:
+                graph.destroy()
+        
         # Grafico Loc
         locFrame = ctk.CTkFrame(graphFrame)
         locFrame.grid(column= 0, row = 0, padx= 20, pady = 20)
@@ -229,6 +235,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_loc = NavigationToolbar2Tk(loc.canvas_loc, locFrame)
         toolbar_loc.update()
         toolbar_loc.pack(side=tk.TOP, fill=tk.X)
+        self.graphList.append(locFrame)
 
         # Grafico revisioni
         revisionFrame = ctk.CTkFrame(graphFrame)
@@ -239,6 +246,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_revision = NavigationToolbar2Tk(revision.canvas_revision, revisionFrame)
         toolbar_revision.update()
         toolbar_revision.pack(side=tk.TOP, fill=tk.X)
+        self.graphList.append(revisionFrame)
         
         # Grafico bugfix
         bugFrame = ctk.CTkFrame(graphFrame)
@@ -249,7 +257,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_bugfix = NavigationToolbar2Tk(bug.canvas_bugfix, bugFrame)
         toolbar_bugfix.update()
         toolbar_bugfix.pack(side=tk.TOP, fill=tk.X)
-
+        self.graphList.append(bugFrame)
+        
         # Grafico code churn
         churnFrame = ctk.CTkFrame(graphFrame)
         churnFrame.grid(column= 1, row = 1, padx= 20, pady = 20)
@@ -259,6 +268,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_cc = NavigationToolbar2Tk(churn.canvas_codechurn, churnFrame)
         toolbar_cc.update()
         toolbar_cc.pack(side=tk.TOP, fill=tk.X)
+        self.graphList.append(churnFrame)
         
         # Grafico weeks
         weeksFrame = ctk.CTkFrame(graphFrame)
@@ -269,6 +279,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_weeks = NavigationToolbar2Tk(weeks.canvas_weeks, weeksFrame)
         toolbar_weeks.update()
         toolbar_weeks.pack(side=tk.TOP, fill=tk.X)
+        self.graphList.append(weeksFrame)
         
         # Grafico authors
         authorsFrame = ctk.CTkFrame(graphFrame)
@@ -279,7 +290,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_authors = NavigationToolbar2Tk(authors.canvas_authors, authorsFrame)
         toolbar_authors.update()
         toolbar_authors.pack(side=tk.TOP, fill=tk.X)
-
+        self.graphList.append(authorsFrame)
     
     
 
