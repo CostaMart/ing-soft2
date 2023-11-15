@@ -215,33 +215,56 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         loc = LocGraph(self, process_dict)
         loc.draw()
         loc.pack()
+        toolbar_loc = NavigationToolbar2Tk(loc.canvas_loc, self)
+        toolbar_loc.update()
+        toolbar_loc.pack(side=tk.TOP, fill=tk.X)
 
         # Grafico revisioni
         revision = RevisionGraph(self, process_dict)
         revision.draw()
         revision.pack()
-
-
+        toolbar_revision = NavigationToolbar2Tk(revision.canvas_revision, self)
+        toolbar_revision.update()
+        toolbar_revision.pack(side=tk.TOP, fill=tk.X)
+        
         # Grafico bugfix
         bug = BugFixGraph(self, process_dict)
         bug.draw()
         bug.pack()
+        toolbar_bugfix = NavigationToolbar2Tk(bug.canvas_bugfix, self)
+        toolbar_bugfix.update()
+        toolbar_bugfix.pack(side=tk.TOP, fill=tk.X)
+        
 
 
         # Grafico code churn
         churn = ChurnGraph(self, process_dict)
         churn.draw()
         churn.pack()
+        toolbar_cc = NavigationToolbar2Tk(churn.canvas_codechurn, self)
+        toolbar_cc.update()
+        toolbar_cc.pack(side=tk.TOP, fill=tk.X)
+        
+
+
 
         # Grafico weeks
         weeks = WeeksGraph(self, process_dict)
         weeks.draw()
         weeks.pack()
+        toolbar_weeks = NavigationToolbar2Tk(weeks.canvas_weeks, self)
+        toolbar_weeks.update()
+        toolbar_weeks.pack(side=tk.TOP, fill=tk.X)
+        
+
 
         # Grafico authors
         authors = AuthorsGraph(self, process_dict)
         authors.draw()
         authors.pack()
+        toolbar_authors = NavigationToolbar2Tk(authors.canvas_authors, self)
+        toolbar_authors.update()
+        toolbar_authors.pack(side=tk.TOP, fill=tk.X)
 
 
 

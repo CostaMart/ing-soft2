@@ -1,6 +1,6 @@
 
  
-
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import tkinter
 from matplotlib.figure import Figure
 import model.chartOrganizer as co
@@ -21,7 +21,9 @@ class LocGraph():
         self.ax_loc.set_title("Amount (in LOC) of previous changes")
         self.ax_loc.set_xticklabels(y2, rotation=30, ha='right')
         self.canvas_loc = FigureCanvasTkAgg(fig_loc, master=master)
-        
+
+
+
     def draw(self):
         self.canvas_loc.draw()
         
