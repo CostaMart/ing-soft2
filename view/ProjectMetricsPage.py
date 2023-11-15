@@ -121,78 +121,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.label = ctk.CTkLabel(self.subFrame4, text= f"{self.repoData.owner['url']}")
         self.label.pack()
 
-
-    # -----------------------------gli update si chiamano a catena tra di loro quando viene aggioranto un componetne -----------------------------
-          
-   # -----------------------------update start commit list-----------------------------   
-    def start_updateStartCommitList(self, year):
-        """ esegue l'update della lista di commit di partenza dell'analisi """
-        me = self
-        
-        def _end_updateStartCommitList(commitList):    
-            commitHashes = [commit.hash for commit in commitList]
-            me.startCommitSelector.configure(values = commitHashes)
-            me.startCommitSelector.update()
-            me.startCommitSelector.set(commitHashes[0])
-            me.updateClassList(commitHashes[0])
-
-    
-        self.disableSelectorPanel()
-        self.controller.updateCommitsListByYear(year, callback = _end_updateStartCommitList)
-        
-    
-    # -----------------------------update lista classi-----------------------------
-    def updateClassList(self, hash):
-        """ esegue l'update della lista delle classi """
-        
-        self.disableSelectorPanel()
-        newList = self.controller.getClassesList(hash)
-        if len(newList) == 0:
-            newList = ["no classes available"]  
-        self.classSelector.configure(values = newList)
-        self.classSelector.set(list(newList)[0])
-        self.start_updateArriveYearList(self.startYearSelector.get())
-    
-    # -----------------------------update anno di arrivo-----------------------------
-    def start_updateArriveYearList(self, startingYear):
-        
-        self.disableSelectorPanel()
-        years = self.yearList
-        
-        
-        def _end_updateArriveYearList(arriveYears = 0):
-            startingYear = int(self.startYearSelector.get())
-            newYearList = [str(year) for year in years if year >= startingYear]
-            self.arriveYearSelector.configure(values = newYearList) 
-            self.arriveYearSelector.update()
-            self.arriveYearSelector.set(newYearList[0])
-            self.start_updateArriveCommitList(self.classSelector.get()) 
-        
-        self.controller.updateRepoYearList(callback= _end_updateArriveYearList)
-        
-    # -----------------------------update commit di arrivo -----------------------------    
-    def start_updateArriveCommitList(self, className):
-        """ esegue l'update della lista di commit di arrivo dell'analisi """
-        self.disableSelectorPanel()
-        className = self.classSelector.get()      
-        startCommit = self.controller.getCommitByhash(self.startCommitSelector.get())
-        
-        def _end_updateArriveCommitList(commitList: List[Commit]):
-           
-            
-            finalList = [commit.hash for commit in commitList if className in self.controller.getClassesList(commit.hash)]
-            
-            if len(finalList) == 0:
-                finalList =["select a class"]
-            
-            self.arriveCommitSelector.configure(values = finalList)
-            self.arriveCommitSelector.update()
-            self.arriveCommitSelector.set(finalList[0])
-            self.enableSelectorPanel()
-        
-        self.controller.getCommiListFromDate(startCommit.committer_date, self.arriveYearSelector.get(), callback= ic(_end_updateArriveCommitList))
-         
-   
     # ----------------------------- GUI MANAGEMENT METHODS -----------------------------
     def disableSelectorPanel(self):
         """disabilita il pannello di selezione dei commit"""
@@ -210,23 +138,10 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.arriveYearSelector.configure(state= "normal")
         self.arriveCommitSelector.configure(state= "normal")
         
-    def on_option_button_click(self):
-        if self.grid_frame is not None:
-            self.grid_frame.destroy()  # Rimuovi il frame della griglia se esiste già
-
-        self.grid_frame = ctk.CTkFrame(self.internalFrame)  # Crea un nuovo frame per la griglia
-        self.grid_frame.pack(side=tk.RIGHT, padx=20, fill="y", expand=True)
-
-        # Inizializza la GridView all'interno del frame con i dati del grafico
-        chart_data = [
-            [('pie', ['A', 'B'], [30, 70]), ('bar', ['X', 'Y'], [40, 60])],
-            [('line', [1, 2, 3, 4, 5], [10, 20, 15, 25, 30]), ('pie', ['C', 'D'], [45, 55])]
-        ]
-        grid_view = GridView(self.grid_frame)
-        grid_view.create_grid(chart_data)  # Passa i dati del grafico alla GridView
-        self.grid_frame.update()  # Aggiorna il frame della griglia per mostrare i nuovi grafici
-    
+        
     def computationPanel(self):
+        """ inizializza il pannello centrale con le sue componenti """
+        
         self.lowerFrame = ctk.CTkFrame(self, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.lowerFrame.pack(fill = "x", expand = True)
         
@@ -254,13 +169,13 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         arriveYearSelectorSubFrame = ctk.CTkFrame(self.optionFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         arriveYearSelectorSubFrame.grid(column = 2, row = 0, pady = 10)
         self.arriveYearSelector = ctk.CTkOptionMenu(arriveYearSelectorSubFrame, values= ["arrive year"], dynamic_resizing= False, command = self.start_updateArriveCommitList)
-        self.arriveYearSelector.pack()
+        self.arriveYearSelector.pack(pady = 10)
         self.arriveCommitSelector = ctk.CTkOptionMenu(arriveYearSelectorSubFrame, values= ["arrive commit"], dynamic_resizing= False)
         self.arriveCommitSelector.pack()
 
         # bottone di start dell'analisi affidata ad un altro processo
-        start_button = ctk.CTkButton(self, text="Start Analysis", command=self.start_endpoint)
-        start_button.pack()
+        start_button = ctk.CTkButton(self.lowerFrame, text="Start Analysis", command=self.start_endpoint)
+        start_button.pack(anchor = "s", pady= 10)
 
         # configurazione iniziale selettori
         self.start_updateStartCommitList(self.yearList[0])
@@ -337,4 +252,81 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.paned_window.add(churn.canvas_codechurn.get_tk_widget(), stretch="never", minsize=100)
         self.paned_window.add(weeks.canvas_weeks.get_tk_widget(), stretch="never", minsize=100)
         self.paned_window.add(authors.canvas_authors.get_tk_widget(), stretch="never", minsize=100)
+    
+    
+    
+    
+    # -----------------------------gli update si chiamano a catena tra di loro quando viene aggioranto un componetne -----------------------------
+          
+   # -----------------------------update start commit list-----------------------------   
+    def start_updateStartCommitList(self, year):
+        """ esegue l'update della lista di commit di partenza dell'analisi """
+        me = self
+        
+        def _end_updateStartCommitList(commitList):    
+            commitHashes = [commit.hash for commit in commitList]
+            me.startCommitSelector.configure(values = commitHashes)
+            me.startCommitSelector.update()
+            me.startCommitSelector.set(commitHashes[0])
+            me.updateClassList(commitHashes[0])
+
+    
+        self.disableSelectorPanel()
+        self.controller.updateCommitsListByYear(year, callback = _end_updateStartCommitList)
+        
+    
+    # -----------------------------update lista classi-----------------------------
+    def updateClassList(self, hash):
+        """ esegue l'update della lista delle classi """
+        
+        self.disableSelectorPanel()
+        newList = self.controller.getClassesList(hash)
+        if len(newList) == 0:
+            newList = ["no classes available"]  
+        self.classSelector.configure(values = newList)
+        self.classSelector.set(list(newList)[0])
+        self.start_updateArriveYearList(self.startYearSelector.get())
+    
+    # -----------------------------update anno di arrivo-----------------------------
+    def start_updateArriveYearList(self, startingYear):
+        
+        self.disableSelectorPanel()
+        years = self.yearList
+        
+        
+        def _end_updateArriveYearList(arriveYears = 0):
+            startingYear = int(self.startYearSelector.get())
+            newYearList = [str(year) for year in years if year >= startingYear]
+            self.arriveYearSelector.configure(values = newYearList) 
+            self.arriveYearSelector.update()
+            self.arriveYearSelector.set(newYearList[0])
+            self.start_updateArriveCommitList(self.classSelector.get()) 
+        
+        self.controller.updateRepoYearList(callback= _end_updateArriveYearList)
+        
+    # -----------------------------update commit di arrivo -----------------------------    
+    def start_updateArriveCommitList(self, className):
+        """ esegue l'update della lista di commit di arrivo dell'analisi """
+       
+        self.disableSelectorPanel()
+        className = self.classSelector.get()      
+        startCommit = self.controller.getCommitByhash(self.startCommitSelector.get())
+        
+        def _end_updateArriveCommitList(commitList: List[Commit]):
+           
+            
+            finalList = [commit.hash for commit in commitList if className in self.controller.getClassesList(commit.hash)]
+            
+            if len(finalList) == 0:
+                finalList =["select a class"]
+            
+            self.arriveCommitSelector.configure(values = finalList)
+            self.arriveCommitSelector.update()
+            self.arriveCommitSelector.set(finalList[0])
+            self.enableSelectorPanel()
+        
+        self.controller.getCommiListFromDate(startCommit.committer_date, self.arriveYearSelector.get(), callback= ic(_end_updateArriveCommitList))
+         
+   
+    
         

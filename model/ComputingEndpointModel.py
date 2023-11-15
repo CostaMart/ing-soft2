@@ -50,4 +50,7 @@ class ComputingEndpointModel:
         """Verifica se il processo è attivo."""
         return self.parent_conn.poll()  # True se il processo è attivo, False altrimenti
 
-    
+    def destroy(self) -> None:
+        self.parent_conn.send({"fun": "destroy"})
+        message = self.parent_conn.recv()
+        print(message)

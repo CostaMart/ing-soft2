@@ -36,4 +36,7 @@ class StartAppController:
             return "local"
         except subprocess.SubprocessError as e:
             return "error"
-            
+    
+    def closeSubProcess(self):
+        """ avvia la chiusura del sotto-processo mettendosi in attesa della sua termianzione """
+        self.ComputeEnd.destroy()

@@ -16,7 +16,7 @@ class IngSoftApp(ctk.CTk):
         self.pageStack = []
 
         super().__init__()
-
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
         ctk.set_appearance_mode("dark")
         self.title("Ing_soft")
         self.geometry("800x500")
@@ -48,7 +48,10 @@ class IngSoftApp(ctk.CTk):
         self._newPageAnimation(self.pageStack[-1], page, 0)
         self.pageStack[-1].place_forget()
         self.pageStack.append(page)
-
+    
+    def on_closing(self):
+        self.contoller.closeSubProcess()
+        self.destroy()
         # ----------------------------- METODI PER LA GESTIONE DELLA GRAFICA -----------------------------
 
     def _newPageAnimation(self, leftPage, rigPage, l):

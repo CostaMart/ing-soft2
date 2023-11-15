@@ -12,19 +12,25 @@ from .functionFactory import FunctionFactory
 class ComputationEndpoint:
 
     def __init__(self, connection):
+        self.working = True
         self.funFactory = FunctionFactory()
         self.pipe = connection
         self.worker()
 
     def worker(self):
         try:
-            while True:
+            while self.working:
                 message = self.pipe.recv()
 
                 if "fun" not in message:
                     self.pipe.send(
                         "Errore: il messaggio deve essere un dizionario che contiene il parametro 'fun' per specificare la funzione.")
                     continue
+                
+                if message["fun"] == "destroy":
+                    self.pipe.send("destroy request ok")
+                    self.destroy()
+                    continue    
 
                 fun_name = message.pop("fun")
                 fun = self.funFactory.getFunct(fun_name)
@@ -42,6 +48,10 @@ class ComputationEndpoint:
 
         finally:
             self.pipe.close()
+    
+    def destroy(self):
+        self.working = False
+
 
 
 # Funzione per avviare l'endpoint
@@ -52,7 +62,8 @@ def startEndpoint(connection):
         print(f"Errore durante l'avvio dell'endpoint: {e}")
 
 
-                
+
+    
             
 
             
