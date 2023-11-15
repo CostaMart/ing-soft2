@@ -44,7 +44,33 @@ class LocGraph():
     def pack(self, **args):
         self.canvas_loc.get_tk_widget().pack(**args)
 
-    
+    def zoom_out(self):
+        # Aumentare lo zoom del grafico
+        current_xlim = self.ax_loc.get_xlim()
+        current_ylim = self.ax_loc.get_ylim()
+
+        new_xlim = (current_xlim[0] * 0.9, current_xlim[1] * 1.1)
+        new_ylim = (current_ylim[0] * 0.9, current_ylim[1] * 1.1)
+
+        self.ax_loc.set_xlim(new_xlim)
+        self.ax_loc.set_ylim(new_ylim)
+
+        # Aggiornare il canvas
+        self.canvas_loc.draw()
+      
+    def zoom_in(self):
+        # Aumentare lo zoom del grafico
+        current_xlim = self.ax_loc.get_xlim()
+        current_ylim = self.ax_loc.get_ylim()
+
+        new_xlim = (current_xlim[0] / 0.9, current_xlim[1] / 1.1)
+        new_ylim = (current_ylim[0] / 0.9, current_ylim[1] / 1.1)
+
+        self.ax_loc.set_xlim(new_xlim)
+        self.ax_loc.set_ylim(new_ylim)
+
+        # Aggiornare il canvas
+        self.canvas_loc.draw()
       
         
 

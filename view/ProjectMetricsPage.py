@@ -234,6 +234,10 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_loc = NavigationToolbar2Tk(loc.canvas_loc, locFrame)
         toolbar_loc.update()
         toolbar_loc.pack(side=tk.TOP, fill=tk.X)
+        bottoneAmoroso= ctk.CTkButton(locFrame, command= loc.zoom_out, text= "bottoncino simpatichino -")
+        bottoneAmoroso.pack()
+        bottoneAmoroso2= ctk.CTkButton(locFrame, command= loc.zoom_in, text= "bottoncino simpatichino +")
+        bottoneAmoroso2.pack()
        
 
         # Grafico revisioni
