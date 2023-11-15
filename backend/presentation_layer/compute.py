@@ -1,5 +1,5 @@
 from multiprocessing.connection import Pipe
-from model.spMetrics import generate_process_metrics
+import model.spMetrics as sp
 """ tutte le funzioni devono accettare il dictionary come parametro (usando **args) così i 
 parametri possono essere passati come coppie chiave valore """
 
@@ -15,10 +15,11 @@ def ping(**kwargs):
     b = kwargs["num2"]
     return a + b
 
+
 def generate_metrics(**kwargs):
     """esegue il calcolo delle metriche usando le metriche di processo di spMetrics.py"""
     """genera le metriche di processo"""
-    """ritorna un dizionario con le metriche"""
+    """ritorna un dataframe con le metriche"""
     
     #controllo se i parametri non sono presenti
     if "nome_classe" not in kwargs or "commits_dict" not in kwargs:
@@ -29,4 +30,18 @@ def generate_metrics(**kwargs):
     commits_dict = kwargs["commits_dict"]
     # a questo punto ritorna le metriche generate alla view che le stampa
     # sull'interfaccia grafica.
-    return generate_process_metrics(nome_classe=nome_classe, commits_dict=commits_dict)
+    return sp.generate_process_metrics(nome_classe=nome_classe, commits_dict=commits_dict)
+
+
+def generate_metricsCK(**kwargs):
+    """esegue il calcolo delle metriche usando le metriche di processo di spMetrics.py"""
+    """genera le metriche di progetto"""
+    """ritorna un dataframe con le metriche"""
+    if "commits_dict" not in kwargs:
+        print("necessario parametro commits_dict")
+        return
+
+    commits_dict = kwargs["commits_dict"]
+    # a questo punto ritorna le metriche generate alla view che le stampa
+    # sull'interfaccia grafica.
+    return sp.generate_metrics_ck(commits_dict=commits_dict)
