@@ -211,37 +211,52 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.paned_window = tk.PanedWindow(self, orient=tk.VERTICAL, sashwidth=10)
         self.paned_window.pack(expand=True, fill="both")
 
+        graphFrame = ctk.CTkFrame(self, bg_color= "#1d1e1e", fg_color= "#1d1e1e")
+        graphFrame.pack()
+        
+        graphFrame.columnconfigure(0, minsize=100)
+        # Imposta l'altezza della riga 1 a 50 pixel
+        graphFrame.rowconfigure(1, minsize=50)
+
         # Grafico Loc
-        loc = LocGraph(self, process_dict)
+        locFrame = ctk.CTkFrame(graphFrame)
+        locFrame.grid(column= 0, row = 0, padx= 20, pady = 20)
+        loc = LocGraph(locFrame, process_dict)
         loc.draw()
-        loc.pack()
-        toolbar_loc = NavigationToolbar2Tk(loc.canvas_loc, self)
+        loc.pack(fill = "x")
+        toolbar_loc = NavigationToolbar2Tk(loc.canvas_loc, locFrame)
         toolbar_loc.update()
         toolbar_loc.pack(side=tk.TOP, fill=tk.X)
 
         # Grafico revisioni
-        revision = RevisionGraph(self, process_dict)
+        revisionFrame = ctk.CTkFrame(graphFrame)
+        revisionFrame.grid(column= 1, row = 0, padx= 20, pady = 20)
+        revision = RevisionGraph(revisionFrame, process_dict)
         revision.draw()
-        revision.pack()
-        toolbar_revision = NavigationToolbar2Tk(revision.canvas_revision, self)
+        revision.pack(fill = "x")
+        toolbar_revision = NavigationToolbar2Tk(revision.canvas_revision, revisionFrame)
         toolbar_revision.update()
         toolbar_revision.pack(side=tk.TOP, fill=tk.X)
         
         # Grafico bugfix
-        bug = BugFixGraph(self, process_dict)
+        bugFrame = ctk.CTkFrame(graphFrame)
+        bugFrame.grid(column= 0, row = 1, padx= 20, pady = 20)
+        bug = BugFixGraph(bugFrame, process_dict)
         bug.draw()
-        bug.pack()
-        toolbar_bugfix = NavigationToolbar2Tk(bug.canvas_bugfix, self)
+        bug.pack(fill = "x")
+        toolbar_bugfix = NavigationToolbar2Tk(bug.canvas_bugfix, bugFrame)
         toolbar_bugfix.update()
         toolbar_bugfix.pack(side=tk.TOP, fill=tk.X)
         
 
 
         # Grafico code churn
-        churn = ChurnGraph(self, process_dict)
+        churnFrame = ctk.CTkFrame(graphFrame)
+        churnFrame.grid(column= 1, row = 1, padx= 20, pady = 20)
+        churn = ChurnGraph(churnFrame, process_dict)
         churn.draw()
-        churn.pack()
-        toolbar_cc = NavigationToolbar2Tk(churn.canvas_codechurn, self)
+        churn.pack(fill = "x")
+        toolbar_cc = NavigationToolbar2Tk(churn.canvas_codechurn, churnFrame)
         toolbar_cc.update()
         toolbar_cc.pack(side=tk.TOP, fill=tk.X)
         
@@ -249,32 +264,28 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
 
 
         # Grafico weeks
-        weeks = WeeksGraph(self, process_dict)
+        weeksFrame = ctk.CTkFrame(graphFrame)
+        weeksFrame.grid(column= 0, row = 2, padx= 20, pady = 20)
+        weeks = WeeksGraph(weeksFrame, process_dict)
         weeks.draw()
         weeks.pack()
-        toolbar_weeks = NavigationToolbar2Tk(weeks.canvas_weeks, self)
+        toolbar_weeks = NavigationToolbar2Tk(weeks.canvas_weeks, weeksFrame)
         toolbar_weeks.update()
         toolbar_weeks.pack(side=tk.TOP, fill=tk.X)
         
 
 
         # Grafico authors
-        authors = AuthorsGraph(self, process_dict)
+        authorsFrame = ctk.CTkFrame(graphFrame)
+        authorsFrame.grid(column= 1, row = 2, padx= 20, pady = 20)
+        authors = AuthorsGraph(authorsFrame, process_dict)
         authors.draw()
         authors.pack()
-        toolbar_authors = NavigationToolbar2Tk(authors.canvas_authors, self)
+        toolbar_authors = NavigationToolbar2Tk(authors.canvas_authors, authorsFrame)
         toolbar_authors.update()
         toolbar_authors.pack(side=tk.TOP, fill=tk.X)
 
 
-
-        # Aggiungi i canvas al PanedWindow
-        self.paned_window.add(loc.canvas_loc.get_tk_widget(), stretch="never", minsize=100)
-        self.paned_window.add(revision.canvas_revision.get_tk_widget(), stretch="never", minsize=100)
-        self.paned_window.add(bug.canvas_bugfix.get_tk_widget(), stretch="never", minsize=100)
-        self.paned_window.add(churn.canvas_codechurn.get_tk_widget(), stretch="never", minsize=100)
-        self.paned_window.add(weeks.canvas_weeks.get_tk_widget(), stretch="never", minsize=100)
-        self.paned_window.add(authors.canvas_authors.get_tk_widget(), stretch="never", minsize=100)
     
     
     
