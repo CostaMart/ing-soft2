@@ -1,5 +1,6 @@
 from multiprocessing.connection import Pipe
 import model.spMetrics as sp
+import model.repo_utils as ru
 """ tutte le funzioni devono accettare il dictionary come parametro (usando **args) così i 
 parametri possono essere passati come coppie chiave valore """
 
@@ -40,7 +41,7 @@ def generate_metricsCK(**kwargs):
     if "commits_dict" not in kwargs:
         print("necessario parametro commits_dict")
         return
-
+    ru.check_folder()
     commits_dict = kwargs["commits_dict"]
     # a questo punto ritorna le metriche generate alla view che le stampa
     # sull'interfaccia grafica.

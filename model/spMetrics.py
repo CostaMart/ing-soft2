@@ -51,8 +51,6 @@ def generate_metrics_ck(commits_dict, folder = "repository", measures =["cbo", "
     if(commit.empty): 
         print("Non ci sono commit disponibili")
         return 0
-    commit['Data del Commit'] = pd.to_datetime(commit['Data del Commit'])
-    commit['Data del Commit'] = commit['Data del Commit'].dt.strftime('%Y-%m-%d %H:%M:%S')
     return commit
 
 
