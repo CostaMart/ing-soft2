@@ -23,6 +23,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from datetime import datetime
+from view.widgets.GraficiSP.LocGraph import LocGraph, RevisionGraph, BugFixGraph, ChurnGraph, WeeksGraph, AuthorsGraph
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
     
@@ -296,95 +297,44 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.paned_window.pack(expand=True, fill="both")
 
         # Grafico Loc
-        fig_loc = Figure(figsize=(10, 10), dpi=100)
-        ax_loc = fig_loc.add_subplot(111)
-        x1, x2, x3, y = co.loc_number(process_dict)
-
-        ax_loc.plot(y, x1, label='Linee di Codice', marker='o')
-        ax_loc.plot(y, x2, label='Linee vuote', marker='o')
-        ax_loc.plot(y, x3, label='Commenti', marker='o')
-        ax_loc.legend()
-        ax_loc.set_title("Amount (in LOC) of previous changes")
-        ax_loc.set_xticklabels(y, rotation=45, ha='right')
-        
-
-        canvas_loc = FigureCanvasTkAgg(fig_loc, master=self)
-        canvas_loc.draw()
-        canvas_loc.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        loc = LocGraph(self, process_dict)
+        loc.draw()
+        loc.pack()
 
         # Grafico revisioni
-        fig_revision = Figure(figsize=(10, 10), dpi=100)
-        ax_revision = fig_revision.add_subplot(111)
-        x, y = co.revision_number(process_dict)
-        ax_revision.bar(y, x)
-        ax_revision.legend()
-        ax_revision.set_title("Number of revisions")
-        ax_revision.set_xticklabels(y, rotation=45, ha='right')
-
-        canvas_revision = FigureCanvasTkAgg(fig_revision, master=self)
-        canvas_revision.draw()
-        canvas_revision.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        revision = RevisionGraph(self, process_dict)
+        revision.draw()
+        revision.pack()
 
 
         # Grafico bugfix
-        fig_bugfix = Figure(figsize=(10, 10), dpi=100)
-        ax_bugfix = fig_bugfix.add_subplot(111)
-        x, y = co.bugfix(process_dict)
-        ax_bugfix.bar(y, x)
-        ax_bugfix.legend()
-        ax_bugfix.set_title("Number of bugfix commits")
-        ax_bugfix.set_xticklabels(y, rotation=45, ha='right')
+        bug = BugFixGraph(self, process_dict)
+        bug.draw()
+        bug.pack()
 
-        canvas_bugfix = FigureCanvasTkAgg(fig_bugfix, master=self)
-        canvas_bugfix.draw()
-        canvas_bugfix.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
         # Grafico code churn
-        fig_codechurn = Figure(figsize=(10, 10), dpi=100)
-        ax_codechurn = fig_codechurn.add_subplot(111)
-        x, y = co.codeC(process_dict)
-        ax_codechurn.bar(y, x)
-        ax_codechurn.legend()
-        ax_codechurn.set_title("Number of code churn commits")
-        ax_codechurn.set_xticklabels(y, rotation=45, ha='right')
-
-        canvas_codechurn = FigureCanvasTkAgg(fig_codechurn, master=self)
-        canvas_codechurn.draw()
-        canvas_codechurn.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        churn = ChurnGraph(self, process_dict)
+        churn.draw()
+        churn.pack()
 
         # Grafico weeks
-        fig_weeks = Figure(figsize=(10, 10), dpi=100)
-        ax_weeks = fig_weeks.add_subplot(111)
-        x, y = co.weeks(process_dict)
-        ax_weeks.bar(y, x)
-        ax_weeks.legend()
-        ax_weeks.set_title("Number of weeks")
-        ax_weeks.set_xticklabels(y, rotation=45, ha='right')
-
-        canvas_weeks = FigureCanvasTkAgg(fig_weeks, master=self)
-        canvas_weeks.draw()
-        canvas_weeks.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        weeks = WeeksGraph(self, process_dict)
+        weeks.draw()
+        weeks.pack()
 
         # Grafico authors
-        fig_authors = Figure(figsize=(10, 10), dpi=100)
-        ax_authors = fig_authors.add_subplot(111)
-        x, y = co.authors(process_dict)
-        ax_authors.bar(y, x)
-        ax_authors.legend()
-        ax_authors.set_title("Number of authors")
-        ax_authors.set_xticklabels(y, rotation=45, ha='right')
-
-        canvas_authors = FigureCanvasTkAgg(fig_authors, master=self)
-        canvas_authors.draw()
-        canvas_authors.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        authors = AuthorsGraph(self, process_dict)
+        authors.draw()
+        authors.pack()
 
 
 
         # Aggiungi i canvas al PanedWindow
-        self.paned_window.add(canvas_loc.get_tk_widget(), stretch="never", minsize=100)
-        self.paned_window.add(canvas_revision.get_tk_widget(), stretch="never", minsize=100)
-        self.paned_window.add(canvas_bugfix.get_tk_widget(), stretch="never", minsize=100)
-        self.paned_window.add(canvas_codechurn.get_tk_widget(), stretch="never", minsize=100)
-        self.paned_window.add(canvas_weeks.get_tk_widget(), stretch="never", minsize=100)
-        self.paned_window.add(canvas_authors.get_tk_widget(), stretch="never", minsize=100)
+        self.paned_window.add(loc.canvas_loc.get_tk_widget(), stretch="never", minsize=100)
+        self.paned_window.add(revision.canvas_revision.get_tk_widget(), stretch="never", minsize=100)
+        self.paned_window.add(bug.canvas_bugfix.get_tk_widget(), stretch="never", minsize=100)
+        self.paned_window.add(churn.canvas_codechurn.get_tk_widget(), stretch="never", minsize=100)
+        self.paned_window.add(weeks.canvas_weeks.get_tk_widget(), stretch="never", minsize=100)
+        self.paned_window.add(authors.canvas_authors.get_tk_widget(), stretch="never", minsize=100)
         

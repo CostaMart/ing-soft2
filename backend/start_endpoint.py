@@ -22,9 +22,9 @@ class ComputationEndpoint:
                 message = self.pipe.recv()
 
                 if "fun" not in message:
-                    print(
+                    self.pipe.send(
                         "Errore: il messaggio deve essere un dizionario che contiene il parametro 'fun' per specificare la funzione.")
-                    return
+                    continue
 
                 fun_name = message.pop("fun")
                 fun = self.funFactory.getFunct(fun_name)
