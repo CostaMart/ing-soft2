@@ -6,6 +6,7 @@ from view.widgets.SideButton import SideButton
 from view.widgets.Plot import PlotCartesian
 from controller.ProjectMetricsContoller import ProjectMetricsController
 import tkinter as tk
+from matplotlib import dates as mdates
 from icecream import ic
 from .ControllerFalso import ControllerFalso
 from .widgets.Graphics.GridView import GridView
@@ -14,6 +15,14 @@ import model.repo_utils as ru
 import git
 from pydriller import Repository, Commit
 from PIL.Image import open
+import model.chartOrganizer as co
+import pandas as pd
+from matplotlib.dates import date2num
+import tkinter as tk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from datetime import datetime
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
     
@@ -260,7 +269,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         """Viene chiamata la classe ComputationEndpoint per iniziare l'analisi delle metriche"""
         """gli vengono passate le funzioni per calcolare le metriche e i parametri necessari per eseguire l'analisi"""
         """utilizzo i metodi del controller per passargli le funzioni che deve eseguire come messaggi"""
-
+        
         # prende il nome della classe dal selettore
         class_name = self.classSelector.get()
 
@@ -281,6 +290,101 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         else:
             print("La lista di commit è vuota o non valida. Impossibile avviare l'analisi.")
         
-        # a questo punto otteniamo il dizionario di output dalla funzione tramite la rcv del controller
         process_dict = self.controller.receiveMessage()
-        ic(process_dict)
+        print(process_dict)
+        self.paned_window = tk.PanedWindow(self, orient=tk.VERTICAL, sashwidth=10)
+        self.paned_window.pack(expand=True, fill="both")
+
+        # Grafico Loc
+        fig_loc = Figure(figsize=(10, 10), dpi=100)
+        ax_loc = fig_loc.add_subplot(111)
+        x1, x2, x3, y = co.loc_number(process_dict)
+
+        ax_loc.plot(y, x1, label='Linee di Codice', marker='o')
+        ax_loc.plot(y, x2, label='Linee vuote', marker='o')
+        ax_loc.plot(y, x3, label='Commenti', marker='o')
+        ax_loc.legend()
+        ax_loc.set_title("Amount (in LOC) of previous changes")
+        ax_loc.set_xticklabels(y, rotation=45, ha='right')
+        
+
+        canvas_loc = FigureCanvasTkAgg(fig_loc, master=self)
+        canvas_loc.draw()
+        canvas_loc.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+        # Grafico revisioni
+        fig_revision = Figure(figsize=(10, 10), dpi=100)
+        ax_revision = fig_revision.add_subplot(111)
+        x, y = co.revision_number(process_dict)
+        ax_revision.bar(y, x)
+        ax_revision.legend()
+        ax_revision.set_title("Number of revisions")
+        ax_revision.set_xticklabels(y, rotation=45, ha='right')
+
+        canvas_revision = FigureCanvasTkAgg(fig_revision, master=self)
+        canvas_revision.draw()
+        canvas_revision.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+
+        # Grafico bugfix
+        fig_bugfix = Figure(figsize=(10, 10), dpi=100)
+        ax_bugfix = fig_bugfix.add_subplot(111)
+        x, y = co.bugfix(process_dict)
+        ax_bugfix.bar(y, x)
+        ax_bugfix.legend()
+        ax_bugfix.set_title("Number of bugfix commits")
+        ax_bugfix.set_xticklabels(y, rotation=45, ha='right')
+
+        canvas_bugfix = FigureCanvasTkAgg(fig_bugfix, master=self)
+        canvas_bugfix.draw()
+        canvas_bugfix.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+        # Grafico code churn
+        fig_codechurn = Figure(figsize=(10, 10), dpi=100)
+        ax_codechurn = fig_codechurn.add_subplot(111)
+        x, y = co.codeC(process_dict)
+        ax_codechurn.bar(y, x)
+        ax_codechurn.legend()
+        ax_codechurn.set_title("Number of code churn commits")
+        ax_codechurn.set_xticklabels(y, rotation=45, ha='right')
+
+        canvas_codechurn = FigureCanvasTkAgg(fig_codechurn, master=self)
+        canvas_codechurn.draw()
+        canvas_codechurn.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+        # Grafico weeks
+        fig_weeks = Figure(figsize=(10, 10), dpi=100)
+        ax_weeks = fig_weeks.add_subplot(111)
+        x, y = co.weeks(process_dict)
+        ax_weeks.bar(y, x)
+        ax_weeks.legend()
+        ax_weeks.set_title("Number of weeks")
+        ax_weeks.set_xticklabels(y, rotation=45, ha='right')
+
+        canvas_weeks = FigureCanvasTkAgg(fig_weeks, master=self)
+        canvas_weeks.draw()
+        canvas_weeks.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+        # Grafico authors
+        fig_authors = Figure(figsize=(10, 10), dpi=100)
+        ax_authors = fig_authors.add_subplot(111)
+        x, y = co.authors(process_dict)
+        ax_authors.bar(y, x)
+        ax_authors.legend()
+        ax_authors.set_title("Number of authors")
+        ax_authors.set_xticklabels(y, rotation=45, ha='right')
+
+        canvas_authors = FigureCanvasTkAgg(fig_authors, master=self)
+        canvas_authors.draw()
+        canvas_authors.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+
+
+        # Aggiungi i canvas al PanedWindow
+        self.paned_window.add(canvas_loc.get_tk_widget(), stretch="never", minsize=100)
+        self.paned_window.add(canvas_revision.get_tk_widget(), stretch="never", minsize=100)
+        self.paned_window.add(canvas_bugfix.get_tk_widget(), stretch="never", minsize=100)
+        self.paned_window.add(canvas_codechurn.get_tk_widget(), stretch="never", minsize=100)
+        self.paned_window.add(canvas_weeks.get_tk_widget(), stretch="never", minsize=100)
+        self.paned_window.add(canvas_authors.get_tk_widget(), stretch="never", minsize=100)
+        
