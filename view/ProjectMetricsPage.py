@@ -329,4 +329,43 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
          
    
     
+    def computationPanel(self):
+        self.lowerFrame = ctk.CTkFrame(self, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        self.lowerFrame.pack(fill = "x", expand = True)
         
+        self.lowerFrameLabel = ctk.CTkLabel(self.lowerFrame, text = """select where to start and where to finish your analysis \n keep in mind: long therm analysis will require more time""")
+        self.lowerFrameLabel.pack()
+        
+        self.optionFrame = ctk.CTkFrame(self.lowerFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        self.optionFrame.pack()
+        
+        # selettore di inizio analisi
+        startYearSelectorSubFrame = ctk.CTkFrame(self.optionFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        startYearSelectorSubFrame.grid(column = 0, row = 0)
+        self.startYearSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values= [str(year) for year in self.yearList] , command= self.start_updateStartCommitList, dynamic_resizing= False)
+        self.startYearSelector.pack(pady = 10)
+        self.startCommitSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values= ["start commit"], command= self.updateClassList, dynamic_resizing= False)
+        self.startCommitSelector.pack()
+        self.startCommitSelector.configure(state ="disabled")
+        
+        # selettore di classe
+        self.classSelector = ctk.CTkOptionMenu(self.optionFrame, values= ["class"], command= self.start_updateArriveCommitList, dynamic_resizing= False)
+        self.classSelector.grid(column = 1, row = 0, padx = 20)
+        self.classSelector.configure(state ="disabled")
+        
+        # selettore di arrivo
+        arriveYearSelectorSubFrame = ctk.CTkFrame(self.optionFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        arriveYearSelectorSubFrame.grid(column = 2, row = 0, pady = 10)
+        self.arriveYearSelector = ctk.CTkOptionMenu(arriveYearSelectorSubFrame, values= ["arrive year"], dynamic_resizing= False, command = self.start_updateArriveCommitList)
+        self.arriveYearSelector.pack()
+        self.arriveCommitSelector = ctk.CTkOptionMenu(arriveYearSelectorSubFrame, values= ["arrive commit"], dynamic_resizing= False)
+        self.arriveCommitSelector.pack()
+
+        # bottone di start dell'analisi affidata ad un altro processo
+        start_button = ctk.CTkButton(self, text="Start Analysis", command=self.start_endpoint)
+        start_button.pack()
+
+        # configurazione iniziale selettori
+        self.start_updateStartCommitList(self.yearList[0])
+    
+
