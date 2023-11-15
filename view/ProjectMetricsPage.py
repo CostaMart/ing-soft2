@@ -23,7 +23,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from datetime import datetime
-from view.widgets.GraficiSP.LocGraph import LocGraph, RevisionGraph, BugFixGraph, ChurnGraph, WeeksGraph, AuthorsGraph
+from view.widgets.GraficiSP.LocGraph import NocGraph, DitGraph, LcomGraph, WmcGraph, RfcGraph, CboGraph, LocGraph, RevisionGraph, BugFixGraph, ChurnGraph, WeeksGraph, AuthorsGraph
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
     
@@ -177,6 +177,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         start_button = ctk.CTkButton(self.lowerFrame, text="Start Analysis", command=self.start_endpoint)
         start_button.pack(anchor = "s", pady= 10)
 
+        start_buttonCK = ctk.CTkButton(self.lowerFrame, text="Start Analysis CK", command=self.start_endpointCK)
+        start_buttonCK.pack(anchor = "s", pady= 10)
         # configurazione iniziale selettori
         self.start_updateStartCommitList(self.yearList[0])
     
@@ -234,8 +236,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_bugfix = NavigationToolbar2Tk(bug.canvas_bugfix, self)
         toolbar_bugfix.update()
         toolbar_bugfix.pack(side=tk.TOP, fill=tk.X)
-        
-
 
         # Grafico code churn
         churn = ChurnGraph(self, process_dict)
@@ -245,9 +245,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_cc.update()
         toolbar_cc.pack(side=tk.TOP, fill=tk.X)
         
-
-
-
         # Grafico weeks
         weeks = WeeksGraph(self, process_dict)
         weeks.draw()
@@ -256,8 +253,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_weeks.update()
         toolbar_weeks.pack(side=tk.TOP, fill=tk.X)
         
-
-
         # Grafico authors
         authors = AuthorsGraph(self, process_dict)
         authors.draw()
@@ -265,8 +260,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_authors = NavigationToolbar2Tk(authors.canvas_authors, self)
         toolbar_authors.update()
         toolbar_authors.pack(side=tk.TOP, fill=tk.X)
-
-
 
         # Aggiungi i canvas al PanedWindow
         self.paned_window.add(loc.canvas_loc.get_tk_widget(), stretch="never", minsize=100)
@@ -276,6 +269,84 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.paned_window.add(weeks.canvas_weeks.get_tk_widget(), stretch="never", minsize=100)
         self.paned_window.add(authors.canvas_authors.get_tk_widget(), stretch="never", minsize=100)
     
+    
+
+    def start_endpointCK(self):
+        """Viene chiamata la classe ComputationEndpoint per iniziare l'analisi delle metriche"""
+        """gli vengono passate le funzioni per calcolare le metriche e i parametri necessari per eseguire l'analisi"""
+        """utilizzo i metodi del controller per passargli le funzioni che deve eseguire come messaggi"""
+
+        # lista di commit dall'inizio alla fine dell'analisi
+        start_commit_hash = self.startCommitSelector.get()
+        arrive_commit_hash = self.arriveCommitSelector.get()
+
+        commit_list = self.controller.getCommitsBetweenHashes(start_commit_hash, arrive_commit_hash)
+        # prima di inviare il messaggio si fa una verifica che la lista non è vuota
+        if commit_list:
+            self.controller.sendMessage(
+                {
+                    "fun": "generate_metricsCK",
+                    "commits_dict": commit_list
+                }
+            )
+        else:
+            print("La lista di commit è vuota o non valida. Impossibile avviare l'analisi.")
+        
+        process_dict = self.controller.receiveMessage()
+        print(process_dict)
+        self.paned_window = tk.PanedWindow(self, orient=tk.VERTICAL, sashwidth=10)
+        self.paned_window.pack(expand=True, fill="both")
+
+        # Grafico Cbo
+        cbo = CboGraph(self, process_dict)
+        cbo.draw()
+        cbo.pack()
+        toolbar_cbo = NavigationToolbar2Tk(cbo.canvas_cbo, self)
+        toolbar_cbo.update()
+        toolbar_cbo.pack(side=tk.TOP, fill=tk.X)
+
+        # Grafico rfc
+        rfc = RfcGraph(self, process_dict)
+        rfc.draw()
+        rfc.pack()
+        toolbar_rfc = NavigationToolbar2Tk(rfc.canvas_rfc, self)
+        toolbar_rfc.update()
+        toolbar_rfc.pack(side=tk.TOP, fill=tk.X)
+
+        # Grafico wmc
+        wmc = WmcGraph(self, process_dict)
+        wmc.draw()
+        wmc.pack()
+        toolbar_wmc = NavigationToolbar2Tk(wmc.canvas_wmc, self)
+        toolbar_wmc.update()
+        toolbar_wmc.pack(side=tk.TOP, fill=tk.X)
+
+         # Grafico noc
+        noc = NocGraph(self, process_dict)
+        noc.draw()
+        noc.pack()
+        toolbar_noc = NavigationToolbar2Tk(noc.canvas_noc, self)
+        toolbar_noc.update()
+        toolbar_noc.pack(side=tk.TOP, fill=tk.X)
+
+         # Grafico dit
+        dit = DitGraph(self, process_dict)
+        dit.draw()
+        dit.pack()
+        toolbar_dit = NavigationToolbar2Tk(dit.canvas_dit, self)
+        toolbar_dit.update()
+        toolbar_dit.pack(side=tk.TOP, fill=tk.X)
+
+          # Grafico dit
+        lcom = LcomGraph(self, process_dict)
+        lcom.draw()
+        lcom.pack()
+        toolbar_lcom = NavigationToolbar2Tk(lcom.canvas_lcom, self)
+        toolbar_lcom.update()
+        toolbar_lcom.pack(side=tk.TOP, fill=tk.X)
+
+
+
     
     
     
