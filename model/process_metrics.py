@@ -7,7 +7,7 @@ import datetime
 import math
 import pandas as pd
 import chardet
-
+import gc
 
 def controlla_numero_revisioni_per_classe(classe_filename, folder = "repository"):
     """Metodo che dato il nome di una classe ne calcola il numero di revisioni"""
@@ -22,7 +22,7 @@ def controlla_numero_revisioni_per_classe(classe_filename, folder = "repository"
 
     for commit in repo.iter_commits(paths=classe_file_path):
         numero_revisioni += 1
-
+    repo.close()
     return numero_revisioni
 
 
@@ -46,7 +46,7 @@ def calcola_numero_bug_fix(folder ="repository"):
     for commit in repo.iter_commits():
         if 'fix' in commit.message.lower():
             numero_bug_fix += 1
-
+    repo.close()
     return numero_bug_fix
 
 
@@ -64,7 +64,7 @@ def calcola_numero_bug_fix_per_commit_specifico(folder="repository", commit_hash
     for parola_chiave in parole_chiave:
         if parola_chiave in commit.message.lower():
             numero_bug_fix += 1
-
+    repo.close()
     return numero_bug_fix
 
 
@@ -81,7 +81,8 @@ def calcola_code_churn(commit_hash1, commit_hash2, folder="repository"):
     for patch in repo.diff(commit1, commit2):
         code_churn += patch.line_stats[1]  # Linee rimosse
         code_churn += patch.line_stats[2]  # Linee aggiunte
-
+    repo = None
+    gc.collect()
     return code_churn
 
 
