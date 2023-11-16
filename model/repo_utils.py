@@ -31,6 +31,7 @@ def check_folder(folder = "output"):
 
 
 
+
 def clone_repo(folder = "repository"):
     """Metodo che effettua il clone di un repository target"""
     subprocess.call(['git', 'clone', remote_repo, folder])

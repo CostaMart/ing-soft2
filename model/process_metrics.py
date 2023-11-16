@@ -8,6 +8,7 @@ import math
 import pandas as pd
 import chardet
 import gc
+import difflib
 
 def controlla_numero_revisioni_per_classe(classe_filename, folder = "repository"):
     """Metodo che dato il nome di una classe ne calcola il numero di revisioni"""
@@ -69,21 +70,20 @@ def calcola_numero_bug_fix_per_commit_specifico(folder="repository", commit_hash
 
 
 
-def calcola_code_churn(commit_hash1, commit_hash2, folder="repository"):
-    """Metodo che calcola i code churn tra 2 commit, praticamente le linee modificate """
-    repository_path = os.path.abspath(folder)
-    repo = pygit2.Repository(repository_path)
-    code_churn = 0
+def calcola_code_churn(file1, file2):
+    """Calcola il numero di modifiche tra due file e restituisce il risultato"""
+    with open(file1, 'r', encoding='utf-8') as f1, open(file2, 'r', encoding='utf-8') as f2:
+        lines1 = f1.readlines()
+        lines2 = f2.readlines()
 
-    commit1 = repo.revparse_single(commit_hash1)
-    commit2 = repo.revparse_single(commit_hash2)
+    # Calcola il diff tra le linee dei due file
+    differ = difflib.Differ()
+    diff = list(differ.compare(lines1, lines2))
 
-    for patch in repo.diff(commit1, commit2):
-        code_churn += patch.line_stats[1]  # Linee rimosse
-        code_churn += patch.line_stats[2]  # Linee aggiunte
-    repo = None
-    gc.collect()
-    return code_churn
+    # Conta il numero di linee modificate (inizia con '+' o '-')
+    numero_modifiche = sum(1 for line in diff if line.startswith('+') or line.startswith('-'))
+
+    return numero_modifiche
 
 
 

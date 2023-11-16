@@ -4,7 +4,7 @@ import pandas as pd
 import model.git_ck as ck
 import subprocess
 import os
-
+import shutil
 
 def generate_process_metrics(nome_classe, commits_dict, folder = "repository"):
     """Genera le metriche di processo, è possibile specificare il commit da analizzare e il folder dove è conservata la repository"""
@@ -12,16 +12,25 @@ def generate_process_metrics(nome_classe, commits_dict, folder = "repository"):
     latest_commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=os.path.abspath(folder), text=True).strip()
     df_filtrato = pd.DataFrame(list(commits_dict.items()), columns=['Commit Hash', 'Data del Commit'])
     df_filtrato['Data del Commit'] = df_filtrato['Data del Commit'].apply(lambda x: x['date'])
-    hash1 = df_filtrato["Commit Hash"][0]
+    flag = False
     df_finale= pd.DataFrame(columns=['Commit hash', 'Data del Commit', 'Numero di Revisioni', 'Linee di Codice', 'Linee vuote', 'Commenti', 'Autori Distinti', 'Settimane file', 'Bugfix commit', 'Code churn'])
     for index, element in enumerate(df_filtrato["Commit Hash"]):
         ru.checkout_commit(element)
+        
+        if(flag is not True):
+            ru.check_folder(folder="Giulio")
+            folderG = os.path.abspath("Giulio")+"\\"+"giulio.txt"
+            shutil.copy2(ru.trova_file_classe(nome_classe), folderG )
+            cc = 0
+            flag = True
+        else:
+            cc = pm.calcola_code_churn(ru.trova_file_classe(nome_classe), folderG)
+
         nr = pm.controlla_numero_revisioni_per_classe(nome_classe, folder)
         rig, rigv, com = pm.calcola_loc(nome_classe, folder)
         ad = pm.calcola_autori_distinti_per_file(nome_classe, folder)
         sf = pm.calcola_settimane_file(nome_classe, folder)
         bf = pm.calcola_numero_bug_fix(folder)
-        cc = pm.calcola_code_churn(hash1, element, folder)
                
         temp_df = pd.DataFrame({'Commit hash': element,
                                 'Data del Commit': df_filtrato.loc[index, 'Data del Commit'],  
@@ -34,9 +43,12 @@ def generate_process_metrics(nome_classe, commits_dict, folder = "repository"):
                                 'Bugfix commit': bf,
                                 'Code churn': cc}, index=[0])
         df_finale = pd.concat([df_finale, temp_df], ignore_index=True)
-        # df_finale['Data del Commit'] = pd.to_datetime(df_finale['Data del Commit'])
-        # df_finale['Data del Commit'] = df_finale['Data del Commit'].dt.strftime('%Y-%m-%d %H:%M:%S')
     ru.checkout_commit(latest_commit_hash)
+    file_path = os.path.join("Giulio", "giulio.txt")
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    if os.path.exists("Giulio"):
+        os.rmdir("Giulio")
     return df_finale
 
 
