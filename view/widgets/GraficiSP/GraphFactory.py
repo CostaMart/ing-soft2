@@ -12,9 +12,13 @@ from icecream import ic
 class GraphFactory:
     """ factory class che produce il grafico richiesto """
     
-    @staticmethod
-    def _baseGraph(master) -> Union[Figure, Axes]:
-        """ crea la base del grafico """
+    def __init__(self) -> None:
+        self.graphsList =  {name.lstrip('_'): getattr(self, name) for name in dir(self) if callable(getattr(self, name))}
+        
+    
+    def makeGraph(self, master, graph : str, process_dict) -> Union[tk.Canvas, NavigationToolbar2Tk]:
+        """ crea il grafico generale, poi chiamando uno dei metodi di specializzazione crea il grafico specializzato richiesto """
+        
         fig_loc = Figure(figsize=(8,5), dpi=100)
         ax_loc = fig_loc.add_subplot(111)
         fig_loc.set_facecolor("#2b2b2b")
@@ -25,14 +29,22 @@ class GraphFactory:
         ax_loc.spines['left'].set_color("white")
         ax_loc.tick_params(axis='x', colors='white')
         ax_loc.tick_params(axis='y', colors='white')
-        ax_loc.legend()
+
+        graphProducer = self.graphsList[graph]
+        fig = graphProducer(process_dict, fig_loc, ax_loc)
         
-        return fig_loc, ax_loc
+        
+      
+        canvas_loc = FigureCanvasTkAgg(fig, master=master)
+        toolbar_revision = NavigationToolbar2Tk(canvas_loc)
+        canvas_loc.draw()
+       
+        return canvas_loc.get_tk_widget(), toolbar_revision
     
-    @staticmethod
-    def makeLocGraph(master, process_dict) -> Union[tk.Canvas, NavigationToolbar2Tk]:
+   
+    def _Loc(self, process_dict, fig, axloc) -> Figure:
+        """ contiene solo la specializzazione del grafico, vengono aggiunti gli elementi per renderlo un grafico LOC """
         
-        fig, axloc= GraphFactory._baseGraph(master)
         x1, x2, x3, y = co.loc_number(process_dict)
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
         axloc.plot(y2, x1, label='Linee di Codice', marker='o')
@@ -40,12 +52,12 @@ class GraphFactory:
         axloc.plot(y2, x3, label='Commenti', marker='o')
         axloc.set_title("Amount (in LOC) of previous change" ,color = "white")
         axloc.set_xticklabels(y2, rotation=30, ha='right')
+        axloc.legend()
+        
         if len(y2) <= 10:
             right = len(y2) -1
         else:
             right = 10
         axloc.set_xlim(left = y2[0], right = y2[right])
-        canvas_loc = FigureCanvasTkAgg(fig, master=master)
-        toolbar_revision = NavigationToolbar2Tk(canvas_loc)
-        canvas_loc.draw()
-        return canvas_loc.get_tk_widget(), toolbar_revision
+        
+        return fig

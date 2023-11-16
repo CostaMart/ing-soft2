@@ -223,13 +223,14 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         
 
-
+        graphFactory = GraphFactory()
 
        
         # Grafico Loc
         locFrame = ctk.CTkFrame(self.graphFrame)
         locFrame.grid(column= 0, row = 0, padx=10, pady = 20)
-        loc, toolbar = GraphFactory.makeLocGraph(master= locFrame, process_dict = process_dict)
+        loc, toolbar = graphFactory.makeGraph(master= locFrame, graph= "Loc", process_dict = process_dict)
+        toolbar.pack()
         loc.pack()
         # bottoneAmoroso2= ctk.CTkButton(locFrame, command= loc.zoom_in, text= "bottoncino simpatichino +")
         # bottoneAmoroso2.pack()
