@@ -9,9 +9,9 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
  # Assicurati di importare correttamente il modulo co con la funzione loc_number
 
-class LocGraph():
+class SPGraphs():
     def __init__(self, master, process_dict):
-        fig_loc = Figure(figsize=(5, 5), dpi=100)
+        fig_loc = Figure(figsize=(8,5), dpi=100)
         self.ax_loc = fig_loc.add_subplot(111)
         fig_loc.set_facecolor("#2b2b2b")
         x1, x2, x3, y = co.loc_number(process_dict)
@@ -30,7 +30,7 @@ class LocGraph():
         self.ax_loc.set_title("Amount (in LOC) of previous changes", color="white")
         self.ax_loc.set_xticklabels(y2, rotation=30, ha='right')
         
-        if len(y2) < 10:
+        if len(y2) <= 10:
             right = len(y2) -1
         else:
             right = 10
@@ -83,7 +83,7 @@ class RevisionGraph():
         x, y = co.revision_number(process_dict)
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
         # Grafico revisioni
-        fig_revision = Figure(figsize=(5, 5), dpi=100)
+        fig_revision = Figure(figsize=(8,5), dpi=100)
         fig_revision.set_facecolor("#2b2b2b")
         
         self.ax_revision = fig_revision.add_subplot(111)
@@ -102,7 +102,7 @@ class RevisionGraph():
         self.ax_revision.set_xticklabels(y2, rotation=30, ha='right')
 
         
-        if len(y2) < 10:
+        if len(y2) <= 10:
             right = len(y2) -1
         else:
             right = 10
@@ -127,7 +127,7 @@ class BugFixGraph():
      
         x, y = co.bugfix(process_dict)
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
-        self.fig_bugfix = Figure(figsize=(5, 5), dpi=100)
+        self.fig_bugfix = Figure(figsize=(8,5), dpi=100)
         self.fig_bugfix.set_facecolor("#2b2b2b")
         self.ax_bugfix = self.fig_bugfix.add_subplot(111)
         self.ax_bugfix.bar(y2, x)
@@ -144,7 +144,7 @@ class BugFixGraph():
 
         self.canvas_bugfix = FigureCanvasTkAgg(self.fig_bugfix, master=master)
         
-        if len(y2) < 10:
+        if len(y2) <= 10:
             right = len(y2) -1
         else:
             right = 10
@@ -167,7 +167,7 @@ class ChurnGraph():
         
         x, y = co.codeC(process_dict)
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
-        self.fig_codechurn = Figure(figsize=(5, 5), dpi=100)
+        self.fig_codechurn = Figure(figsize=(8,5), dpi=100)
         self.fig_codechurn.set_facecolor("#2b2b2b")
         self.ax_codechurn = self.fig_codechurn.add_subplot(111)
         self.ax_codechurn.bar(y2, x)
@@ -184,7 +184,7 @@ class ChurnGraph():
 
         self.canvas_codechurn = FigureCanvasTkAgg(self.fig_codechurn, master=master)
         
-        if len(y2) < 10:
+        if len(y2) <= 10:
             right = len(y2) -1
         else:
             right = 10
@@ -203,7 +203,7 @@ class WeeksGraph():
         
         x, y = co.weeks(process_dict)
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
-        self.fig_weeks = Figure(figsize=(5, 5), dpi=100)
+        self.fig_weeks = Figure(figsize=(8,5), dpi=100)
         self.fig_weeks.set_facecolor("#2b2b2b")
         self.ax_weeks = self.fig_weeks.add_subplot(111)
         self.ax_weeks.bar(y2, x)
@@ -219,7 +219,7 @@ class WeeksGraph():
         self.ax_weeks.set_xticklabels(y2, rotation=30, ha='right')
 
         self.canvas_weeks = FigureCanvasTkAgg(self.fig_weeks, master=master)
-        if len(y2) < 10:
+        if len(y2) <= 10:
             right = len(y2) -1
         else:
             right = 10
@@ -238,7 +238,7 @@ class AuthorsGraph():
     def __init__(self, master, process_dict):
         x, y = co.authors(process_dict)
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
-        self.fig_authors = Figure(figsize=(5, 5), dpi=100)
+        self.fig_authors = Figure(figsize=(8,5), dpi=100)
         self.fig_authors.set_facecolor("#2b2b2b")
         self.ax_authors = self.fig_authors.add_subplot(111)
         self.ax_authors.bar(y2, x)
@@ -255,7 +255,7 @@ class AuthorsGraph():
 
         self.canvas_authors = FigureCanvasTkAgg(self.fig_authors, master=master)
 
-        if len(y2) < 10:
+        if len(y2) <= 10:
             right = len(y2) -1
         else:
             right = 10

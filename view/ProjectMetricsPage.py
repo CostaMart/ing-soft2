@@ -23,7 +23,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from datetime import datetime
-from view.widgets.GraficiSP.LocGraph import NocGraph, DitGraph, LcomGraph, WmcGraph, RfcGraph, CboGraph, LocGraph, RevisionGraph, BugFixGraph, ChurnGraph, WeeksGraph, AuthorsGraph
+from view.widgets.GraficiSP.LocGraph import NocGraph, DitGraph, LcomGraph, WmcGraph, RfcGraph, CboGraph, SPGraphs, RevisionGraph, BugFixGraph, ChurnGraph, WeeksGraph, AuthorsGraph
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
     
@@ -219,16 +219,16 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.graphFrame = ctk.CTkFrame(self, bg_color= "#1d1e1e", fg_color= "#1d1e1e")
         self.graphFrame.pack(pady = 30)
         self.panelCreated= True
+        
+        
 
-        self.graphFrame.columnconfigure(0, minsize=100)
-        # Imposta l'altezza della riga 1 a 50 pixel
-        self.graphFrame.rowconfigure(1, minsize=50)
+
 
        
         # Grafico Loc
         locFrame = ctk.CTkFrame(self.graphFrame)
-        locFrame.grid(column= 0, row = 0, padx= 20, pady = 20)
-        loc = LocGraph(locFrame, process_dict)
+        locFrame.grid(column= 0, row = 0, padx=10, pady = 20)
+        loc = SPGraphs(locFrame, process_dict)
         loc.draw()
         loc.pack(fill = "x")
         toolbar_loc = NavigationToolbar2Tk(loc.canvas_loc, locFrame)
@@ -236,13 +236,14 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         toolbar_loc.pack(side=tk.TOP, fill=tk.X)
         bottoneAmoroso= ctk.CTkButton(locFrame, command= loc.zoom_out, text= "bottoncino simpatichino -")
         bottoneAmoroso.pack()
-        bottoneAmoroso2= ctk.CTkButton(locFrame, command= loc.zoom_in, text= "bottoncino simpatichino +")
-        bottoneAmoroso2.pack()
-       
+        # bottoneAmoroso2= ctk.CTkButton(locFrame, command= loc.zoom_in, text= "bottoncino simpatichino +")
+        # bottoneAmoroso2.pack()
+
+        
 
         # Grafico revisioni
         revisionFrame = ctk.CTkFrame(self.graphFrame)
-        revisionFrame.grid(column= 1, row = 0, padx= 20, pady = 20)
+        revisionFrame.grid(column= 1, row = 0, padx=10, pady = 20)
         revision = RevisionGraph(revisionFrame, process_dict)
         revision.draw()
         revision.pack(fill = "x")
@@ -253,7 +254,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         # Grafico bugfix
         bugFrame = ctk.CTkFrame(self.graphFrame)
-        bugFrame.grid(column= 0, row = 1, padx= 20, pady = 20)
+        bugFrame.grid(column= 0, row = 1, padx=10, pady = 20)
         bug = BugFixGraph(bugFrame, process_dict)
         bug.draw()
         bug.pack(fill = "x")
@@ -264,7 +265,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         # Grafico code churn
         churnFrame = ctk.CTkFrame(self.graphFrame)
-        churnFrame.grid(column= 1, row = 1, padx= 20, pady = 20)
+        churnFrame.grid(column= 1, row = 1, padx=10, pady = 20)
         churn = ChurnGraph(churnFrame, process_dict)
         churn.draw()
         churn.pack(fill = "x")
@@ -275,7 +276,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         # Grafico weeks
         weeksFrame = ctk.CTkFrame(self.graphFrame)
-        weeksFrame.grid(column= 0, row = 2, padx= 20, pady = 20)
+        weeksFrame.grid(column= 0, row = 2, padx=10, pady = 20)
         weeks = WeeksGraph(weeksFrame, process_dict)
         weeks.draw()
         weeks.pack()
@@ -286,7 +287,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         # Grafico authors
         authorsFrame = ctk.CTkFrame(self.graphFrame)
-        authorsFrame.grid(column= 1, row = 2, padx= 20, pady = 20)
+        authorsFrame.grid(column= 1, row = 2, padx=10, pady = 20)
         authors = AuthorsGraph(authorsFrame, process_dict)
         authors.draw()
         authors.pack()
