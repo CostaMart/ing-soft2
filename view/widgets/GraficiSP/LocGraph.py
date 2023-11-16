@@ -7,9 +7,11 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from icecream import ic
  # Assicurati di importare correttamente il modulo co con la funzione loc_number
 
 class SPGraphs():
+    
     def __init__(self, master, process_dict):
         fig_loc = Figure(figsize=(8,5), dpi=100)
         self.ax_loc = fig_loc.add_subplot(111)
@@ -27,7 +29,7 @@ class SPGraphs():
         self.ax_loc.tick_params(axis='x', colors='white')
         self.ax_loc.tick_params(axis='y', colors='white')
         self.ax_loc.legend()
-        self.ax_loc.set_title("Amount (in LOC) of previous changes", color="white")
+        self.ax_loc.set_title("Amount (in LOC) of previous change" ,color = "white")
         self.ax_loc.set_xticklabels(y2, rotation=30, ha='right')
         
         if len(y2) <= 10:
@@ -98,7 +100,7 @@ class RevisionGraph():
         self.ax_revision.tick_params(axis='x', colors='white')
         self.ax_revision.tick_params(axis='y', colors='white')
         self.ax_revision.legend()
-        self.ax_revision.set_title("Number of revisions", color= "white")
+        self.ax_revision.set_title("Number of revision", color= "white")
         self.ax_revision.set_xticklabels(y2, rotation=30, ha='right')
 
         
@@ -139,7 +141,7 @@ class BugFixGraph():
         self.ax_bugfix.tick_params(axis='x', colors='white')
         self.ax_bugfix.tick_params(axis='y', colors='white')
         self.ax_bugfix.legend()
-        self.ax_bugfix.set_title("Number of bugfix commits", color= "white")
+        self.ax_bugfix.set_title("Number of bugfix commit", color= "white")
         self.ax_bugfix.set_xticklabels(y2, rotation=30, ha='right')
 
         self.canvas_bugfix = FigureCanvasTkAgg(self.fig_bugfix, master=master)
@@ -179,7 +181,7 @@ class ChurnGraph():
         self.ax_codechurn.tick_params(axis='x', colors='white')
         self.ax_codechurn.tick_params(axis='y', colors='white')
         self.ax_codechurn.legend()
-        self.ax_codechurn.set_title("Number of code churn commits", color= "white")
+        self.ax_codechurn.set_title("Number of code churn commit" ,color = "white")
         self.ax_codechurn.set_xticklabels(y2, rotation=30, ha='right')
 
         self.canvas_codechurn = FigureCanvasTkAgg(self.fig_codechurn, master=master)
@@ -215,7 +217,7 @@ class WeeksGraph():
         self.ax_weeks.tick_params(axis='x', colors='white')
         self.ax_weeks.tick_params(axis='y', colors='white')
         self.ax_weeks.legend()
-        self.ax_weeks.set_title("Number of weeks", color= "white")
+        self.ax_weeks.set_title("Number of week" ,color = "white")
         self.ax_weeks.set_xticklabels(y2, rotation=30, ha='right')
 
         self.canvas_weeks = FigureCanvasTkAgg(self.fig_weeks, master=master)
@@ -239,9 +241,10 @@ class AuthorsGraph():
         x, y = co.authors(process_dict)
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
         self.fig_authors = Figure(figsize=(8,5), dpi=100)
-        self.fig_authors.set_facecolor("#2b2b2b")
+        
         self.ax_authors = self.fig_authors.add_subplot(111)
         self.ax_authors.bar(y2, x)
+        self.fig_authors.set_facecolor("#2b2b2b")
         self.ax_authors.set_facecolor("#2b2b2b")
         self.ax_authors.spines['bottom'].set_color('white')
         self.ax_authors.spines['left'].set_color('white')
@@ -250,7 +253,7 @@ class AuthorsGraph():
         self.ax_authors.tick_params(axis='x', colors='white')
         self.ax_authors.tick_params(axis='y', colors='white')
         self.ax_authors.legend()
-        self.ax_authors.set_title("Number of authors", color= "white")
+        self.ax_authors.set_title("Number of author" ,color = "white")
         self.ax_authors.set_xticklabels(y2, rotation=30, ha='right')
 
         self.canvas_authors = FigureCanvasTkAgg(self.fig_authors, master=master)
@@ -272,17 +275,40 @@ class AuthorsGraph():
 class CboGraph():
 
     def __init__(self,master, process_dict):
-        fig_cbo = Figure(figsize=(10, 10), dpi=100)
+        fig_cbo = Figure(figsize=(8,5), dpi=100)
         self.ax_cbo = fig_cbo.add_subplot(111)
+        fig_cbo.set_facecolor("#2b2b2b")
+        self.ax_cbo.set_facecolor("#2b2b2b")
+        self.ax_cbo.spines['bottom'].set_color('white')
+        self.ax_cbo.spines['left'].set_color('white')
+        self.ax_cbo.spines['top'].set_visible(False)
+        self.ax_cbo.spines['right'].set_visible(False)
+        self.ax_cbo.tick_params(axis='x', colors='white')
+        self.ax_cbo.tick_params(axis='y', colors='white')
         x, y = co.cbo(process_dict)
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
         self.ax_cbo.plot(y2, x, label='Valore cbo', marker='o')
-        self.ax_cbo.set_title("CBO (Coupling Between Object classes)")
+        self.ax_cbo.set_title("CBO (Coupling Between Object classes" ,color = "white")
         self.ax_cbo.set_xticklabels(y2, rotation=30, ha='right')
         self.canvas_cbo = FigureCanvasTkAgg(fig_cbo, master=master)
+        self.originalLimsx = self.ax_cbo.get_xlim()
+        self.originalLimsy = self.ax_cbo.get_ylim()
+        
+    
+    def zoom_out(self, zoomvalue):
+        ic(zoomvalue)
+        # Aumentare lo zoom del grafico
+        new_xlim = (self.originalLimsx[0] * zoomvalue, self.originalLimsx[1] * zoomvalue)
+        new_ylim = (self.originalLimsy[0] * zoomvalue, self.originalLimsy[1] * zoomvalue)
+        
+        self.ax_cbo.set_xlim(new_xlim)
+        self.ax_cbo.set_ylim(new_ylim)
+
+        # Aggiornare il canvas
+        self.canvas_cbo.draw()
 
 
-
+        
     def draw(self):
         self.canvas_cbo.draw()
         
@@ -293,12 +319,20 @@ class CboGraph():
 class WmcGraph():
 
     def __init__(self,master, process_dict):
-        fig_wmc = Figure(figsize=(10, 10), dpi=100)
+        fig_wmc = Figure(figsize=(8,5), dpi=100)
         self.ax_wmc = fig_wmc.add_subplot(111)
         x, y = co.wmc(process_dict)
+        fig_wmc.set_facecolor("#2b2b2b")
+        self.ax_wmc.set_facecolor("#2b2b2b")
+        self.ax_wmc.spines['bottom'].set_color('white')
+        self.ax_wmc.spines['left'].set_color('white')
+        self.ax_wmc.spines['top'].set_visible(False)
+        self.ax_wmc.spines['right'].set_visible(False)
+        self.ax_wmc.tick_params(axis='x', colors='white')
+        self.ax_wmc.tick_params(axis='y', colors='white')
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
         self.ax_wmc.plot(y2, x, label='Valore wmc', marker='o')
-        self.ax_wmc.set_title("WMC (Weighted Methods per Class)")
+        self.ax_wmc.set_title("WMC (Weighted Methods per Class" ,color = "white")
         self.ax_wmc.set_xticklabels(y2, rotation=30, ha='right')
         self.canvas_wmc = FigureCanvasTkAgg(fig_wmc, master=master)
 
@@ -312,12 +346,20 @@ class WmcGraph():
 class DitGraph():
 
     def __init__(self,master, process_dict):
-        fig_dit = Figure(figsize=(10, 10), dpi=100)
+        fig_dit = Figure(figsize=(8,5), dpi=100)
         self.ax_dit = fig_dit.add_subplot(111)
         x, y = co.dit(process_dict)
+        fig_dit.set_facecolor("#2b2b2b")
+        self.ax_dit.set_facecolor("#2b2b2b")
+        self.ax_dit.spines['bottom'].set_color('white')
+        self.ax_dit.spines['left'].set_color('white')
+        self.ax_dit.spines['top'].set_visible(False)
+        self.ax_dit.spines['right'].set_visible(False)
+        self.ax_dit.tick_params(axis='x', colors='white')
+        self.ax_dit.tick_params(axis='y', colors='white')
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
         self.ax_dit.plot(y2, x, label='Valore dit', marker='o')
-        self.ax_dit.set_title("DIT (Depth of Inheritance)")
+        self.ax_dit.set_title("DIT (Depth of Inheritance" ,color = "white")
         self.ax_dit.set_xticklabels(y2, rotation=30, ha='right')
         self.canvas_dit = FigureCanvasTkAgg(fig_dit, master=master)
 
@@ -331,12 +373,20 @@ class DitGraph():
 class NocGraph():
 
     def __init__(self,master, process_dict):
-        fig_noc = Figure(figsize=(10, 10), dpi=100)
+        fig_noc = Figure(figsize=(8,5), dpi=100)
         self.ax_noc = fig_noc.add_subplot(111)
         x, y = co.noc(process_dict)
+        fig_noc.set_facecolor("#2b2b2b")
+        self.ax_noc.set_facecolor("#2b2b2b")
+        self.ax_noc.spines['bottom'].set_color('white')
+        self.ax_noc.spines['left'].set_color('white')
+        self.ax_noc.spines['top'].set_visible(False)
+        self.ax_noc.spines['right'].set_visible(False)
+        self.ax_noc.tick_params(axis='x', colors='white')
+        self.ax_noc.tick_params(axis='y', colors='white')
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
         self.ax_noc.plot(y2, x, label='Valore noc', marker='o')
-        self.ax_noc.set_title("NOC (Number of Children) ")
+        self.ax_noc.set_title("NOC (Number of Children) ", color = "white")
         self.ax_noc.set_xticklabels(y2, rotation=30, ha='right')
         self.canvas_noc = FigureCanvasTkAgg(fig_noc, master=master)
 
@@ -350,12 +400,20 @@ class NocGraph():
 class RfcGraph():
 
     def __init__(self,master, process_dict):
-        fig_rfc = Figure(figsize=(10, 10), dpi=100)
+        fig_rfc = Figure(figsize=(8,5), dpi=100)
         self.ax_rfc = fig_rfc.add_subplot(111)
         x, y = co.rfc(process_dict)
+        fig_rfc.set_facecolor("#2b2b2b")
+        self.ax_rfc.set_facecolor("#2b2b2b")
+        self.ax_rfc.spines['bottom'].set_color('white')
+        self.ax_rfc.spines['left'].set_color('white')
+        self.ax_rfc.spines['top'].set_visible(False)
+        self.ax_rfc.spines['right'].set_visible(False)
+        self.ax_rfc.tick_params(axis='x', colors='white')
+        self.ax_rfc.tick_params(axis='y', colors='white')
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
         self.ax_rfc.plot(y2, x, label='Valore rfc', marker='o')
-        self.ax_rfc.set_title("RFC (Response for a Class)")
+        self.ax_rfc.set_title("RFC (Response for a Class" ,color = "white")
         self.ax_rfc.set_xticklabels(y2, rotation=30, ha='right')
         self.canvas_rfc= FigureCanvasTkAgg(fig_rfc, master=master)
 
@@ -369,14 +427,23 @@ class RfcGraph():
 class LcomGraph():
 
     def __init__(self,master, process_dict):
-        fig_lcom = Figure(figsize=(10, 10), dpi=100)
+        fig_lcom = Figure(figsize=(8,5), dpi=100)
         self.ax_lcom = fig_lcom.add_subplot(111)
         x, y = co.lcom(process_dict)
+        fig_lcom.set_facecolor("#2b2b2b")
+        self.ax_lcom.set_facecolor("#2b2b2b")
+        self.ax_lcom.spines['bottom'].set_color('white')
+        self.ax_lcom.spines['left'].set_color('white')
+        self.ax_lcom.spines['top'].set_visible(False)
+        self.ax_lcom.spines['right'].set_visible(False)
+        self.ax_lcom.tick_params(axis='x', colors='white')
+        self.ax_lcom.tick_params(axis='y', colors='white')
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
         self.ax_lcom.plot(y2, x, label='Valore lcom', marker='o')
-        self.ax_lcom.set_title("LCOM (Lack of Cohesion of Methods)")
+        self.ax_lcom.set_title("LCOM (Lack of Cohesion of Methods" ,color = "white")
         self.ax_lcom.set_xticklabels(y2, rotation=30, ha='right')
         self.canvas_lcom= FigureCanvasTkAgg(fig_lcom, master=master)
+        
 
     def draw(self):
         self.canvas_lcom.draw()
