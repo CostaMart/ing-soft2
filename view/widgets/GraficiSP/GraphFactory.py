@@ -17,6 +17,7 @@ class GraphFactory:
         """ crea la base del grafico """
         fig_loc = Figure(figsize=(8,5), dpi=100)
         ax_loc = fig_loc.add_subplot(111)
+        fig_loc.subplots_adjust(left=0.176, bottom=0.205, right=0.9, top=0.88, wspace=0.2, hspace=0)
         fig_loc.set_facecolor("#2b2b2b")
         ax_loc.set_facecolor("#2b2b2b")
         ax_loc.spines['top'].set_visible(False)

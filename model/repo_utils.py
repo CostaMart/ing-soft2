@@ -223,90 +223,6 @@ def checkout_commit(commit_hash, folder = "repository"):
         print(f"Errore durante il checkout al commit {commit_hash}: {e.stderr}")
 
 
-
-def inizia_analisi(tag = None, folder = "repository", year = 0):
-    """Questo metodo prepara il processo alle operazioni da effettuare"""
-    repo = repo_to_use(folder)
-    if(tag is not None):
-        checkout_tag(tag, folder)
-        flag=  intervallo_tra_release(dataCommitLink(repo),tag, folder)
-        return flag
-    else:
-        if(year != 0):
-            return dataCommitLinkYear(repo,year)
-    return dataCommitLink(repo)
-
-
-# DEPRECATO
-# def sfoglia_commit(df, index = 0):
-#     """Questo metodo richiede il dataframe ritornato dall'inizializzazione e sfoglia i commit 10 alla volta sulla base dell'indice passato"""
-#     if index >= df.shape[0]:
-#         return pd.DataFrame()
-#     check_folder()
-#     start_index = index
-#     end_index = min(index + 10, df.shape[0])
-#     subset_df = df.iloc[start_index:end_index]
-#     return subset_df
-
-
-
-def confronta_release(tag, folder="repository"):
-    """Questo metodo ritorna , se presente, l'hash della release precedente a quella inserita"""
-    df =get_git_tags_commit(folder)
-    release_precedente = None
-    tag_index = df[df['Tag'] == tag].index[0] if tag in df['Tag'].values else -1
-    
-    if tag_index > 0:
-        # Se tag è positivo allora hai una release precedente
-        release_precedente = df.loc[tag_index - 1, 'Commit Hash']
-        return release_precedente
-    
-
-
-def intervallo_tra_release(df, tag, folder= "repository"):
-    """Questo metodo ritorna un dataframe con l'intervallo tra il tag specificato e quello precendete"""
-    hash1 = get_commit_hash_for_tag(tag)
-    hash2= confronta_release(tag, folder)
-    if hash2 is not None:
-        index_hash2 = df[df['Commit Hash'] == hash2].index[0]
-        index_hash1 = df[df['Commit Hash'] == hash1].index[0]
-        commit_indices = df.index[index_hash2 + 1:index_hash1 + 1]
-        intervallo_df = df.loc[commit_indices].reset_index(drop=True)
-        return intervallo_df
-    else:
-        return df
-
-
-
-def filtro(hash1, hash2):
-    """Questo metodo ritorna un dataframe con l'intervallo tra 2 hash"""
-    df = dataCommitLink(repo_to_use())
-    index_hash2 = df[df['Commit Hash'] == hash2].index[0]
-    index_hash1 = df[df['Commit Hash'] == hash1].index[0]
-    if(index_hash1 < index_hash2):
-        commit_indices = df.index[index_hash1 :index_hash2 + 1]
-    else:
-        commit_indices = df.index[index_hash2 :index_hash1 + 1]
-    intervallo_df = df.loc[commit_indices].reset_index(drop=True)
-    return intervallo_df
-
-
-
-def estrai_parametri(json_list):
-    result = []
-    for obj in json_list:
-        commit_hash = obj.get("Commit_Hash")
-        data_commit = obj.get("Data_del_Commit")
-        
-        # Verifica se entrambi i parametri sono presenti prima di aggiungere alla lista
-        if commit_hash is not None and data_commit is not None:
-            result.append({"Commit Hash": commit_hash, "Data del Commit": data_commit})
-    
-    return pd.DataFrame(result)
-
-
-
-
 def extract_years_from_commits(folder = "repository"):
     repo = repo_to_use(folder)
     
@@ -316,7 +232,6 @@ def extract_years_from_commits(folder = "repository"):
         commit_date = commit.committer_date
         year = commit_date.year
         years.add(year)
-        # Converti il set in una lista e restituiscila
     ordered_list= list(years)
     ordered_list.sort()
     return ordered_list

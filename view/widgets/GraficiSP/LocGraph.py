@@ -217,7 +217,7 @@ class WeeksGraph():
         self.ax_weeks.tick_params(axis='x', colors='white')
         self.ax_weeks.tick_params(axis='y', colors='white')
         self.ax_weeks.legend()
-        self.ax_weeks.set_title("Number of week" ,color = "white")
+        self.ax_weeks.set_title("Number of days" ,color = "white")
         self.ax_weeks.set_xticklabels(y2, rotation=30, ha='right')
 
         self.canvas_weeks = FigureCanvasTkAgg(self.fig_weeks, master=master)

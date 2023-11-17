@@ -28,16 +28,6 @@ def controlla_numero_revisioni_per_classe(classe_filename, folder = "repository"
 
 
 
-def controlla_numero_revisioni_per_repo(folder = "repository"):
-    """Metodo che calcola il numero di revisioni per repository"""
-    list = ru.cerca_file_java(folder)
-    class_data = []
-    for element in list:
-        class_data.append({'Nome della Classe': element, 'Numero di Revisioni': controlla_numero_revisioni_per_classe(element)})
-    return pd.DataFrame(class_data)
-
-
-
 def calcola_numero_bug_fix(folder ="repository"):
     """Metodo che calcola i bug fix di un progetto se documentati """
     repository_path = os.path.abspath(folder)
@@ -118,22 +108,6 @@ def calcola_loc(classe_filename, folder = "repository"):
     
 
 
-def calcola_loc_repo(folder="repository"):
-    """Calcola il LOC per una lista di classi di un commit e restituisce un DataFrame."""
-    risultati = []
-    classi = ru.cerca_file_java(folder)
-    for classe in classi:
-        loc_result = calcola_loc(classe)  # Usa il tuo metodo calcola_loc
-        nome_classe = classe.split("/")[-1]  # Estrarre solo il nome della classe
-        risultati.append([nome_classe, loc_result[0], loc_result[1], loc_result[2]])
-
-    # Creare un DataFrame con i risultati
-    df = pd.DataFrame(risultati, columns=["Nome della Classe", "Linee di Codice", "Linee Vuote", "Commenti"])
-    
-    return df
-
-
-
 def calcola_autori_distinti_per_file(file_name, folder="repository"):
     """Questo metodo calcola il numero di autori distinti per file e ne restituisce una lista di nomi"""
     file_path = ru.trova_file_classe(file_name)
@@ -164,16 +138,6 @@ def calcola_autori_distinti_per_file(file_name, folder="repository"):
 
 
 
-def calcola_autori_distinti_per_repo(folder = "repository"):
-    """Metodo che calcola e restituisce gli autori distinti che hanno modificato un file"""
-    list = ru.cerca_file_java(folder)
-    class_data = []
-    for element in list:
-        class_data.append({'Nome della Classe': element, 'Autori': calcola_autori_distinti_per_file(element)})
-    return pd.DataFrame(class_data)
-
-
-
 def calcola_settimane_file(class_name, folder = "repository"):
     """Questo metodo calcola l'età del file richiesto in settimane"""
     repository_path = os.path.abspath(folder)
@@ -196,16 +160,7 @@ def calcola_settimane_file(class_name, folder = "repository"):
     time_difference = current_time - file_creation_date
 
     # Calcola il numero di giorni
-    return math.ceil(time_difference.days/7)
+    return time_difference.days
 
-
-
-def calcola_settimane_repo(folder = "repository"):
-    """Questo metodo calcola l'età in settimane di tutti i file in una repository"""
-    list = ru.cerca_file_java(folder)
-    class_data = []
-    for element in list:
-        class_data.append({'Nome della Classe': element, 'Settimane file': calcola_settimane_file(element)})
-    return pd.DataFrame(class_data)
 
 
