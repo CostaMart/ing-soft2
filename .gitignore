@@ -3,3 +3,4 @@ repository/
 *.pyc
 Prova.py
 **/__pycache__
+output/
