@@ -1,29 +1,13 @@
 import os.path
-from tkinter import ttk
 from typing import List
 import customtkinter as ctk
 from view.widgets.SideButton import SideButton
-from view.widgets.Plot import PlotCartesian
 from controller.ProjectMetricsContoller import ProjectMetricsController
 import tkinter as tk
-from matplotlib import dates as mdates
 from icecream import ic
 from .ControllerFalso import ControllerFalso
-from .widgets.Graphics.GridView import GridView
-from icecream import ic
-import model.repo_utils as ru
-import git
-from pydriller import Repository, Commit
-from PIL.Image import open
-import model.chartOrganizer as co
-import pandas as pd
-from matplotlib.dates import date2num
+from pydriller import Commit
 import tkinter as tk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
-from datetime import datetime
-from view.widgets.GraficiSP.LocGraph import NocGraph, DitGraph, LcomGraph, WmcGraph, RfcGraph, CboGraph, SPGraphs, RevisionGraph, BugFixGraph, ChurnGraph, WeeksGraph, AuthorsGraph
 from .widgets.GraficiSP.GraphFactory import GraphFactory
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
@@ -229,7 +213,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         # Grafico Loc
         locFrame = ctk.CTkFrame(self.graphFrame)
         locFrame.grid(column= 0, row = 0, padx=10, pady = 20)
-        loc, toolbar = graphFactory.makeGraph(master= locFrame, graph= "Loc", process_dict = process_dict)
+        loc, toolbar = graphFactory.makeGraph(master= locFrame, graph= "loc", process_dict = process_dict)
         toolbar.pack()
         loc.pack()
         # bottoneAmoroso2= ctk.CTkButton(locFrame, command= loc.zoom_in, text= "bottoncino simpatichino +")
@@ -240,56 +224,39 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         # Grafico revisioni
         revisionFrame = ctk.CTkFrame(self.graphFrame)
         revisionFrame.grid(column= 1, row = 0, padx=10, pady = 20)
-        revision = RevisionGraph(revisionFrame, process_dict)
-        revision.draw()
-        revision.pack(fill = "x")
-        toolbar_revision = NavigationToolbar2Tk(revision.canvas_revision, revisionFrame)
-        toolbar_revision.update()
-        toolbar_revision.pack(side=tk.TOP, fill=tk.X)
-    
+        revision, revToolbar = graphFactory.makeGraph(master= revisionFrame, graph= "revisions", process_dict= process_dict)
+        revision.pack()
+
         
         # Grafico bugfix
         bugFrame = ctk.CTkFrame(self.graphFrame)
         bugFrame.grid(column= 0, row = 1, padx=10, pady = 20)
-        bug = BugFixGraph(bugFrame, process_dict)
-        bug.draw()
-        bug.pack(fill = "x")
-        toolbar_bugfix = NavigationToolbar2Tk(bug.canvas_bugfix, bugFrame)
-        toolbar_bugfix.update()
-        toolbar_bugfix.pack(side=tk.TOP, fill=tk.X)
+        churn, bugToolbar = graphFactory.makeGraph(master= bugFrame, graph= "bugfix", process_dict= process_dict)
+        churn.pack()
+
        
         
         # Grafico code churn
         churnFrame = ctk.CTkFrame(self.graphFrame)
         churnFrame.grid(column= 1, row = 1, padx=10, pady = 20)
-        churn = ChurnGraph(churnFrame, process_dict)
-        churn.draw()
-        churn.pack(fill = "x")
-        toolbar_cc = NavigationToolbar2Tk(churn.canvas_codechurn, churnFrame)
-        toolbar_cc.update()
-        toolbar_cc.pack(side=tk.TOP, fill=tk.X)
+        churn, churnToolbar = graphFactory.makeGraph(master= churnFrame, graph= "churn", process_dict= process_dict)
+        churn.pack()
    
         
         # Grafico weeks
         weeksFrame = ctk.CTkFrame(self.graphFrame)
         weeksFrame.grid(column= 0, row = 2, padx=10, pady = 20)
-        weeks = WeeksGraph(weeksFrame, process_dict)
-        weeks.draw()
+        weeks, churnToolbar = graphFactory.makeGraph(master= weeksFrame, graph= "weeks", process_dict= process_dict)
         weeks.pack()
-        toolbar_weeks = NavigationToolbar2Tk(weeks.canvas_weeks, weeksFrame)
-        toolbar_weeks.update()
-        toolbar_weeks.pack(side=tk.TOP, fill=tk.X)
+   
       
         
         # Grafico authors
         authorsFrame = ctk.CTkFrame(self.graphFrame)
         authorsFrame.grid(column= 1, row = 2, padx=10, pady = 20)
-        authors = AuthorsGraph(authorsFrame, process_dict)
-        authors.draw()
-        authors.pack()
-        toolbar_authors = NavigationToolbar2Tk(authors.canvas_authors, authorsFrame)
-        toolbar_authors.update()
-        toolbar_authors.pack(side=tk.TOP, fill=tk.X)
+        author, churnToolbar = graphFactory.makeGraph(master= authorsFrame, graph= "authors", process_dict= process_dict)
+        author.pack()
+   
        
     
     def start_endpointCK(self):
@@ -321,6 +288,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.panelCreated = False
         
         
+        graphFactory = GraphFactory()
         
         self.graphFrame = ctk.CTkFrame(self, bg_color= "#1d1e1e", fg_color= "#1d1e1e")
         self.graphFrame.pack(pady = 30)
@@ -329,66 +297,41 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         # Grafico Cbo
         cboFrame = ctk.CTkFrame(self.graphFrame)
         cboFrame.grid(column= 0, row = 0, padx=10, pady = 20)
-        cbo = CboGraph(cboFrame, process_dict)
-        cbo.draw()
+        cbo, churnToolbar = graphFactory.makeGraph(master= cboFrame, graph= "cbo", process_dict= process_dict)
         cbo.pack()
-        toolbar_cbo = NavigationToolbar2Tk(cbo.canvas_cbo, cboFrame)
-        toolbar_cbo.forget()
-        superBottoneMagico = ctk.CTkButton(cboFrame, command= lambda: toolbar_cbo.pan(), text = "pan mode")
-        superBottoneMagico.pack()
-        slider = ctk.CTkSlider(cboFrame, from_= 0.1, to= 2, number_of_steps= 200, command= lambda value: cbo.zoom_out(value), orientation= "horizontal")
-        slider.pack()
+   
         
         # Grafico rfc
         rfcFrame = ctk.CTkFrame(self.graphFrame)
         rfcFrame.grid(column= 1, row = 0, padx=10, pady = 20)
-        rfc = RfcGraph(rfcFrame, process_dict)
-        rfc.draw()
+        rfc, churnToolbar = graphFactory.makeGraph(master= rfcFrame, graph= "rfc", process_dict= process_dict)
         rfc.pack()
-        toolbar_rfc = NavigationToolbar2Tk(rfc.canvas_rfc,rfcFrame)
-        toolbar_rfc.update()
         
-        toolbar_rfc.pack(side=tk.TOP, fill=tk.X)
+     
        
         # Grafico wmc
         wmcFrame = ctk.CTkFrame(self.graphFrame)
         wmcFrame.grid(column= 0, row = 1, padx=10, pady = 20)
-        wmc = WmcGraph(wmcFrame, process_dict)
-        wmc.draw()
+        wmc, churnToolbar = graphFactory.makeGraph(master= wmcFrame, graph= "wmc", process_dict= process_dict)
         wmc.pack()
-        toolbar_wmc = NavigationToolbar2Tk(wmc.canvas_wmc, wmcFrame)
-        toolbar_wmc.update()
-        toolbar_wmc.pack(side=tk.TOP, fill=tk.X)
       
          # Grafico noc
         nocFrame = ctk.CTkFrame(self.graphFrame)
         nocFrame.grid(column= 1, row = 1, padx=10, pady = 20)
-        noc = NocGraph(nocFrame, process_dict)
-        noc.draw()
+        noc, churnToolbar = graphFactory.makeGraph(master= nocFrame, graph= "noc", process_dict= process_dict)
         noc.pack()
-        toolbar_noc = NavigationToolbar2Tk(noc.canvas_noc, nocFrame)
-        toolbar_noc.update()
-        toolbar_noc.pack(side=tk.TOP, fill=tk.X)
        
          # Grafico dit
         ditFrame = ctk.CTkFrame(self.graphFrame)
         ditFrame.grid(column= 0, row = 2, padx=10, pady = 20)
-        dit = DitGraph(ditFrame, process_dict)
-        dit.draw()
+        dit, churnToolbar = graphFactory.makeGraph(master= ditFrame, graph= "dit", process_dict= process_dict)
         dit.pack()
-        toolbar_dit = NavigationToolbar2Tk(dit.canvas_dit, ditFrame)
-        toolbar_dit.update()
-        toolbar_dit.pack(side=tk.TOP, fill=tk.X)
   
         # Grafico lcom
         lcomFrame = ctk.CTkFrame(self.graphFrame)
         lcomFrame.grid(column= 1, row = 2, padx=10, pady = 20)
-        lcom = LcomGraph(lcomFrame, process_dict)
-        lcom.draw()
+        lcom, churnToolbar = graphFactory.makeGraph(master= lcomFrame, graph= "lcom", process_dict= process_dict)
         lcom.pack()
-        toolbar_lcom = NavigationToolbar2Tk(lcom.canvas_lcom, lcomFrame)
-        toolbar_lcom.update()
-        toolbar_lcom.pack(side=tk.TOP, fill=tk.X)
     
 
 

@@ -42,7 +42,7 @@ class GraphFactory:
         return canvas_loc.get_tk_widget(), toolbar_revision
     
    
-    def _Loc(self, process_dict, fig, axloc) -> Figure:
+    def _loc(self, process_dict, fig, axloc) -> Figure:
         """ contiene solo la specializzazione del grafico, vengono aggiunti gli elementi per renderlo un grafico LOC """
         
         x1, x2, x3, y = co.loc_number(process_dict)
@@ -53,6 +53,195 @@ class GraphFactory:
         axloc.set_title("Amount (in LOC) of previous change" ,color = "white")
         axloc.set_xticklabels(y2, rotation=30, ha='right')
         axloc.legend()
+        
+        if len(y2) <= 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        axloc.set_xlim(left = y2[0], right = y2[right])
+        
+        return fig
+        
+        
+    def _revisions(self, process_dict, fig, axloc) -> Figure:
+        
+        x, y = co.revision_number(process_dict)
+        y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
+        axloc.plot(y2, x, label = "revisions", marker = "o")
+        axloc.set_title("Number of revision", color= "white")
+        axloc.set_xticklabels(y2, rotation=30, ha='right')
+        axloc.legend()
+        
+        if len(y2) <= 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        axloc.set_xlim(left = y2[0], right = y2[right])
+
+        return fig
+        
+    
+    
+    def _bugfix(self, process_dict, fig, axloc) -> Figure:
+        
+        x, y = co.bugfix(process_dict)
+        y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
+        axloc.bar(y2, x)
+        axloc.set_title("Number of bugfix commit", color= "white")
+        axloc.set_xticklabels(y2, rotation=30, ha='right')
+        
+        if len(y2) <= 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        axloc.set_xlim(left = y2[0], right = y2[right])
+
+        return fig
+        
+    
+    
+    def _churn(self, process_dict, fig, axloc) -> Figure:
+        
+        x, y = co.codeC(process_dict)
+        y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
+        axloc.bar(y2, x)
+        axloc.set_title("Number of code churn commit" ,color = "white")
+        axloc.set_xticklabels(y2, rotation=30, ha='right')
+        
+        if len(y2) <= 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        axloc.set_xlim(left = y2[0], right = y2[right])
+
+        return fig
+
+        
+    
+    
+    def _weeks(self, process_dict, fig, axloc) -> Figure:
+        
+        x, y = co.weeks(process_dict)
+        y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
+        axloc.bar(y2, x)
+        axloc.set_title("Number of week", color = "white")
+        axloc.set_xticklabels(y2, rotation=30, ha='right')
+        
+        if len(y2) <= 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        axloc.set_xlim(left = y2[0], right = y2[right])
+
+        return fig
+
+
+    def _authors(self, process_dict, fig, axloc) -> Figure:
+        
+        x, y = co.authors(process_dict)
+        y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
+        axloc.bar(y2, x)
+        axloc.set_title("Number of author" ,color = "white")
+        axloc.set_xticklabels(y2, rotation=30, ha='right')
+        
+        if len(y2) <= 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        axloc.set_xlim(left = y2[0], right = y2[right])
+
+        return fig
+   
+   
+    def _cbo(self, process_dict, fig, axloc) -> Figure:
+        
+        x, y = co.cbo(process_dict)
+        y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
+        axloc.bar(y2, x)
+        axloc.set_title("CBO (Coupling Between Object classes" ,color = "white")
+        axloc.set_xticklabels(y2, rotation=30, ha='right')
+        
+        if len(y2) <= 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        axloc.set_xlim(left = y2[0], right = y2[right])
+
+        return fig
+    
+    
+    def _wmc(self, process_dict, fig, axloc) -> Figure:
+        
+        x, y = co.wmc(process_dict)
+        y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
+        axloc.bar(y2, x)
+        axloc.set_title("WMC (Weighted Methods per Class" ,color = "white")
+        axloc.set_xticklabels(y2, rotation=30, ha='right')
+        
+        if len(y2) <= 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        axloc.set_xlim(left = y2[0], right = y2[right])
+
+        return fig
+    
+    def _dit(self, process_dict, fig, axloc) -> Figure:
+        
+        x, y = co.dit(process_dict)
+        y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
+        axloc.bar(y2, x)
+        axloc.set_title("DIT (Depth of Inheritance" ,color = "white")
+        axloc.set_xticklabels(y2, rotation=30, ha='right')
+        
+        if len(y2) <= 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        axloc.set_xlim(left = y2[0], right = y2[right])
+
+        return fig
+    
+    
+    def _noc(self, process_dict, fig, axloc) -> Figure:
+        
+        x, y = co.noc(process_dict)
+        y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
+        axloc.bar(y2, x)
+        axloc.set_title("NOC (Number of Children) ", color = "white")
+        axloc.set_xticklabels(y2, rotation=30, ha='right')
+        
+        if len(y2) <= 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        axloc.set_xlim(left = y2[0], right = y2[right])
+    
+        return fig
+    
+    def _rfc(self, process_dict, fig, axloc) -> Figure:
+        
+        x, y = co.rfc(process_dict)
+        y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
+        axloc.bar(y2, x)
+        axloc.set_title("RFC (Response for a Class" ,color = "white")
+        axloc.set_xticklabels(y2, rotation=30, ha='right')
+        
+        if len(y2) <= 10:
+            right = len(y2) -1
+        else:
+            right = 10
+        axloc.set_xlim(left = y2[0], right = y2[right])
+    
+        return fig
+    
+    def _lcom(self, process_dict, fig, axloc) -> Figure:
+        
+        x, y = co.lcom(process_dict)
+        y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
+        axloc.bar(y2, x)
+        axloc.set_title("LCOM (Lack of Cohesion of Methods" ,color = "white")
+        axloc.set_xticklabels(y2, rotation=30, ha='right')
         
         if len(y2) <= 10:
             right = len(y2) -1
