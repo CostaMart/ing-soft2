@@ -140,7 +140,7 @@ class MainPage(ctk.CTkFrame):
             self.loading = True
             self.sideB.place_forget()
             self.icon.pack()
-            self.icon.start()
+            self.icon.beginRotation()
             self.showMessage(f"now downloading: {str(value)}")
             self.controller.get_selected_repo(value)
             self.showMessage("download complete")
@@ -152,7 +152,7 @@ class MainPage(ctk.CTkFrame):
 
     def beforeRepoDataUpdate(self):
         self.icon.pack()
-        self.icon.start()
+        self.icon.beginRotation()
         self.showMessage("we are now analyzing this repo")
 
     def afterRepoDataUpdate(self):

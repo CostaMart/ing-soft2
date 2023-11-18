@@ -5,7 +5,7 @@ from model.Domain import Repository
 from .widgets.LoadingIcon import RotatingIcon
 
 
-class StartupPage(ctk.CTk):
+class StartupErrorPage(ctk.CTk):
     def __init__(self):
         super().__init__()
         ctk.set_appearance_mode("dark")

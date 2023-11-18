@@ -64,11 +64,18 @@ class ProjectMetricsController:
     def getCommitsBetweenHashes(self, hash_start, hash_end):
         return self.localModel.getCommitInInterval(hash_start, hash_end)
 
-    def sendMessage(self, message):
-        self.computingEndPointModel.sendMessageToEndpoint(message)
-
-    def receiveMessage(self):
-        return self.computingEndPointModel.receiveMessageFromEndpoint()
+    def request_service(self, message, callback):
+        """ avvia una richiesta asincrona alla componente di calcolo, il risultato viene passato come
+        parametro alla callback impostata """
+        def toRun():
+            self.computingEndPointModel.sendMessageToEndpoint(message)
+            result = self.computingEndPointModel.receiveMessageFromEndpoint()
+            callback(result)
+        
+        t = Thread(target= toRun)
+        t.start()
+        
+        
 
         
             
