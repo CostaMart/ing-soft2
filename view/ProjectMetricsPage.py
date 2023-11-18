@@ -193,7 +193,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             print("La lista di commit è vuota o non valida. Impossibile avviare l'analisi.")
         
         process_dict = self.controller.receiveMessage()
-        print(process_dict)
+        ic(process_dict)
         
         if self.panelCreated:
             self.graphFrame.destroy()
@@ -256,6 +256,13 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         authorsFrame.grid(column= 1, row = 2, padx=10, pady = 20)
         author, churnToolbar = graphFactory.makeGraph(master= authorsFrame, graph= "authors", process_dict= process_dict)
         author.pack()
+        
+        # grafico contributi     
+        contributionsFrame = ctk.CTkFrame(self.graphFrame)
+        contributionsFrame.grid(column= 0, row = 3, padx=10, pady = 20)
+        contributions, churnToolbar = graphFactory.makeGraph(master= contributionsFrame, graph= "contributions", process_dict= process_dict)
+        contributions.pack()
+   
    
        
     

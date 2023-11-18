@@ -9,6 +9,11 @@ import pandas as pd
 import chardet
 import gc
 import difflib
+from icecream import ic
+
+
+
+
 
 def controlla_numero_revisioni_per_classe(classe_filename, folder = "repository"):
     """Metodo che dato il nome di una classe ne calcola il numero di revisioni"""
@@ -133,7 +138,7 @@ def calcola_autori_distinti_per_file(file_name, folder="repository"):
     for line in lines:
         autore = line.strip('"\n')  # Rimuovi i caratteri di citazione e newline
         autori_distinti.add(autore)
-
+    ic(autori_distinti)
     return autori_distinti
 
 

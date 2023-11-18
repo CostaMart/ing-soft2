@@ -153,6 +153,16 @@ class GraphFactory:
 
         return fig
    
+    def _contributions(self,process_dict, fig, axloc) -> Figure:
+        authros = co.perAuthorContribution(process_dict)
+        values = authros.values()
+        labels = authros.keys()
+        axloc.pie(values, labels=labels, autopct='%1.1f%%', startangle=140)
+        axloc.set_title("Per author contribution" ,color = "white")
+        axloc.legend()
+
+        return fig
+   
    
     def _cbo(self, process_dict, fig, axloc) -> Figure:
         

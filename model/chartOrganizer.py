@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-
+from icecream import ic
 
 
 ######### INIZIO METODI PER METRICHE DI PROCESSO QUINDI DA USARE IL DATFRAME RESTITUITO DA generate_process_metrics in spMetrics ###########
@@ -26,7 +26,22 @@ def authors(df):
         authors_count = pd.concat([authors_count, pd.DataFrame({"Data del Commit": [date], "Numero di Autori": [len(set(group["Autori Distinti"].sum()))-1]})])
     return authors_count['Numero di Autori'].tolist(), authors_count['Data del Commit'].tolist()
 
-    
+def perAuthorContribution(df : pd.DataFrame) -> dict[str, int]:
+    contributors = {}
+    for index, row in df.iterrows():
+        authors = row["Autori Distinti"]
+        authors: set
+        ic(authors)
+        for author in authors:
+            if author == "":
+                continue
+            if author not in contributors:
+                # se il contributo non è in lista aggiungilo
+                contributors[author] = 1    
+            else:
+                # se il contributor è già in lista aumenta le sue presenze di 1
+                contributors[author] = contributors[author] + 1
+    return contributors
 
 def weeks(df):
     """Genera e restituisce un grafico a barre con il numero di settimane del file per data del commit"""
