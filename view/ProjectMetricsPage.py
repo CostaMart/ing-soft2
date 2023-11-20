@@ -11,7 +11,7 @@ from .widgets.GraficiSP.GraphFactory import GraphFactory
 from .widgets.LoadingIcon import RotatingIcon
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
-    
+    """ view rappresentante la pagina delle metriche """
     def __init__(self, master, debug = False):
         super().__init__(master = master)
         self.grid_frame = None  # Aggiungi una variabile per tenere traccia del frame della griglia
@@ -114,11 +114,11 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
     def startRequest(self):
         """ in base al valore impostato sul selettore decide quale analisi far iniziare """
         if self.modeSelector.get() == "CK metrics":
-            self.start_endpointCK()
+            self.start_CKdataRequest()
         else:
             self.start_dataRequest()
   
-    def LoadingFrame(self):
+    def loadingFrame(self):
         """ mostra un messaggio durante il caricamento """
         self.messageFrame = ctk.CTkFrame(master= self.lowerFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.messageFrame.pack()
@@ -149,9 +149,10 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
                     "nome_classe": class_name,
                     "commits_dict": commit_list
                 },
-            callback = self.finalize_data_request)
+            callback = self.finalize_data_request
+            )
             
-            self.LoadingFrame()
+            self.loadingFrame()
             self.disableSelectorPanel()
         else:
             print("La lista di commit è vuota o non valida. Impossibile avviare l'analisi.")
@@ -230,7 +231,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.enableSelectorPanel()
         self.messageFrame.forget()
                   
-    def start_endpointCK(self):
+    def start_CKdataRequest(self):
         """Viene chiamata la classe ComputationEndpoint per iniziare l'analisi delle metriche"""
         """gli vengono passate le funzioni per calcolare le metriche e i parametri necessari per eseguire l'analisi"""
         """utilizzo i metodi del controller per passargli le funzioni che deve eseguire come messaggi"""
@@ -246,13 +247,16 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
                 {
                     "fun": "generate_metricsCK",
                     "commits_dict": commit_list
-                }
+                },
+                callback= self.finalize_CDdata_request
             )
+            
+            self.loadingFrame()
+            self.disableSelectorPanel()
         else:
             print("La lista di commit è vuota o non valida. Impossibile avviare l'analisi.")
-        
-        process_dict = self.controller.receiveMessage()
-        print(process_dict)
+               
+    def finalize_CDdata_request(self, process_dict):
         
         if self.panelCreated:
             self.graphFrame.destroy()
@@ -303,11 +307,9 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         lcomFrame.grid(column= 1, row = 2, padx=10, pady = 20)
         lcom, churnToolbar = graphFactory.makeGraph(master= lcomFrame, graph= "lcom", process_dict= process_dict)
         lcom.pack()
-    
-
-
-    
-    
+        
+        self.enableSelectorPanel()
+        self.messageFrame.forget()
     
     # ----------------------------- le seguenti funzioni controllano gli update del blocco di selezione per l'analisi dei commit  -----------------------------
     def computationPanel(self):

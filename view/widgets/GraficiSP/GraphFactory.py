@@ -1,4 +1,5 @@
 from typing import Union
+from matplotlib import pyplot as plt, ticker
 from matplotlib.axes import Axes
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
@@ -8,6 +9,7 @@ import tkinter as tk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from icecream import ic
+import numpy as np
 
 class GraphFactory:
     """ factory class che produce il grafico richiesto """
@@ -28,6 +30,7 @@ class GraphFactory:
         ax_loc.spines['right'].set_visible(False)
         ax_loc.spines['bottom'].set_color("white")
         ax_loc.spines['left'].set_color("white")
+        ax_loc.grid(True, which='both', linestyle='--', linewidth=0.5)
         ax_loc.tick_params(axis='x', colors='white')
         ax_loc.tick_params(axis='y', colors='white')
 
@@ -39,7 +42,7 @@ class GraphFactory:
         canvas_loc = FigureCanvasTkAgg(fig, master=master)
         toolbar_revision = NavigationToolbar2Tk(canvas_loc)
         canvas_loc.draw()
-       
+        
         return canvas_loc.get_tk_widget(), toolbar_revision
     
    
@@ -120,7 +123,7 @@ class GraphFactory:
         
     
     
-    def _weeks(self, process_dict, fig, axloc) -> Figure:
+    def _weeks(self, process_dict, fig, axloc: Axes) -> Figure:
         
         x, y = co.weeks(process_dict)
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
@@ -137,11 +140,14 @@ class GraphFactory:
         return fig
 
 
-    def _authors(self, process_dict, fig, axloc) -> Figure:
+    def _authors(self, process_dict, fig, axloc: Axes) -> Figure:
         
         x, y = co.authors(process_dict)
+        x = ic([int(value) for value in x])
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
-        axloc.bar(y2, x)
+        axloc.step(y2, x)
+        axloc.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+        axloc.set_ylim(bottom= 0, top = 5)
         axloc.set_title("Number of author" ,color = "white")
         axloc.set_xticklabels(y2, rotation=30, ha='right')
         

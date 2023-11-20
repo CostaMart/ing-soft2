@@ -18,6 +18,8 @@ class ComputationEndpoint:
         self.worker()
 
     def worker(self):
+        """ gestisce i messaggi in arrivo richiamando la funzione richiesta a seconda del messaggio inviato """
+        
         try:
             while self.working:
                 message = self.pipe.recv()
