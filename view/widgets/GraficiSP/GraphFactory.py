@@ -91,6 +91,8 @@ class GraphFactory:
         x, y = co.bugfix(process_dict)
         y2 = [timestamp.strftime('%Y-%m-%d %H:%M:%S') for timestamp in y]
         axloc.bar(y2, x)
+        axloc.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+        axloc.set_ylim(bottom= 0, top = 5)
         axloc.set_title("Number of bugfix commit", color= "white")
         axloc.set_xticklabels(y2, rotation=30, ha='right')
         
