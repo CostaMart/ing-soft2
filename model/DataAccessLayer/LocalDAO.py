@@ -77,16 +77,23 @@ class LocalDAO:
         """ ritorna una lista di tutti gli anni in cui è stato effettuato almeno un commit """
         repo = repo_to_use(folder)
 
-        years = set()
-
+        years : dict[int, set[str]]
+        years = {}
+        
         for commit in get_commits(repo):
             commit_date = commit.committer_date
             year = commit_date.year
-            years.add(year)
+            
+            if year not in years.keys():
+                years[year] = set(commit.branches)
+            else:
+                branches = years[year]
+                branches.union(commit.branches)
+                
             # Converti il set in una lista e restituiscila
-        ordered_list = list(years)
-        ordered_list.sort()
-        return ordered_list
+        return years
+        
+        
 
     def getClassListFromGivenCommit(self, commit_hash, repo_path="repository"):
         repo = git.Repo(repo_path)
