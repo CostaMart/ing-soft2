@@ -325,37 +325,67 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.optionFrame = ctk.CTkFrame(self.lowerFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.optionFrame.pack()
         
-        # selettore di inizio analisi
+        # selettori di inizio analisi
         startYearSelectorSubFrame = ctk.CTkFrame(self.optionFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         startYearSelectorSubFrame.grid(column = 0, row = 0)
         startLabel = ctk.CTkLabel(startYearSelectorSubFrame, text = "start point: ", bg_color="#1d1e1e", fg_color="#1d1e1e")
-        startLabel.pack()
-        self.startYearSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values= [str(year) for year in self.yearList] , command= self.update_branchList, dynamic_resizing= False)
-        self.startYearSelector.pack(pady = 10)
+        startLabel.pack(side = ctk.TOP)
         
-        # selettore di branch
-        self.branchSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values = [ic(branch) for branch in self.yearBranchDict[int(self.startYearSelector.get())] if "HEAD" not in branch], command= self.start_updateStartCommitList, dynamic_resizing= False)
+            # selettore anno
+        yearbox = ctk.CTkFrame(startYearSelectorSubFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        yearbox.pack(padx = 5, side = ctk.LEFT)
+        yearLabel = ctk.CTkLabel(yearbox, text = "chose year:", bg_color="#1d1e1e", fg_color="#1d1e1e", text_color= "grey")
+        yearLabel.pack(side = ctk.TOP)
+        self.startYearSelector = ctk.CTkOptionMenu(yearbox, values= [str(year) for year in self.yearList] , command= self.update_branchList, dynamic_resizing= False)
+        self.startYearSelector.pack()
+        
+            # selettore di branch
+        branchBox = ctk.CTkFrame(startYearSelectorSubFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        branchBox.pack(padx = 5, side = ctk.LEFT)
+        branchLabel = ctk.CTkLabel(branchBox, text = "chose branch:", bg_color="#1d1e1e", fg_color="#1d1e1e", text_color= "grey")
+        branchLabel.pack(side = ctk.TOP)
+        self.branchSelector = ctk.CTkOptionMenu(branchBox, values = [ic(branch) for branch in self.yearBranchDict[int(self.startYearSelector.get())] if "HEAD" not in branch], command= self.start_updateStartCommitList, dynamic_resizing= False)
         self.branchSelector.pack()
         
-        # selettore di commit iniziale
-        self.startCommitSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values= ["start commit"], command= self.updateClassList, dynamic_resizing= False)
+            # selettore di commit iniziale
+        startCommitBox = ctk.CTkFrame(startYearSelectorSubFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        startCommitBox.pack(padx = 5, side = ctk.LEFT)
+        startCommitLabel = ctk.CTkLabel(startCommitBox, text = "chose branch:", bg_color="#1d1e1e", fg_color="#1d1e1e", text_color= "grey")
+        startCommitLabel.pack(side = ctk.TOP)
+        self.startCommitSelector = ctk.CTkOptionMenu(startCommitBox, values= ["start commit"], command= self.updateClassList, dynamic_resizing= False)
         self.startCommitSelector.pack()
         self.startCommitSelector.configure(state ="disabled")
         
         # selettore di classe
-        self.classSelector = ctk.CTkOptionMenu(self.optionFrame, values= ["class"], command= self.start_updateArriveCommitList, dynamic_resizing= False)
-        self.classSelector.grid(column = 1, row = 0, padx = 20)
+        classBox = ctk.CTkFrame(self.optionFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        classBox.grid(column = 0, row = 1, pady= 10)
+        classLabel = ctk.CTkLabel(classBox, text = "chose class:", bg_color="#1d1e1e", fg_color="#1d1e1e")
+        classLabel.pack(side = ctk.TOP)
+        self.classSelector = ctk.CTkOptionMenu(classBox, values= ["class"], command= self.start_updateArriveCommitList, dynamic_resizing= False)
+        self.classSelector.pack()
         self.classSelector.configure(state ="disabled")
         
-        # selettore di arrivo
+        # selettori di arrivo
         arriveYearSelectorSubFrame = ctk.CTkFrame(self.optionFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
-        arriveYearSelectorSubFrame.grid(column = 2, row = 0, pady = 10)
+        arriveYearSelectorSubFrame.grid(column = 0, row = 2)
         arriveLabel = ctk.CTkLabel(arriveYearSelectorSubFrame, text = "arrive point: ", bg_color="#1d1e1e", fg_color="#1d1e1e")
-        arriveLabel.pack()
-        self.arriveYearSelector = ctk.CTkOptionMenu(arriveYearSelectorSubFrame, values= ["arrive year"], dynamic_resizing= False, command = self.start_updateArriveCommitList)
-        self.arriveYearSelector.pack(pady = 10)
-        self.arriveCommitSelector = ctk.CTkOptionMenu(arriveYearSelectorSubFrame, values= ["arrive commit"], dynamic_resizing= False)
-        self.arriveCommitSelector.pack()
+        arriveLabel.pack(padx = 5, side = ctk.TOP)
+            
+            # selettore anno di arrivo
+        arriveBox = ctk.CTkFrame(arriveYearSelectorSubFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        arriveBox.pack(padx = 5, side = ctk.LEFT)
+        arriveLabel = ctk.CTkLabel(arriveBox, text = "arrive year: ", bg_color="#1d1e1e", fg_color="#1d1e1e", text_color= "grey")
+        arriveLabel.pack(padx = 5, side = ctk.TOP)
+        self.arriveYearSelector = ctk.CTkOptionMenu(arriveBox, values= ["arrive year"], dynamic_resizing= False, command = self.start_updateArriveCommitList)
+        self.arriveYearSelector.pack(padx = 5, side = ctk.LEFT)
+        
+            # selettore commit di arrivo
+        arriveCommitBox = ctk.CTkFrame(arriveYearSelectorSubFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
+        arriveCommitBox.pack(padx = 5, side = ctk.LEFT)
+        arriveCommitLabel = ctk.CTkLabel(arriveCommitBox, text = "arrive commit:", bg_color="#1d1e1e", fg_color="#1d1e1e", text_color= "grey")
+        arriveCommitLabel.pack(padx = 5, side = ctk.TOP)
+        self.arriveCommitSelector = ctk.CTkOptionMenu(arriveCommitBox, values= ["arrive commit"], dynamic_resizing= False)
+        self.arriveCommitSelector.pack(padx = 5, side = ctk.LEFT)
 
         # bottone di start dell'analisi affidata ad un altro processo
         self.start_button = ctk.CTkButton(self.lowerFrame, text="Start Analysis", command=self.startRequest)
@@ -372,6 +402,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
         
         
+        
+        
     def disableSelectorPanel(self):
         """disabilita il pannello di selezione dei commit"""
         self.startYearSelector.configure(state= "disabled")
@@ -380,6 +412,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.arriveYearSelector.configure(state= "disabled")
         self.arriveCommitSelector.configure(state= "disabled")
         self.start_button.configure(state = "disabled")
+        self.branchSelector.configure(state = "disabled")
             
     def enableSelectorPanel(self):
         """abilita il pannello di selezione dei commit"""
@@ -388,7 +421,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.classSelector.configure(state= "normal")
         self.arriveYearSelector.configure(state= "normal")
         self.arriveCommitSelector.configure(state= "normal")
-        self.start_button.configure(state = "normal")      
+        self.start_button.configure(state = "normal") 
+        self.branchSelector.configure(state = "normal")     
         
           
    # -----------------------------update start commit list-----------------------------   
