@@ -40,7 +40,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.initTopRightFrame()
         
         # inizializza lista di anni del repo in memoria
-        self.yearList = self.controller.getYearList()
+        self.yearBranchDict = ic(self.controller.getYearList())
+        self.yearList = list(self.yearBranchDict.keys())
         
         # inizializza il pannello di selezione dei commit
         self.computationPanel()
@@ -325,13 +326,18 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.optionFrame.pack()
         
         # selettore di inizio analisi
-        
         startYearSelectorSubFrame = ctk.CTkFrame(self.optionFrame, bg_color="#1d1e1e", fg_color="#1d1e1e")
         startYearSelectorSubFrame.grid(column = 0, row = 0)
         startLabel = ctk.CTkLabel(startYearSelectorSubFrame, text = "start point: ", bg_color="#1d1e1e", fg_color="#1d1e1e")
         startLabel.pack()
-        self.startYearSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values= [str(year) for year in self.yearList] , command= self.start_updateStartCommitList, dynamic_resizing= False)
+        self.startYearSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values= [str(year) for year in self.yearList] , command= self.update_branchList, dynamic_resizing= False)
         self.startYearSelector.pack(pady = 10)
+        
+        # selettore di branch
+        self.branchSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values = [ic(branch) for branch in self.yearBranchDict[int(self.startYearSelector.get())] if "HEAD" not in branch], command= self.start_updateStartCommitList, dynamic_resizing= False)
+        self.branchSelector.pack()
+        
+        # selettore di commit iniziale
         self.startCommitSelector = ctk.CTkOptionMenu(startYearSelectorSubFrame, values= ["start commit"], command= self.updateClassList, dynamic_resizing= False)
         self.startCommitSelector.pack()
         self.startCommitSelector.configure(state ="disabled")
@@ -356,7 +362,15 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.start_button.pack(anchor = "s", pady= 10)
 
         # configurazione iniziale selettori
+        ic(self.yearList)
         self.start_updateStartCommitList(self.yearList[0]) 
+        
+        
+        
+        
+        
+        
+        
         
     def disableSelectorPanel(self):
         """disabilita il pannello di selezione dei commit"""
@@ -378,9 +392,21 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         
           
    # -----------------------------update start commit list-----------------------------   
-    def start_updateStartCommitList(self, year):
+    
+    
+    def update_branchList(self, year):
+        values = [ic(branch) for branch in self.yearBranchDict[int(year)] if "HEAD" not in branch]
+        self.branchSelector.configure(values = values)
+        self.branchSelector.set(values[0])
+        self.start_updateStartCommitList(year = year)
+    
+    def start_updateStartCommitList(self, branch = "any", year = "no Value"):
         """ esegue l'update della lista di commit di partenza dell'analisi """
         me = self
+        
+        if year == "no Value":
+            year = self.startYearSelector.get()        
+        
         
         def _end_updateStartCommitList(commitList):    
             commitHashes = [commit.hash for commit in commitList]
@@ -391,7 +417,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
 
     
         self.disableSelectorPanel()
-        self.controller.updateCommitsListByYear(year, callback = _end_updateStartCommitList)
+        self.controller.updateCommitsListByYear(year, self.branchSelector.get(), callback = _end_updateStartCommitList)
         
     
     # -----------------------------update lista classi-----------------------------

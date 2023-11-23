@@ -143,12 +143,22 @@ class MainPage(ctk.CTkFrame):
             self.icon.beginRotation()
             self.showMessage(f"now downloading: {str(value)}")
             self.controller.get_selected_repo(value)
+            
+            # setta la loadingBar
+            self.loadbar = ctk.CTkProgressBar(self.messageBox, orientation= "horizontal")
+            self.loadbar.set(0)
+            self.loadbar.update()
+            self.loadbar.pack(pady= 10)
+            self.controller.update_branches(self.loadbar)
+            
+            
             self.showMessage("download complete")
             time.sleep(2)
             self.icon.stop()
             self.icon.pack_forget()
             self.showMessage(" ")
             self._recoverRepoData()
+            
 
     def beforeRepoDataUpdate(self):
         self.icon.pack()
@@ -169,6 +179,10 @@ class MainPage(ctk.CTkFrame):
             self.icon.pack_forget()
             time.sleep(4)
             self.showMessage("")
+            
+            if "loadbar" in self.__dict__:
+                self.loadbar.destroy()
+                
             self.loading = False
         else:
 
@@ -186,4 +200,8 @@ class MainPage(ctk.CTkFrame):
             self.icon.pack_forget()
             time.sleep(4)
             self.showMessage("")
+            
+            if "loadbar" in self.__dict__:
+                self.loadbar.destroy()
+                
             self.loading = False

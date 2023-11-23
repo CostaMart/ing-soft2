@@ -4,6 +4,7 @@ from .DataAccessLayer.DAORepo import DAORepo
 from icecream import ic
 from .DataAccessLayer.LocalDAO import LocalDAO
 from pydriller import Commit
+import subprocess as sp
 
 class LocalRepoModel:
     """SINGLETON: modella le interazioni e il recupero dei dati locali (come il repo locale) necessari all app """
@@ -65,14 +66,14 @@ class LocalRepoModel:
         """ dato il nomoe di una classe recupera tutti i commit in cui questa è presente """
         return self.LocalDAO.get_commits_with_class(className, "repository")
     
-    def getYearList(self):
-        return self.LocalDAO.extract_years_from_commits()
+    def getYearList(self) -> dict[int, set[str]]:
+        return self.LocalDAO.extract_yearsList_with_branches()
     
     def getClassListFromGivenCommit(self, commit) -> List[str]:
         return self.LocalDAO.getClassListFromGivenCommit(commit)
     
-    def getCommiListByYear(self, year):
-        return self.LocalDAO.dataCommitLinkYear(year)
+    def getCommiListByYear(self, branch, year):
+        return self.LocalDAO.dataCommitLinkYear(branch, year)
     
     def getCommiListFromDate(self, date, yearToArrive):
         return self.LocalDAO.getCommitsFromDate(date, yearToArrive, "repository")
@@ -83,3 +84,7 @@ class LocalRepoModel:
     def getCommitInInterval(self, start_hash, end_hash):
         """Recupera la lista di commit tra start_hash e end_hash."""
         return self.LocalDAO.getCommitInInterval(start_hash, end_hash)
+    
+    def switch_branch(branch):
+        """ checkouts the local repo to the given branch """
+        LocalDAO.checkout_to(branch, "repository")

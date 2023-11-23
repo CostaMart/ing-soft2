@@ -1,10 +1,13 @@
 from typing import Callable, List
+from icecream import ic
+from git import Repo
 from model.Domain import Repository
 import os
 from model.LocalRepoModel import LocalRepoModel
 from model.RepoModel import RepoModel
 import threading
-
+from customtkinter import CTkProgressBar
+import subprocess as sp
 
 class MainPageController:
    
@@ -70,10 +73,38 @@ class MainPageController:
     def get_selected_repo(self, url):
         self.globalModel.createLocalRepo(url)
         return True
-           
+       
+    def update_branches(self, loadBar: CTkProgressBar):
+        """ downloads branches for the local repostitory updating given progress bar in real time """
+        # se ci sono branch aggiuntivi li scarica tutti
+        repo = Repo("repository")
+        branches = ic([ref.name for ref in repo.references if "origin" in ref.name and "HEAD" not in ref.name])
+        steplen = ic((1/len(branches)))
+        
+        # non so perchè nell'impelemntazione di sta roba la velocità di spostamento della barra viene divisa per 50
+        # quindi per farla avanzare di quanto vogliamo noi moltiplico per 50
+        loadBar.configure(determinate_speed= steplen * 50)
+        ic(loadBar._determinate_speed)
+        loadBar.update()
+        
+        for branch in branches:
+            LocalRepoModel.switch_branch(branch.split("/")[-1])
+            loadBar.step()   
+        
+        if "origin/main" in branches:
+            LocalRepoModel.switch_branch("main")
+        else:
+            LocalRepoModel.switch_branch("master")
+        
+        
     def checkRepo(self):
             percorso_git = os.path.join("repository", ".git")
             if os.path.exists(percorso_git) and os.path.isdir(percorso_git):
                 return True
             else:
                 return False
+        
+            
+
+            
+           

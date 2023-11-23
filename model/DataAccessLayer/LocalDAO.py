@@ -8,7 +8,8 @@ import git
 import pandas as pd
 from pydriller import Repository, Commit
 from model.repo_utils import get_commits, repo_to_use
-
+from git import Repo
+import subprocess as sp
 
 class LocalDAO:
 
@@ -46,8 +47,9 @@ class LocalDAO:
         shutil.rmtree("repository", onerror=on_rm_error)
 
         try:
-            subprocess.call(['git', 'clone', url, "repository"])
-
+            # clona il repo
+            p = subprocess.call(['git', 'clone', url, "repository"])
+        
         except Exception as e:
             # Gestisci eccezioni in caso di fallimento del clone
             print(f"Errore durante il clone del repository: {e}")
@@ -73,8 +75,9 @@ class LocalDAO:
 
         return commit_list
 
-    def extract_years_from_commits(self, folder="repository"):
-        """ ritorna una lista di tutti gli anni in cui è stato effettuato almeno un commit """
+    def extract_yearsList_with_branches(self, folder="repository"):
+        """ ritorna una lista di tutti gli anni in cui è stato effettuato almeno un commit. Ogni anno è associato ad una lista di branch attivi durante quell'anno """
+        
         repo = repo_to_use(folder)
 
         years : dict[int, set[str]]
@@ -85,11 +88,12 @@ class LocalDAO:
             year = commit_date.year
             
             if year not in years.keys():
-                years[year] = set(commit.branches)
+                years[year] = set(ic(commit.branches))
             else:
                 branches = years[year]
                 branches.union(commit.branches)
                 
+            ic(years)    
             # Converti il set in una lista e restituiscila
         return years
         
@@ -106,10 +110,10 @@ class LocalDAO:
 
         return dict_file
 
-    def dataCommitLinkYear(self, year, rep="repository"):
+    def dataCommitLinkYear(self, branch, year, rep="repository"):
         """Metodo che prende tutti i commit con relativa data in base all'anno e li inserisce in un dataframe che ritorna"""
         year = int(year)
-        return list(Repository(rep, since=datetime(year, 1, 1), to=datetime(year, 12, 31)).traverse_commits())
+        return list(Repository(rep, only_in_branch= branch, since=datetime(year, 1, 1), to=datetime(year, 12, 31)).traverse_commits())
 
     def getCommit(self, hash: str, rep: str = "repository") -> Commit:
         return next(Repository(rep, single=hash).traverse_commits())
@@ -141,3 +145,6 @@ class LocalDAO:
                 break
 
         return commits_in_range
+    
+    def checkout_to(branch, repo = "repository"):
+        sp.call(["git","checkout", branch], cwd= "repository")

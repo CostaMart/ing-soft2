@@ -33,16 +33,16 @@ class ProjectMetricsController:
         """ esegue la callback in un thread """
         Thread(target = callback).start()
                
-    def updateCommitsListByYear(self, year, callback):
+    def updateCommitsListByYear(self, year, branch, callback):
         """ recupera una lista di tutti i commit avvenuti in un dato anno e la passa
         come parametro a callback """
         myYear = year
         def target():
-            commitList = self.localModel.getCommiListByYear(myYear)
+            commitList = self.localModel.getCommiListByYear(branch, myYear)
             callback(commitList)
         Thread(target = target).start()    
         
-    def getYearList(self):
+    def getYearList(self) -> dict[int, set[str]]:
         """ ritorna la lista completa di tutti gli anni in cui è stato effettuato almeno un commit
         per il repostiory installato """
         return self.localModel.getYearList()
