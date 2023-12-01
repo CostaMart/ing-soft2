@@ -3,8 +3,8 @@ import pandas as pd
 import json
 from pydriller import Repository
 import subprocess
-import urllib.parse
 from icecream import ic
+from datetime import datetime
 
 setting = open("settings.json")
 settings = json.load(setting)
@@ -35,30 +35,7 @@ def check_folder(folder = "output"):
 def clone_repo(folder = "repository"):
     """Metodo che effettua il clone di un repository target"""
     subprocess.call(['git', 'clone', remote_repo, folder])
-    
 
-
-def clone_git_repository_with_tag(tag):
-    """Questo metodo clona una repository con il tag specificato"""
-    try:
-        subprocess.run(['git', 'clone', '-b', tag, remote_repo], check=True)
-        print(f"Repository clonata con successo utilizzando il tag {tag}.")
-    except subprocess.CalledProcessError as e:
-        print(f"Errore durante il clone: {e.stderr}")
-
-
-
-def get_commit_hash_for_tag(tag, folder = "repository"):
-    try:
-        repository_path=os.path.abspath(folder)
-        # Esegui il comando 'git rev-list' per ottenere l'hash del commit associato al tag
-        result = subprocess.run(['git', 'rev-list', '-n', '1', tag], cwd=repository_path, capture_output=True, text=True, check=True)
-        commit_hash = result.stdout.strip()
-        return commit_hash
-    except subprocess.CalledProcessError as e:
-        print(f"Errore nell'ottenere l'hash del commit per il tag {tag}: {e.stderr}")
-        return None
-    
 
 
 def print_current_branch(repository):
@@ -69,7 +46,11 @@ def print_current_branch(repository):
 
 def repo_to_use(folder = "repository"):
     """Metodo che restituisce un oggetto Repository"""
-    return Repository(folder) 
+    repoOs = os.path.abspath(folder)
+    if(not os.path.exists(repoOs)):
+        return -1
+    repo = Repository(folder) 
+    return repo
 
 
 
@@ -79,10 +60,13 @@ def get_commits(repository):
 
 
 
-def dataCommit():
+def dataCommit(folder = "repository"):
     """Metodo che prende tutti i commit con relativa data e li inserisce in un dataframe che ritorna"""
     commit_data=[]
-    for commit in get_commits(repo_to_use()):
+    repo = repo_to_use(folder)
+    if repo == -1:
+        return -1
+    for commit in get_commits(repo):
         commit_hash = commit.hash
         commit_date = commit.committer_date
         commit_data.append({'Titolo del Commit': commit_hash, 'Data del Commit': commit_date})
@@ -93,6 +77,10 @@ def dataCommit():
 def dataCommitLink(rep):
     """Metodo che prende tutti i commit con relativa data e li inserisce in un dataframe che ritorna"""
     commit_data=[]
+    if not isinstance(rep, Repository):
+            
+            return -1
+
     for commit in get_commits(rep):
         commit_hash = commit.hash
         commit_date = commit.committer_date
@@ -103,6 +91,16 @@ def dataCommitLink(rep):
 
 def dataCommitLinkYear(rep, year):
     """Metodo che prende tutti i commit con relativa data in base all'anno e li inserisce in un dataframe che ritorna"""
+    if not isinstance(rep, Repository): 
+        return -1
+    
+    if not isinstance(year, int):
+        
+        return -1
+    
+    current_year = datetime.now().year
+    if year > current_year:
+        return -1
     
     commit_data = []
     for commit in get_commits(rep):
@@ -142,7 +140,8 @@ def cerca_file_java(cartella_name):
     """ Questo metodo cerca tutti i file java in una cartella e ne restituisce una lista di nomi di file """
     risultati = []
     cartella = os.path.abspath(cartella_name)
-    
+    if not os.path.exists(cartella_name):
+        return -1
     for root, dirs, files in os.walk(cartella):
         for file in files:
             if file.endswith(".java"):
@@ -150,35 +149,15 @@ def cerca_file_java(cartella_name):
 
     return risultati
 
-
-
-def get_git_tags(folder = None):
-    """Questo metodo restituisce i tag di una repository"""
-    if folder != None:
-        repo_path = os.path.abspath(folder)+"\\.git"
-    
-  
-     
-    try:
-        result = subprocess.run(['git', '--git-dir', repo_path, 'tag'], capture_output=True, text=True)
-        
-        if result.returncode == 0:
-            # Il comando eseguito
-            output = result.stdout
-            tags = output.split('\n')
-            return [tag for tag in tags if tag]  # Rimuovi eventuali tag vuoti
-        else:
-            print("Errore nell'esecuzione del comando 'git tag':", result.stderr)
-            return []
-    except subprocess.CalledProcessError as e:
-        print("Errore nell'esecuzione del comando 'git tag':", e.stderr)
-        return []
     
 
 
 def get_commit_date(commit_hash, folder = "repository"):
     """Questo metodo restituisce la data del commit richiesto"""
     try:
+        cartella = os.path.abspath(folder)
+        if not os.path.exists(cartella):
+            return None
         result = subprocess.run(['git', 'show', '--format=%aI', '-s', commit_hash], cwd=os.path.abspath(folder), capture_output=True, text=True, check=True)
         commit_date = result.stdout.strip()
         return commit_date
@@ -186,35 +165,6 @@ def get_commit_date(commit_hash, folder = "repository"):
         print(f"Errore nell'ottenere la data del commit {commit_hash}: {e.stderr}")
         return None
 
-
-
-def get_git_tags_commit(folder = "repository"):
-    """Questo metodo ottiene la lista dei tag e li inserisce in un dataframe con il commit specifico che ha creato il tag e la data del commit"""
-    tags = get_git_tags(folder)
-    
-    data = []
-    
-    for tag in tags:
-        commit_hash = get_commit_hash_for_tag(tag, folder)
-        
-        if commit_hash:
-            commit_date = get_commit_date(commit_hash, folder)
-            data.append({'Tag': tag, 'Commit Hash': commit_hash, 'Commit Date': commit_date})
-    
-    df = pd.DataFrame(data)
-    
-    return df
-
-
-
-def checkout_tag(tag=None, folder = "repository"):
-    """Questo metodo prende il tag come parametro e fa il checkout"""
-    if(tag != None):
-        if(folder == "repository"):
-            checkout_commit(get_commit_hash_for_tag(tag))
-        else:
-            checkout_commit(get_commit_hash_for_tag(tag, folder), folder)
-    
 
 
 def checkout_commit(commit_hash, folder = "repository"):
@@ -226,6 +176,9 @@ def checkout_commit(commit_hash, folder = "repository"):
 
 
 def extract_years_from_commits(folder = "repository"):
+    cartella = os.path.abspath(folder)
+    if not os.path.exists(cartella):
+        return -1
     repo = repo_to_use(folder)
     
     years = set()

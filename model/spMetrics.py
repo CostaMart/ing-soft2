@@ -8,19 +8,34 @@ import shutil
 
 def generate_process_metrics(nome_classe, commits_dict, folder = "repository"):
     """Genera le metriche di processo, è possibile specificare il commit da analizzare e il folder dove è conservata la repository"""
-    """Questo metodo dovrà essere utilizzato per fare tutte le analisi disponibili con le metriche di processo, a parte i code churn"""
+    """Questo metodo dovrà essere utilizzato per fare tutte le analisi disponibili con le metriche di processo"""
+    cartella = os.path.abspath(folder)
+    if( not os.path.exists(cartella)):
+        return -1
     latest_commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=os.path.abspath(folder), text=True).strip()
-    df_filtrato = pd.DataFrame(list(commits_dict.items()), columns=['Commit Hash', 'Data del Commit'])
-    df_filtrato['Data del Commit'] = df_filtrato['Data del Commit'].apply(lambda x: x['date'])
-    flag = False
-    df_finale= pd.DataFrame(columns=['Commit hash', 'Data del Commit', 'Numero di Revisioni', 'Linee di Codice', 'Linee vuote', 'Commenti', 'Autori Distinti', 'Settimane file', 'Bugfix commit', 'Code churn'])
+    
+    if(ru.trova_file_classe(nome_classe, folder) is None):
+        return -1
+    if  isinstance(commits_dict, str ) or isinstance(commits_dict, int ):
+        return -1
+    
+    if  isinstance(commits_dict, tuple ):
+        df_filtrato = pd.DataFrame(list(commits_dict.items()), columns=['Commit Hash', 'Data del Commit'])
+        df_filtrato['Data del Commit'] = df_filtrato['Data del Commit'].apply(lambda x: x['date'])
+        flag = False
+        df_finale= pd.DataFrame(columns=['Commit hash', 'Data del Commit', 'Numero di Revisioni', 'Linee di Codice', 'Linee vuote', 'Commenti', 'Autori Distinti', 'Settimane file', 'Bugfix commit', 'Code churn'])
+    else:
+        df_filtrato = pd.DataFrame(commits_dict, columns=['Commit Hash', 'Data del Commit'])
+        df_filtrato['Data del Commit'] = pd.to_datetime(df_filtrato['Data del Commit'], utc=True)
+        flag = False
+        df_finale= pd.DataFrame(columns=['Commit hash', 'Data del Commit', 'Numero di Revisioni', 'Linee di Codice', 'Linee vuote', 'Commenti', 'Autori Distinti', 'Settimane file', 'Bugfix commit', 'Code churn'])
     for index, element in enumerate(df_filtrato["Commit Hash"]):
         ru.checkout_commit(element)
         
         if(flag is not True):
             ru.check_folder(folder="Giulio")
             folderG = os.path.abspath("Giulio")+"\\"+"giulio.txt"
-            shutil.copy2(ru.trova_file_classe(nome_classe), folderG )
+            shutil.copy2(ru.trova_file_classe(nome_classe, folder), folderG )
             cc = 0
             flag = True
         else:
