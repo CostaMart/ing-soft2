@@ -9,7 +9,9 @@ import pandas as pd
 from pydriller import Repository, Commit
 from model.repo_utils import get_commits, repo_to_use
 from git import Repo
-import subprocess as sp
+import subprocess
+
+
 
 class LocalDAO:
 
@@ -116,10 +118,24 @@ class LocalDAO:
         return list(Repository(rep, only_in_branch= branch, since=datetime(year, 1, 1), to=datetime(year, 12, 31)).traverse_commits())
 
     def getCommit(self, hash: str, rep: str = "repository") -> Commit:
-        return next(Repository(rep, single=hash).traverse_commits())
+        repo = Repository(rep, single=hash)
+        commits = repo.traverse_commits()
+
+        # Cerca il commit con l'hash desiderato
+        for commit in commits:
+            if commit.hash == hash:
+                return commit
+
+        # Se non viene trovato alcun commit con l'hash desiderato, solleva un'eccezione
+        raise ValueError(f"Commit with hash {hash} not found in repository {rep}")
 
     def getCommitsFromDate(self, date: datetime, yearToArrive, repo):
-        return list(Repository(repo, since=date, to=datetime(int(yearToArrive), 12, 31)).traverse_commits())
+        commits = list(Repository(repo, since=date, to=datetime(int(yearToArrive), 12, 31)).traverse_commits())
+
+        if not commits:
+            raise ValueError("No commits found in the specified date range.")
+
+        return commits
 
     def getCommitInInterval(self, start_commit, end_commit, repo_path="repository"):
         # oggetto Repository
@@ -128,14 +144,15 @@ class LocalDAO:
         # Dizionario per salvare i commit nell'intervallo
         commits_in_range = {}
 
+        # Flag per verificare se l'hash di inizio è valido
+        start_commit_valid = not start_commit
+
         # Itera attraverso tutti i commit nel repository nell'intervallo specificato
         for commit in repo.traverse_commits():
             if start_commit and commit.hash == start_commit:
+                start_commit_valid = True
 
-                start_commit = None
-
-            if not start_commit:
-
+            if start_commit_valid:
                 commits_in_range[commit.hash] = {
                     "hash": commit.hash,
                     "date": commit.committer_date
@@ -145,6 +162,18 @@ class LocalDAO:
                 break
 
         return commits_in_range
-    
-    def checkout_to(branch, repo = "repository"):
-        sp.call(["git","checkout", branch], cwd= "repository")
+
+    def checkout_to(self, branch):
+        try:
+            # Esegui il checkout del branch
+            subprocess.check_call(["git", "checkout", branch], cwd= "repository")
+            print(f"Checked out to branch: {branch}")
+        except subprocess.CalledProcessError as e:
+            # Se il branch non esiste, solleva un'eccezione manualmente
+            if "did not match any file(s) known to git" in str(e):
+                print(f"Branch '{branch}' does not exist.")
+                raise
+            else:
+                # Se si verifica un altro errore, rilancia l'eccezione
+                print(f"Error during checkout: {e}")
+                raise

@@ -6,9 +6,11 @@ from backend.start_endpoint import startEndpoint  # Importa il target del proces
 class ComputingEndpointModel:
     _instance = None
 
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(ComputingEndpointModel, cls).__new__(cls)
+            cls.parent_conn = None
         return cls._instance
 
     def activateLocal(self):
@@ -28,8 +30,11 @@ class ComputingEndpointModel:
             self.parent_conn.send({"fun": "ping", "num1": 1, "num2": 2})
             result = self.parent_conn.recv()
             ic(f"La risposta ottenuta è: {result}")
+            return result == 3
+            # Restituisce True se la risposta è quella attesa
         except Exception as e:
             print(f"Errore durante il controllo dell'attività del processo locale: {e}")
+            return False  # Restituisce False in caso di errore
 
     def sendMessageToEndpoint(self, message):
         """Invia un messaggio al processo."""
@@ -46,11 +51,12 @@ class ComputingEndpointModel:
         except Exception as e:
             print(f"Errore durante la ricezione del messaggio dal processo: {e}")
 
-    def isEndpointActive(self):
-        """Verifica se il processo è attivo."""
-        return self.parent_conn.poll()  # True se il processo è attivo, False altrimenti
 
-    def destroy(self) -> None:
+    def destroy(self) -> bool:
         self.parent_conn.send({"fun": "destroy"})
         message = self.parent_conn.recv()
         print(message)
+        if message == "destroy request ok":
+            return True
+        else:
+            return False

@@ -6,9 +6,9 @@ import subprocess
 import urllib.parse
 from icecream import ic
 
-setting = open("settings.json")
-settings = json.load(setting)
-remote_repo = settings['repo']
+# setting = open("settings.json")
+# settings = json.load(setting)
+# remote_repo = settings['repo']
 
 
 

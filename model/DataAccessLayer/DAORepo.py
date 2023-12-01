@@ -38,29 +38,32 @@ class DAORepo:
 
 
 
-    def getRepoByUrl(self, repoUrl: str):
-        splitted = repoUrl.split("/")
-        repoName = splitted[-1]
-        repoOwner = splitted[-2]
-
-        response = requests.get(f'https://api.github.com/repos/{repoOwner}/{repoName}')
-        self.last_http_response = HttpResponse(response.status_code, response.json())
-        if response.status_code == 200:
-            repository_data = response.json()
-            repository = MetadataRepository(repository_data)
-            relesases = self._set_release_tags(repository.owner, repository.full_name)
-            repository.tag_releases = relesases
-
-            return repository
-        else:
-            return None
+    # def getRepoByUrl(self, repoUrl: str):
+    #     splitted = repoUrl.split("/")
+    #     repoName = splitted[-1]
+    #     repoOwner = splitted[-2]
+    #
+    #     response = requests.get(f'https://api.github.com/repos/{repoOwner}/{repoName}')
+    #     self.last_http_response = HttpResponse(response.status_code, response.json())
+    #     if response.status_code == 200:
+    #         repository_data = response.json()
+    #         repository = MetadataRepository(repository_data)
+    #         relesases = self._set_release_tags(repository.owner, repository.full_name)
+    #         repository.tag_releases = relesases
+    #
+    #         return repository
+    #     else:
+    #         return None
 
 
 
     def getRepoList(self, repoName):
+        if repoName == '' or repoName == ' ':
+            return []
         # Solo i repository java
         url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
         response = requests.get(url)
+        print(response.status_code)
         self.last_http_response = HttpResponse(response.status_code, response.json())
         risultati = response.json()["items"]
 
@@ -118,7 +121,17 @@ class DAORepo:
         url = f"https://api.github.com/search/repositories?q=user:{author}+repo:{repo_name}+language:java"
         response = requests.get(url)
         self.last_http_response = HttpResponse(response.status_code, response.json())
-        risultati = response.json()["items"]
+
+        # Verifica se la risposta contiene dati JSON
+        try:
+            json_data = response.json()
+        except ValueError:
+            return None
+
+        # Verifica se la chiave "items" è presente nel dizionario JSON
+        risultati = json_data.get("items")
+        if risultati is None:
+            return None
 
         # Crea una lista di oggetti di tipo Repository
         repositories = []
@@ -131,14 +144,15 @@ class DAORepo:
         return repositories
 
 
-
     def getRepoListByAuthor(self, author):
         url = f"https://api.github.com/search/repositories?q=user:{author}+language:java"
         response = requests.get(url)
+        print("response: ")
+        print(response)
         self.last_http_response = HttpResponse(response.status_code, response.json())
         repositories = []
         if response.status_code == 200:
-            risultati = response.json()['items']  # Accedi alla lista dei repository dentro la chiave "items"
+            risultati = response.json()['items']
             for risultato in risultati:
                 name = risultato['name']
                 html_url = risultato['html_url']
