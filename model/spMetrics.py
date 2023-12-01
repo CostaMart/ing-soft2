@@ -10,6 +10,8 @@ def generate_process_metrics(nome_classe, commits_dict, folder = "repository"):
     """Genera le metriche di processo, è possibile specificare il commit da analizzare e il folder dove è conservata la repository"""
     """Questo metodo dovrà essere utilizzato per fare tutte le analisi disponibili con le metriche di processo"""
     cartella = os.path.abspath(folder)
+    print("\n\n\n\n")
+    print(type(commits_dict))
     if( not os.path.exists(cartella)):
         return -1
     latest_commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=os.path.abspath(folder), text=True).strip()
@@ -19,7 +21,7 @@ def generate_process_metrics(nome_classe, commits_dict, folder = "repository"):
     if  isinstance(commits_dict, str ) or isinstance(commits_dict, int ):
         return -1
     
-    if  isinstance(commits_dict, tuple ):
+    if  isinstance(commits_dict, dict ):
         df_filtrato = pd.DataFrame(list(commits_dict.items()), columns=['Commit Hash', 'Data del Commit'])
         df_filtrato['Data del Commit'] = df_filtrato['Data del Commit'].apply(lambda x: x['date'])
         flag = False
