@@ -18,11 +18,12 @@ from icecream import ic
 def controlla_numero_revisioni_per_classe(classe_filename, folder = "repository"):
     """Metodo che dato il nome di una classe ne calcola il numero di revisioni"""
     repository_path = os.path.abspath(folder)
-    classe_file_path = ru.trova_file_classe(classe_filename)
+    classe_file_path = ru.trova_file_classe(classe_filename, folder)
     # print(classe_file_path)
     if classe_file_path is None:
-        return 0 
-
+        return -1
+    if not os.path.exists(repository_path):
+        return -1 
     repo = git.Repo(repository_path)
     numero_revisioni = 0
 
@@ -36,6 +37,8 @@ def controlla_numero_revisioni_per_classe(classe_filename, folder = "repository"
 def calcola_numero_bug_fix(folder ="repository"):
     """Metodo che calcola i bug fix di un progetto se documentati """
     repository_path = os.path.abspath(folder)
+    if not os.path.exists(repository_path):
+        return -1 
     repo = git.Repo(repository_path)
     numero_bug_fix = 0
 
@@ -47,30 +50,14 @@ def calcola_numero_bug_fix(folder ="repository"):
 
 
 
-def calcola_numero_bug_fix_per_commit_specifico(folder="repository", commit_hash=None):
-    """Calcola il numero di bug fix per un commit specifico se documentati."""
-    repository_path = os.path.abspath(folder)
-    repo = git.Repo(repository_path)
-
-    commit = repo.commit(commit_hash)
-    numero_bug_fix = 0
-
-    parole_chiave = ['fix', 'bug', 'correggi']
-
-    for parola_chiave in parole_chiave:
-        if parola_chiave in commit.message.lower():
-            numero_bug_fix += 1
-    repo.close()
-    return numero_bug_fix
-
-
-
 def calcola_code_churn(file1, file2):
+    if(file1 is None or file2 is None):
+        return -1
     """Calcola il numero di modifiche tra due file e restituisce il risultato"""
     with open(file1, 'r', encoding='utf-8') as f1, open(file2, 'r', encoding='utf-8') as f2:
         lines1 = f1.readlines()
         lines2 = f2.readlines()
-
+    
     # Calcola il diff tra le linee dei due file
     differ = difflib.Differ()
     diff = list(differ.compare(lines1, lines2))
@@ -86,6 +73,8 @@ def calcola_loc(classe_filename, folder = "repository"):
     """Questo metodo calcola le misure LOC di un codice restituendo il 
        numero di linee di codice il numero di linee vuote e il numero di commenti"""
     classe_file_path = ru.trova_file_classe(classe_filename, folder)
+    if(classe_file_path is None or classe_file_path == -1):
+        return -1
     with open(classe_file_path, 'rb') as raw_file:
         raw_data = raw_file.read()
         encoding_info = chardet.detect(raw_data)
@@ -115,8 +104,10 @@ def calcola_loc(classe_filename, folder = "repository"):
 
 def calcola_autori_distinti_per_file(file_name, folder="repository"):
     """Questo metodo calcola il numero di autori distinti per file e ne restituisce una lista di nomi"""
-    file_path = ru.trova_file_classe(file_name)
+    file_path = ru.trova_file_classe(file_name, folder)
     repository_path = os.path.abspath(folder)
+    if file_path is None or file_path == -1 or not os.path.exists(repository_path):
+        return -1
 
     # Esegui il comando Git per ottenere gli autori
     git_command = ['git', 'log', '--format="%an"', '--follow', file_path]
@@ -146,7 +137,11 @@ def calcola_autori_distinti_per_file(file_name, folder="repository"):
 def calcola_settimane_file(class_name, folder = "repository"):
     """Questo metodo calcola l'età del file richiesto in settimane"""
     repository_path = os.path.abspath(folder)
-    file_path = ru.trova_file_classe(class_name)
+    if not os.path.exists(repository_path):
+        return -1
+    file_path = ru.trova_file_classe(class_name, folder)
+    if file_path is None or file_path == -1:
+        return -1
     git_command = f'git log --diff-filter=A --format=%ct -- "{file_path}"'
     result = subprocess.check_output(git_command, cwd=repository_path, shell=True).decode().strip()
 

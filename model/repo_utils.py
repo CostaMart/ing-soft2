@@ -6,9 +6,9 @@ import subprocess
 import urllib.parse
 from icecream import ic
 
-# setting = open("settings.json")
-# settings = json.load(setting)
-# remote_repo = settings['repo']
+setting = open("settings.json")
+settings = json.load(setting)
+remote_repo = settings['repo']
 
 
 
@@ -129,6 +129,8 @@ def delete_garbage(keep, output=None, folder = "output"):
 def trova_file_classe(classe_filename, folder = "repository"):
     """ Questo metodo trova una classe in una repository e ne ritorna il path assoluto """
     repository_path = os.path.abspath(folder)
+    if not os.path.exists(repository_path):
+        return -1
     for root, dirs, files in os.walk(repository_path):
         if classe_filename in files:
             return os.path.join(root, classe_filename)
