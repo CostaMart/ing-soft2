@@ -23,7 +23,7 @@ class LocalDAO:
 
         for root, dirs, files in os.walk(cartella):
             for file in files:
-                if file.endswith(".java") or file.endswith(".py"):
+                if file.endswith(".java") :
                     risultati.append(file)
 
         return risultati
@@ -78,25 +78,20 @@ class LocalDAO:
         return commit_list
 
     def extract_yearsList_with_branches(self, folder="repository"):
-        """ ritorna una lista di tutti gli anni in cui è stato effettuato almeno un commit. Ogni anno è associato ad una lista di branch attivi durante quell'anno """
-        
         repo = repo_to_use(folder)
-
-        years : dict[int, set[str]]
         years = {}
-        
+
         for commit in get_commits(repo):
             commit_date = commit.committer_date
             year = commit_date.year
-            
+
             if year not in years.keys():
                 years[year] = set(ic(commit.branches))
             else:
                 branches = years[year]
-                branches.union(commit.branches)
-                
-            ic(years)    
-            # Converti il set in una lista e restituiscila
+                branches.update(commit.branches)  # Utilizza il metodo 'update' per unire i set
+
+        # Converti il set in una lista e restituiscila
         return years
         
         
