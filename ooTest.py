@@ -15,9 +15,173 @@ import datetime
 import model.repo_utils as ru
 from pydriller import Repository
 import model.Domain as dd
+import model.LocalRepoModel as lrm
+import model.RepoModel as rm
 
 class TestOO(unittest.TestCase):
-    ##### Domain   ###########
+
+    @patch("multiprocessing.Pipe")
+    @patch("multiprocessing.Process")
+    def test_activate_local_success(self, mock_process, mock_pipe):
+        mock_parent_conn = MagicMock()
+        mock_child_conn = MagicMock()
+        mock_pipe.return_value = (mock_parent_conn, mock_child_conn)
+        model_instance = ce.ComputingEndpointModel()
+        model_instance.activateLocal()
+        mock_pipe.assert_called_once()
+        mock_process.assert_called_once_with(target=ce.startEndpoint, args=(mock_child_conn,))
+        mock_process.return_value.start.assert_called_once()
+        self.assertEqual(model_instance.parent_conn, mock_parent_conn)
+
+    def test_new_method_creates_instance(self):
+        instance = ce.ComputingEndpointModel.__new__(ce.ComputingEndpointModel)
+        self.assertIsNotNone(instance)
+        self.assertIsInstance(instance, ce.ComputingEndpointModel)
+
+    def test_new_method_returns_same_instance(self):
+        instance1 = ce.ComputingEndpointModel.__new__(ce.ComputingEndpointModel)
+        instance2 = ce.ComputingEndpointModel.__new__(ce.ComputingEndpointModel)
+        self.assertIs(instance1, instance2)
+
+
+    def test_destroy_success(self):
+        # Set up mock objects
+        mock_parent_conn = MagicMock()
+        mock_parent_conn.recv.return_value = "destroy request ok"
+        computing_model = ce.ComputingEndpointModel()
+        computing_model.parent_conn = mock_parent_conn
+
+        # Call the destroy method
+        result = computing_model.destroy()
+
+        # Assert that send is called with the correct message
+        mock_parent_conn.send.assert_called_once_with({"fun": "destroy"})
+
+        # Assert that recv is called and returns the expected message
+        mock_parent_conn.recv.assert_called_once()
+
+        # Assert the result is True
+        self.assertTrue(result)
+
+    def test_destroy_failure(self):
+        # Set up mock objects
+        mock_parent_conn = MagicMock()
+        mock_parent_conn.recv.return_value = "unexpected message"
+        computing_model = ce.ComputingEndpointModel()
+        computing_model.parent_conn = mock_parent_conn
+
+        # Call the destroy method
+        result = computing_model.destroy()
+
+        # Assert that send is called with the correct message
+        mock_parent_conn.send.assert_called_once_with({"fun": "destroy"})
+
+        # Assert that recv is called and returns an unexpected message
+        mock_parent_conn.recv.assert_called_once()
+
+        # Assert the result is False
+        self.assertFalse(result)
+
+
+
+
+
+    ###### RepoModel  ########
+    @patch('model.DataAccessLayer.DAORepo')
+    def test_get_repo_list_by_name(self, mock_dao_repo):
+        self.repo_model = rm.RepoModel()
+        self.mock_crud_repo = MagicMock()
+        mock_dao_repo.return_value = self.mock_crud_repo
+        expected_repo_list = ['repo1', 'repo2']
+        self.mock_crud_repo.getRepoList.return_value = expected_repo_list
+        repo_list = self.repo_model.getRepoListByName('name')
+        self.assertGreater(len(repo_list), 0)
+
+    @patch('model.DataAccessLayer.DAORepo')
+    def test_get_repo_list_by_author_and_repo_name(self, mock_dao_repo):
+        self.repo_model = rm.RepoModel()
+        self.mock_crud_repo = MagicMock()
+        mock_dao_repo.return_value = self.mock_crud_repo
+        expected_repo_list = ['repo1', 'repo2']
+        self.mock_crud_repo.getJavaRepoListForAuthorAndRepo.return_value = expected_repo_list
+        repo_list = self.repo_model.getRepoListByAuthorAndRepoName('author', 'repo_name')
+        self.assertGreaterEqual(len(repo_list), 0)
+
+    @patch('model.DataAccessLayer.DAORepo')
+    def test_get_repo_list_by_author(self, mock_dao_repo):
+        self.repo_model = rm.RepoModel()
+        self.mock_crud_repo = MagicMock()
+        mock_dao_repo.return_value = self.mock_crud_repo
+        expected_repo_list = ['repo1', 'repo2']
+        self.mock_crud_repo.getRepoListByAuthor.return_value = expected_repo_list
+        repo_list = self.repo_model.getRepoListByAuthor('author')
+        self.assertGreaterEqual(len(repo_list), 0)
+
+
+
+    ##### Fine RepoModel   ###
+    ##### Local Repo Model ###
+
+    @patch('os.makedirs')
+    @patch('builtins.print')   
+    def test__CheckRepoDir_directory_does_not_exist(self, mock_print, mock_makedirs):
+        local_repo_model = lrm.LocalRepoModel()
+        with patch('os.path.exists', return_value=False):
+            local_repo_model._CheckRepoDir()
+        mock_makedirs.assert_called_once_with('repository')
+        mock_print.assert_not_called()
+
+    @patch('os.makedirs', side_effect=OSError("Mocked OSError"))
+    @patch('builtins.print')  
+    def test__CheckRepoDir_directory_creation_error(self, mock_print, mock_makedirs):
+        local_repo_model = lrm.LocalRepoModel()
+        with patch('os.path.exists', return_value=False):
+            local_repo_model._CheckRepoDir()
+        mock_makedirs.assert_called_once_with('repository')
+        mock_print.assert_called_once_with("Errore durante la creazione della cartella: Mocked OSError")
+
+    @patch('os.path.exists', return_value=True)
+    @patch('os.makedirs')
+    @patch('builtins.print')  # If using Python 3
+    def test__CheckRepoDir_directory_exists(self, mock_print, mock_makedirs, mock_exists):
+        local_repo_model = lrm.LocalRepoModel()
+        local_repo_model._CheckRepoDir()
+        mock_makedirs.assert_not_called()
+        mock_print.assert_not_called()
+
+    @patch('model.DataAccessLayer.DAORepo')
+    @patch('model.DataAccessLayer.LocalDAO')
+    def test_getRepoData_returns_correct_value(self, mock_local_dao, mock_dao_repo):
+        self.instance = lrm.LocalRepoModel()
+        expected_repo_data = MagicMock()
+        self.instance.repoData = expected_repo_data
+        result = self.instance.getRepoData()
+        self.assertEqual(result, expected_repo_data)
+
+    @patch('model.DataAccessLayer.DAORepo')
+    @patch('model.DataAccessLayer.LocalDAO')
+    def test_singleton_instance_creation(self, mock_local_dao, mock_dao_repo):
+        instance1 = lrm.LocalRepoModel()
+        self.assertIsInstance(instance1.CRUD, dao.DAORepo)
+        self.assertIsInstance(instance1.LocalDAO, lao.LocalDAO)
+        instance2 = lrm.LocalRepoModel()
+        self.assertIs(instance1, instance2)
+        self.assertIsInstance(instance2.CRUD, dao.DAORepo)
+        self.assertIsInstance(instance2.LocalDAO, lao.LocalDAO)
+
+    @patch('model.DataAccessLayer.DAORepo')
+    @patch('model.DataAccessLayer.LocalDAO')
+    def test_RepoDataUpdate(self, mock_local_dao, mock_dao_repo):
+        local_repo_model = lrm.LocalRepoModel()
+        mock_local_dao.getRepoInfoFromGit.return_value = ('author_name', 'repo_name')
+        mock_dao_repo.getRepoByNameeAuthor.return_value = MagicMock()
+        mock_dao_repo.get_all_release_tag_repo.return_value = MagicMock()
+        result = local_repo_model.RepoDataUpdate()
+        self.assertIsNone(result)
+
+
+    ##### Fine LocalRepoModel #####
+    ##### Domain   ################
     def test_repository(self):
         repository_data = {
             'name': 'repo_name',
@@ -229,7 +393,7 @@ class TestOO(unittest.TestCase):
     #####  functionFactory  ######
     def setUp(self):
             self.factory = FunctionFactory.FunctionFactory()
-
+        
     def test_getExistingFunction(self):
         # Verifica che la funzione esista nel modulo 'compute'
         funct_name = "generate_metrics"
