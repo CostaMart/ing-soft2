@@ -20,7 +20,6 @@ class TestMainPageController(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # Inizializza una nuova istanza di MainPageController prima di ogni test
         cls.controller = MainPageController()
         repoName = 'flatpack'
         url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
@@ -44,7 +43,7 @@ class TestMainPageController(unittest.TestCase):
         classes = self.controller.getAllJavaClassByLocalRepoModel(rootDirectory='repository')
         self.assertIsInstance(classes, list)
 
-
+    # in questo modo vado a coprire il branch dove è true
     def test_get_status_code_from_local_model(self):
         # Mocking the globalModel and its get_status_code method
         mock_global_model = MagicMock()
@@ -90,6 +89,7 @@ class TestMainPageController(unittest.TestCase):
         # attendi thread
         callback.assert_called()
 
+    # test per il branch true
     @patch('os.path.exists', return_value=True)
     @patch('os.path.isdir', return_value=True)
     def test_checkRepo(self, mock_exists, mock_isdir):
@@ -97,6 +97,8 @@ class TestMainPageController(unittest.TestCase):
         result = self.controller.checkRepo()
         self.assertTrue(result)
 
+
+    # test per il branch false
     @patch('os.path.exists', return_value=False)
     @patch('os.path.isdir', return_value=False)
     def test_checkRepo_not_exists(self, mock_exists, mock_isdir):
@@ -126,8 +128,7 @@ class TestMainPageController(unittest.TestCase):
         self.assertFalse(self.controller.update_in_progress)
 
     # Test per request_for_repos
-    def test_request_for_repos_category_A(self):
-        # Categoria A: Query senza attributi (es. "python")
+    def test_request_for_repos_branch_A(self):
         callback_mock = MagicMock()
         self.controller.request_for_repos("python", callback_mock)
 
@@ -141,8 +142,7 @@ class TestMainPageController(unittest.TestCase):
         # Verifica che la callback sia stata chiamata
         callback_mock.assert_called_once()
 
-    def test_request_for_repos_category_B(self):
-        # Categoria B: Query con attributo "author" (es. "author:john")
+    def test_request_for_repos_branch_B(self):
         callback_mock = MagicMock()
         self.controller.request_for_repos("author:john", callback_mock)
 
@@ -156,8 +156,7 @@ class TestMainPageController(unittest.TestCase):
         # Verifica che la callback sia stata chiamata
         callback_mock.assert_called_once()
 
-    def test_request_for_repos_category_C(self):
-        # Categoria C: Query con attributo "repoName" (es. "repoName:example")
+    def test_request_for_repos_branch_C(self):
         callback_mock = MagicMock()
         self.controller.request_for_repos("repoName:flatpack", callback_mock)
         # Verifica che la variabile sia True durante l'esecuzione
@@ -169,8 +168,7 @@ class TestMainPageController(unittest.TestCase):
         # Verifica che la callback sia stata chiamata
         callback_mock.assert_called_once()
 
-    def test_request_for_repos_category_D(self):
-        # Categoria D: Query con entrambi gli attributi author e repoName
+    def test_request_for_repos_branch_D(self):
         callback_mock = MagicMock()
         self.controller.request_for_repos("author:Appendium repoName:flatpack", callback_mock)
 
@@ -187,14 +185,14 @@ class TestMainPageController(unittest.TestCase):
     # Test per get_selected_repo
 
     def test_A_get_selected_repo_valid_url(self):
-        # Categoria A: URL valido
+        # branch valido
         url = self.repo_url
         result = self.controller.get_selected_repo(url)
         self.assertTrue(result)
 
     @patch('subprocess.call')
     def test_z_clone_repository_with_invalid_url(self, mock_subprocess_call):
-        # Configura il mock per simulare un fallimento durante il clone
+        # branch con url non valido
         mock_subprocess_call.side_effect = Exception("Invalid URL")
 
         try:

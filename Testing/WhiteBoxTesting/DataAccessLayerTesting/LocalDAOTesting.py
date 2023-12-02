@@ -43,7 +43,7 @@ class TestLocalDAO(unittest.TestCase):
         daoRepo = DAORepo()
         url_repo = daoRepo.getRepoList("java")[0].url
         local_dao.cloneRepository(url_repo)
-        cloned_files = os.listdir("../../../repository")
+        cloned_files = os.listdir("repository")
         assert cloned_files, "La directory 'repository' non è vuota dopo il clone"
 
     @classmethod
@@ -51,7 +51,7 @@ class TestLocalDAO(unittest.TestCase):
         # Esegue il tearDown finale dell'intero ambiente
         shutil.rmtree("test_project", ignore_errors=True)
         # rimozione della directory repository
-        shutil.rmtree("../../../repository",ignore_errors = True)
+        shutil.rmtree("repository",ignore_errors = True)
 
     def test_findJavaClass(self):
         local_dao = LocalDAO()
@@ -294,7 +294,7 @@ class TestLocalDAO(unittest.TestCase):
     def test_checkout_existing_branch(self):
         # Verifica il checkout di un branch esistente
         test_instance = LocalDAO()
-        repo = git.Repo("../../../repository")
+        repo = git.Repo("repository")
         branches = [str(branch) for branch in repo.branches]
         branch = branches[0]
         test_instance.checkout_to(branch)
@@ -312,7 +312,7 @@ class TestLocalDAO(unittest.TestCase):
             test_instance.checkout_to(nonExistentString)
 
     def get_all_branches(self):
-        repo = git.Repo("../../../repository")
+        repo = git.Repo("repository")
         branches = [str(branch) for branch in repo.branches]
         return branches
 
