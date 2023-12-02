@@ -19,6 +19,7 @@ class DAORepo:
             self.tag_releases = release_tags
         else:
             print("Impossibile impostare i tag delle release.")
+            return None
 
 
     def getRepoByNameeAuthor(self, repoOwner, repoName):
