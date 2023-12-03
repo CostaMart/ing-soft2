@@ -78,10 +78,11 @@ class LocalDAO:
         return commit_list
 
     def extract_yearsList_with_branches(self, folder="repository"):
-        repo = repo_to_use(folder)
+        repo = Repository(folder)
         years = {}
 
-        for commit in get_commits(repo):
+        for commit in repo.traverse_commits():
+            print(commit)
             commit_date = commit.committer_date
             year = commit_date.year
 
@@ -93,7 +94,7 @@ class LocalDAO:
 
         # Converti il set in una lista e restituiscila
         return years
-        
+
         
 
     def getClassListFromGivenCommit(self, commit_hash, repo_path="repository"):
