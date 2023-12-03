@@ -19,9 +19,11 @@ class IngSoftApp(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         ctk.set_appearance_mode("dark")
         self.title("Ing_soft")
-        self.geometry("1900x780")
-        self.minsize(1900, 780)
-        self.maxsize(1600, 1000)
+        self.geometry("1200x800")
+        self.minsize(800, 600)
+        self.maxsize(1920, 1080)
+
+
 
         self.contoller.getLocalRepoData()
 

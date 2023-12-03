@@ -3,7 +3,6 @@ import multiprocessing
 import model.ComputingEndpointModel  as ce
 import backend.functionFactory as FunctionFactory
 import inspect
-from model.FilterProject import  get_all_release_tag_repo
 import model.DataAccessLayer.DAORepo as dao
 import model.DataAccessLayer.LocalDAO as lao
 from unittest.mock import patch, Mock
@@ -19,7 +18,7 @@ import model.LocalRepoModel as lrm
 import model.RepoModel as rm
 
 class TestOO(unittest.TestCase):
-
+    ##### ComputingEndpointModel ######
     @patch("multiprocessing.Pipe")
     @patch("multiprocessing.Process")
     def test_activate_local_success(self, mock_process, mock_pipe):
@@ -43,49 +42,27 @@ class TestOO(unittest.TestCase):
         instance2 = ce.ComputingEndpointModel.__new__(ce.ComputingEndpointModel)
         self.assertIs(instance1, instance2)
 
-
     def test_destroy_success(self):
-        # Set up mock objects
         mock_parent_conn = MagicMock()
         mock_parent_conn.recv.return_value = "destroy request ok"
         computing_model = ce.ComputingEndpointModel()
         computing_model.parent_conn = mock_parent_conn
-
-        # Call the destroy method
         result = computing_model.destroy()
-
-        # Assert that send is called with the correct message
         mock_parent_conn.send.assert_called_once_with({"fun": "destroy"})
-
-        # Assert that recv is called and returns the expected message
         mock_parent_conn.recv.assert_called_once()
-
-        # Assert the result is True
         self.assertTrue(result)
 
     def test_destroy_failure(self):
-        # Set up mock objects
         mock_parent_conn = MagicMock()
         mock_parent_conn.recv.return_value = "unexpected message"
         computing_model = ce.ComputingEndpointModel()
         computing_model.parent_conn = mock_parent_conn
-
-        # Call the destroy method
         result = computing_model.destroy()
-
-        # Assert that send is called with the correct message
         mock_parent_conn.send.assert_called_once_with({"fun": "destroy"})
-
-        # Assert that recv is called and returns an unexpected message
         mock_parent_conn.recv.assert_called_once()
-
-        # Assert the result is False
         self.assertFalse(result)
 
-
-
-
-
+    ##### fine ComputingEndpointModel ######
     ###### RepoModel  ########
     @patch('model.DataAccessLayer.DAORepo')
     def test_get_repo_list_by_name(self, mock_dao_repo):
@@ -116,8 +93,6 @@ class TestOO(unittest.TestCase):
         self.mock_crud_repo.getRepoListByAuthor.return_value = expected_repo_list
         repo_list = self.repo_model.getRepoListByAuthor('author')
         self.assertGreaterEqual(len(repo_list), 0)
-
-
 
     ##### Fine RepoModel   ###
     ##### Local Repo Model ###
@@ -178,7 +153,6 @@ class TestOO(unittest.TestCase):
         mock_dao_repo.get_all_release_tag_repo.return_value = MagicMock()
         result = local_repo_model.RepoDataUpdate()
         self.assertIsNone(result)
-
 
     ##### Fine LocalRepoModel #####
     ##### Domain   ################
