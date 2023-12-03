@@ -4,11 +4,14 @@ import string
 import unittest
 from datetime import datetime
 from unittest import mock
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, Mock
 import git
+from pydriller import Commit, Repository
+from git import Repo
+from model import repo_utils
 from model.DataAccessLayer.DAORepo import DAORepo
 from model.DataAccessLayer.LocalDAO import LocalDAO
-
+from git import Blob
 import os
 import shutil
 import subprocess
@@ -43,15 +46,108 @@ class TestLocalDAO(unittest.TestCase):
         daoRepo = DAORepo()
         url_repo = daoRepo.getRepoList("java")[0].url
         local_dao.cloneRepository(url_repo)
-        cloned_files = os.listdir("../../../repository")
+        cloned_files = os.listdir("repository")
         assert cloned_files, "La directory 'repository' non è vuota dopo il clone"
 
+    @patch('git.Repo')
+    def test_getClassListFromGivenCommit(self, mock_git_repo):
+        # Configurazione del mock del repository Git
+        mock_repo_instance = Mock()
+        mock_git_repo.return_value = mock_repo_instance
+
+        # Configurazione del mock del commit
+        mock_commit_instance = Mock()
+        mock_repo_instance.commit.return_value = mock_commit_instance
+
+        # Configurazione del mock dell'albero del commit
+        mock_tree_instance = Mock()
+        mock_commit_instance.tree = mock_tree_instance
+
+        # Configurazione del mock per il blob
+        mock_blob_instance = Mock(spec= Blob)
+        mock_blob_instance.path = 'test_file.java'
+        mock_tree_instance.traverse.return_value = [mock_blob_instance]
+
+        # Creazione di un'istanza della classe LocalDAO
+        local_dao = LocalDAO()
+
+        # Chiamata al metodo da testare
+        result = local_dao.getClassListFromGivenCommit('fake_commit_hash')
+
+        # Verifica degli assert
+        self.assertEqual(result, {'test_file.java'})
+
+        # Verifica delle chiamate ai metodi del mock
+        mock_git_repo.assert_called_once_with('repository')
+        mock_repo_instance.commit.assert_called_once_with('fake_commit_hash')
+        mock_tree_instance.traverse.assert_called_once()
+
+    @patch('git.Repo')
+    def test_get_commits_with_class(self, mock_git_repo):
+        # Configurazione del mock del repository Git
+        mock_repo_instance = MagicMock()
+        mock_git_repo.return_value = mock_repo_instance
+
+        # Configurazione del mock del commit
+        mock_commit_instance1 = MagicMock(spec=git.Commit)
+        mock_commit_instance2 = MagicMock(spec=git.Commit)
+        mock_commit_instance3 = MagicMock(spec=git.Commit)
+
+
+        # Imposta il ritorno del metodo 'iter_commits' per restituire i mock dei commit
+        mock_repo_instance.iter_commits.return_value = [mock_commit_instance1, mock_commit_instance2, mock_commit_instance3]
+
+        # Configurazione del mock per '_class_exists_in_commit'
+        with patch.object(LocalDAO, '_class_exists_in_commit', side_effect=[True, False, True]):
+            # Creazione di un'istanza della classe LocalDAO
+            local_dao = LocalDAO()
+
+            # Chiamata al metodo da testare
+            result = local_dao.get_commits_with_class('TestClass', 'fake_repo_path')
+
+            # Verifica degli assert
+            self.assertEqual(result, [mock_commit_instance1, mock_commit_instance3])
+
+        # Verifica delle chiamate ai metodi del mock
+        mock_git_repo.assert_called_once_with('fake_repo_path')
+        mock_repo_instance.iter_commits.assert_called_once()
+
+        # Verifica che il metodo '_class_exists_in_commit' sia stato chiamato per ogni commit
+        expected_calls = [unittest.mock.call(mock_commit_instance, 'TestClass') for mock_commit_instance in [mock_commit_instance1, mock_commit_instance2, mock_commit_instance3]]
+
+
+    @patch('pydriller.Repository.traverse_commits')
+    def test_extract_yearsList_with_branches(self, mock_traverse_commits):
+        # Configura il comportamento del mock
+        fake_commit1 = MagicMock()
+        fake_commit1.committer_date = datetime(2022, 1, 1)
+        fake_commit1.branches = ['branch1', 'branch2']
+
+        fake_commit2 = MagicMock()
+        fake_commit2.committer_date = datetime(2022, 1, 1)
+        fake_commit2.branches = ['branch2', 'branch3']
+
+        mock_traverse_commits.return_value = [fake_commit1, fake_commit2]
+
+        # Creazione di un'istanza della tua classe
+        your_instance = LocalDAO()
+
+        # Chiamare il metodo extract_yearsList_with_branches
+        result = your_instance.extract_yearsList_with_branches()
+
+        # Verificare i risultati attesi
+        self.assertEqual(result, {
+            2022: {'branch1', 'branch2', 'branch3'},
+        })
+
+        # Verificare che il metodo traverse_commits sia stato chiamato correttamente
+        mock_traverse_commits.assert_called_once()
     @classmethod
     def tearDownClass(cls):
         # Esegue il tearDown finale dell'intero ambiente
         shutil.rmtree("test_project", ignore_errors=True)
         # rimozione della directory repository
-        shutil.rmtree("../../../repository",ignore_errors = True)
+        shutil.rmtree("repository",ignore_errors = True)
 
     def test_findJavaClass(self):
         local_dao = LocalDAO()
@@ -294,7 +390,7 @@ class TestLocalDAO(unittest.TestCase):
     def test_checkout_existing_branch(self):
         # Verifica il checkout di un branch esistente
         test_instance = LocalDAO()
-        repo = git.Repo("../../../repository")
+        repo = git.Repo("repository")
         branches = [str(branch) for branch in repo.branches]
         branch = branches[0]
         test_instance.checkout_to(branch)
@@ -312,7 +408,7 @@ class TestLocalDAO(unittest.TestCase):
             test_instance.checkout_to(nonExistentString)
 
     def get_all_branches(self):
-        repo = git.Repo("../../../repository")
+        repo = git.Repo("repository")
         branches = [str(branch) for branch in repo.branches]
         return branches
 
