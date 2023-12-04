@@ -41,6 +41,8 @@ def print_current_branch(repository):
 
 def repo_to_use(folder="repository"):
     """Metodo che restituisce un oggetto Repository o None se la cartella non esiste."""
+    if not os.path.exists(folder):
+        return None
     repo_path = os.path.abspath(folder)
 
     try:
@@ -61,6 +63,7 @@ def dataCommit(folder="repository"):
     repo = repo_to_use(folder)
     if repo == -1:
         return -1
+    
     for commit in get_commits(repo):
         commit_hash = commit.hash
         commit_date = commit.committer_date
