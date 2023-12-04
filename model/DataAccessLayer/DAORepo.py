@@ -2,7 +2,7 @@ import requests
 from icecream import ic
 from model.Domain import HttpResponse, Repository, MetadataRepository 
 import os
-from ..FilterProject import  get_all_release_tag_repo
+
 
 
 class DAORepo:
@@ -10,16 +10,6 @@ class DAORepo:
         self.last_http_response = None
 
 
-
-    def _set_release_tags(self, owner, repo_name):
-        """Metodo che setta le versioni delle release nell'oggetto
-                che modella i metadati del progetto github"""
-        release_tags = get_all_release_tag_repo(owner, repo_name)
-        if release_tags:
-            self.tag_releases = release_tags
-        else:
-            print("Impossibile impostare i tag delle release.")
-            return None
 
 
     def getRepoByNameeAuthor(self, repoOwner, repoName):
@@ -30,31 +20,10 @@ class DAORepo:
         if response.status_code == 200:
             repository_data = response.json()
             repository = MetadataRepository(repository_data)
-            relesases = self._set_release_tags(repository.owner, repository.full_name)
-            repository.tag_releases = relesases
 
             return repository
         else:
             return None
-
-
-
-    # def getRepoByUrl(self, repoUrl: str):
-    #     splitted = repoUrl.split("/")
-    #     repoName = splitted[-1]
-    #     repoOwner = splitted[-2]
-    #
-    #     response = requests.get(f'https://api.github.com/repos/{repoOwner}/{repoName}')
-    #     self.last_http_response = HttpResponse(response.status_code, response.json())
-    #     if response.status_code == 200:
-    #         repository_data = response.json()
-    #         repository = MetadataRepository(repository_data)
-    #         relesases = self._set_release_tags(repository.owner, repository.full_name)
-    #         repository.tag_releases = relesases
-    #
-    #         return repository
-    #     else:
-    #         return None
 
 
 

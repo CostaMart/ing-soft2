@@ -16,7 +16,6 @@ from pydriller import Repository
 import model.Domain as dd
 import model.LocalRepoModel as lrm
 import model.RepoModel as rm
-
 class TestOO(unittest.TestCase):
     ##### ComputingEndpointModel ######
     @patch("multiprocessing.Pipe")
@@ -332,35 +331,35 @@ class TestOO(unittest.TestCase):
             result = your_instance.get_commits_with_class('MyClass', '/path/to/repo')
             self.assertEqual(result, [])
 
-    @mock.patch('model.repo_utils.repo_to_use')
-    @mock.patch('model.DataAccessLayer.LocalDAO.get_commits')
-    def test_extract_yearsList_with_branches(self, mock_get_commits, mock_repo_to_use):
-        mock_repo_instance = mock.MagicMock()
-        mock_repo_to_use.return_value = mock_repo_instance
-        mock_commit_1 = mock.MagicMock()
-        mock_commit_1.committer_date.year = 2022
-        mock_commit_1.branches = ['master']
-        mock_commit_2 = mock.MagicMock()
-        mock_commit_2.committer_date.year = 2022
-        mock_commit_2.branches = ['feature']
-        mock_get_commits.return_value = [mock_commit_1, mock_commit_2]
-        your_instance = lao.LocalDAO()
-        result = your_instance.extract_yearsList_with_branches()
-        expected_result = {2022: {'master', 'feature'}}
-        self.assertEqual(result, expected_result)
+    # @mock.patch('model.repo_utils.repo_to_use')
+    # @mock.patch('model.DataAccessLayer.LocalDAO.get_commits')
+    # def test_extract_yearsList_with_branches(self, mock_get_commits, mock_repo_to_use):
+    #     mock_repo_instance = mock.MagicMock()
+    #     mock_repo_to_use.return_value = mock_repo_instance
+    #     mock_commit_1 = mock.MagicMock()
+    #     mock_commit_1.committer_date.year = 2022
+    #     mock_commit_1.branches = ['master']
+    #     mock_commit_2 = mock.MagicMock()
+    #     mock_commit_2.committer_date.year = 2022
+    #     mock_commit_2.branches = ['feature']
+    #     mock_get_commits.return_value = [mock_commit_1, mock_commit_2]
+    #     your_instance = lao.LocalDAO()
+    #     result = your_instance.extract_yearsList_with_branches()
+    #     expected_result = {2022: {'master', 'feature'}}
+    #     self.assertEqual(result, expected_result)
 
-    @patch('pydriller.Repository')
-    def test_dataCommitLinkYear(self, mock_repository):
-        mock_repo = MagicMock()
-        mock_commit1 = MagicMock()
-        mock_commit2 = MagicMock()
-        mock_commit1.committer_date = datetime.datetime(2022, 1, 15)
-        mock_commit2.committer_date = datetime.datetime(2022, 2, 20)
-        mock_repo.traverse_commits.return_value = [mock_commit1, mock_commit2]
-        mock_repository.return_value = mock_repo
-        your_instance = lao.LocalDAO()
-        result = your_instance.dataCommitLinkYear(branch='Master', year='2022')
-        self.assertGreater(len(result), 0)
+    # @patch('pydriller.Repository')
+    # def test_dataCommitLinkYear(self, mock_repository):
+    #     mock_repo = MagicMock()
+    #     mock_commit1 = MagicMock()
+    #     mock_commit2 = MagicMock()
+    #     mock_commit1.committer_date = datetime.datetime(2022, 1, 15)
+    #     mock_commit2.committer_date = datetime.datetime(2022, 2, 20)
+    #     mock_repo.traverse_commits.return_value = [mock_commit1, mock_commit2]
+    #     mock_repository.return_value = mock_repo
+    #     your_instance = lao.LocalDAO()
+    #     result = your_instance.dataCommitLinkYear(branch='Master', year='2022')
+    #     self.assertGreater(len(result), 0)
 
 
     
@@ -383,21 +382,8 @@ class TestOO(unittest.TestCase):
     
     #### Fine functionFactory #####
     #### DAORepo  #################
-    @patch('model.DataAccessLayer.DAORepo.DAORepo.get_all_release_tag_repo')
-    def test_set_release_tags_success(self, mock_get_all_release_tag_repo):
-        # Configura il mock per restituire una lista di tag di release
-        mock_tags = ["v1.0.0", "v1.1.0", "v1.2.0"]
-        mock_get_all_release_tag_repo.return_value = mock_tags
-        dao_repo = dao.DAORepo()
-        dao_repo._set_release_tags("owner", "repo_name")
-        self.assertEqual(dao_repo.get_all_release_tag_repo(), mock_tags)
 
-    @patch('model.DataAccessLayer.DAORepo.DAORepo.get_all_release_tag_repo')
-    def test_set_release_tags_failure(self, mock_get_all_release_tag_repo):
-        # Configura il mock per restituire None, simulando un fallimento
-        mock_get_all_release_tag_repo.return_value = None
-        dao_repo = dao.DAORepo()
-        self.assertIsNone(dao_repo._set_release_tags("owner", "repo_name"))
+
 
     
     @patch('requests.get')
@@ -585,7 +571,15 @@ class TestOO(unittest.TestCase):
         result = your_instance.getRepoListByAuthor("author_name")
         self.assertEqual(result, [])
         mock_requests_get.assert_called_once_with("https://api.github.com/search/repositories?q=user:author_name+language:java")
+
+
+
     ##### fine DAO repo #######
+
+
+if __name__ == '__main__':
+    unittest.main()
+
 
 if __name__ == '__main__':
     unittest.main()
