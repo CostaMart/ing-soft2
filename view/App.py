@@ -19,9 +19,11 @@ class IngSoftApp(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         ctk.set_appearance_mode("dark")
         self.title("Ing_soft")
-        self.geometry("1200x800")
+        self.geometry("+0+0")
+        #self.geometry("1920x1080")
         self.minsize(800, 600)
         self.maxsize(1920, 1080)
+        
 
 
 
@@ -84,3 +86,13 @@ class IngSoftApp(ctk.CTk):
 
         leftPage.place(relwidth=1, relheight=1, rely=0, relx=-l)
         rigPage.place(relwidth=1, relheight=1, rely=0, relx=1 - l)
+
+    def toggle_fullscreen(self, event=None):
+        self.attributes('-fullscreen', not self.attributes('-fullscreen'))
+
+    def exit_fullscreen(self, event=None):
+        self.attributes('-fullscreen', False)
+
+    def on_closing(self):
+        # Aggiungi qui il codice per la chiusura della finestra o l'azione desiderata prima della chiusura
+        self.destroy()
