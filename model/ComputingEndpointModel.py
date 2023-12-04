@@ -6,7 +6,6 @@ from backend.start_endpoint import startEndpoint  # Importa il target del proces
 class ComputingEndpointModel:
     _instance = None
 
-
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(ComputingEndpointModel, cls).__new__(cls)
@@ -16,8 +15,8 @@ class ComputingEndpointModel:
     def activateLocal(self):
         """Richiede l'attivazione del servizio locale."""
         try:
-            self.parent_conn, child_conn = multiprocessing.Pipe()
-            p = multiprocessing.Process(target=startEndpoint, args=(child_conn,))
+            self.parent_conn, self.child_conn = multiprocessing.Pipe()
+            p = multiprocessing.Process(target=startEndpoint, args=(self.child_conn,))
             p.start()
             print(f"Processo avviato con PID: {p.pid}")
         except Exception as e:
@@ -29,7 +28,7 @@ class ComputingEndpointModel:
         try:
             self.parent_conn.send({"fun": "ping", "num1": 1, "num2": 2})
             result = self.parent_conn.recv()
-            ic(f"La risposta ottenuta è: {result}")
+
             return result == 3
             # Restituisce True se la risposta è quella attesa
         except Exception as e:
@@ -51,12 +50,15 @@ class ComputingEndpointModel:
         except Exception as e:
             print(f"Errore durante la ricezione del messaggio dal processo: {e}")
 
-
     def destroy(self) -> bool:
         self.parent_conn.send({"fun": "destroy"})
         message = self.parent_conn.recv()
+
         print(message)
         if message == "destroy request ok":
+            self.child_conn.close()
+            self.parent_conn.close()
+            print("recieved")
             return True
         else:
             return False

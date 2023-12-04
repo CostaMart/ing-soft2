@@ -392,7 +392,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.start_button.pack(anchor = "s", pady= 10)
 
         # configurazione iniziale selettori
-        ic(self.yearList)
+
         self.start_updateStartCommitList(self.yearList[0]) 
         
         

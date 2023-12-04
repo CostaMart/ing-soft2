@@ -9,8 +9,8 @@ import threading
 from customtkinter import CTkProgressBar
 import subprocess as sp
 
+
 class MainPageController:
-   
     def __init__(self):
         super().__init__()
         self.process = None
@@ -18,16 +18,20 @@ class MainPageController:
         self.repoModel = RepoModel()
         self.update_in_progress = False
         self.is_request_for_repos_running = False
-    
+
     def getStatusCodeFromLocalModel(self):
         return self.globalModel.get_status_code()
 
     def getAllJavaClassByLocalRepoModel(self, rootDirectory):
         return self.globalModel.getAllJavaClassProject(rootDirectory=rootDirectory)
 
+    def requestRepoUpdate(
+        self,
+        callbackBefore: Callable[[], None] = None,
+        callbackAfter: Callable[[], None] = None,
+    ):
+        """Metodo che esegue l'aggiornamento del repository scaricato in locale"""
 
-    def requestRepoUpdate(self, callbackBefore: Callable[[], None] = None, callbackAfter: Callable[[], None] = None):
-        """ Metodo che esegue l'aggiornamento del repository scaricato in locale"""
         def toRun():
             # Imposta la variabile a True quando l'aggiornamento è in corso
             self.update_in_progress = True
@@ -47,7 +51,7 @@ class MainPageController:
         thread = threading.Thread(target=toRun)
         thread.start()
 
-    def getRepoData(self):     
+    def getRepoData(self):
         return self.globalModel.getRepoData()
 
     def request_for_repos(self, query, callback: Callable[[List], any]):
@@ -70,7 +74,9 @@ class MainPageController:
 
             # Chiama i metodi del modello in base agli attributi estratti dalla query
             if author_query and repo_name_query:
-                repoList = self.repoModel.getRepoListByAuthorAndRepoName(author_query, repo_name_query)
+                repoList = self.repoModel.getRepoListByAuthorAndRepoName(
+                    author_query, repo_name_query
+                )
             elif author_query:
                 repoList = self.repoModel.getRepoListByAuthor(author_query)
             elif repo_name_query:
@@ -94,21 +100,24 @@ class MainPageController:
         self.globalModel.createLocalRepo(url)
         return True
 
-    def update_branches(self, loadBar: CTkProgressBar, repo = None):
+    def update_branches(self, loadBar: CTkProgressBar, repo=None):
         """downloads branches for the local repository updating given progress bar in real-time"""
         # se ci sono branch aggiuntivi li scarica tutti
         if repo is None:
             repo = Repo("repository")
-        branches = [ref.name for ref in repo.references if "origin" in ref.name and "HEAD" not in ref.name]
+        branches = [
+            ref.name
+            for ref in repo.references
+            if "origin" in ref.name and "HEAD" not in ref.name
+        ]
         print(branches)
         # Verifica se l'elenco dei branch è vuoto prima di calcolare la lunghezza
         if branches:
-            steplen = ic((1 / len(branches)))
+            steplen = 1 / len(branches)
 
             # non so perché nell'implementazione di questa roba la velocità di spostamento della barra viene divisa per 50
             # quindi per farla avanzare di quanto vogliamo noi, moltiplico per 50
             loadBar.configure(determinate_speed=steplen * 50)
-            ic(loadBar._determinate_speed)
             loadBar.update()
 
             for branch in branches:
@@ -124,13 +133,8 @@ class MainPageController:
             print("Nessun branch disponibile")
 
     def checkRepo(self):
-            percorso_git = os.path.join("repository", ".git")
-            if os.path.exists(percorso_git) and os.path.isdir(percorso_git):
-                return True
-            else:
-                return False
-        
-            
-
-            
-           
+        percorso_git = os.path.join("repository", ".git")
+        if os.path.exists(percorso_git) and os.path.isdir(percorso_git):
+            return True
+        else:
+            return False

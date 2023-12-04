@@ -12,9 +12,7 @@ from git import Repo
 import subprocess
 
 
-
 class LocalDAO:
-
     def findJavaClass(self, directory):
         """Metodo che trova tutte le classi di un progetto java"""
         """ Questo metodo cerca tutti i file java in una cartella e ne restituisce una lista di nomi di file """
@@ -23,7 +21,7 @@ class LocalDAO:
 
         for root, dirs, files in os.walk(cartella):
             for file in files:
-                if file.endswith(".java") :
+                if file.endswith(".java"):
                     risultati.append(file)
 
         return risultati
@@ -32,7 +30,9 @@ class LocalDAO:
         """Ottieni le informazioni del repository dal sistema Git."""
 
         os.chdir("repository")
-        result = subprocess.check_output(["git", "remote", "show", "origin"]).decode("utf-8")
+        result = subprocess.check_output(["git", "remote", "show", "origin"]).decode(
+            "utf-8"
+        )
         firstLine = result.split("\n")[1]
         name = firstLine.split("/")[-2]
         repoName = firstLine.split("/")[-1]
@@ -50,8 +50,8 @@ class LocalDAO:
 
         try:
             # clona il repo
-            p = subprocess.call(['git', 'clone', url, "repository"])
-        
+            p = subprocess.call(["git", "clone", url, "repository"])
+
         except Exception as e:
             # Gestisci eccezioni in caso di fallimento del clone
             print(f"Errore durante il clone del repository: {e}")
@@ -65,13 +65,12 @@ class LocalDAO:
             return False
 
     def get_commits_with_class(self, class_name, repo_path):
-        """ recupera nel repo specificato una lista dei commit in cui era presente la calsse dal nome passato come parametro """
+        """recupera nel repo specificato una lista dei commit in cui era presente la calsse dal nome passato come parametro"""
 
         repo = git.Repo(repo_path)
         commit_list = []
 
         for commit in repo.iter_commits():
-
             if self._class_exists_in_commit(commit, class_name):
                 commit_list.append(commit)
 
@@ -90,12 +89,12 @@ class LocalDAO:
                 years[year] = set(ic(commit.branches))
             else:
                 branches = years[year]
-                branches.update(commit.branches)  # Utilizza il metodo 'update' per unire i set
+                branches.update(
+                    commit.branches
+                )  # Utilizza il metodo 'update' per unire i set
 
         # Converti il set in una lista e restituiscila
         return years
-
-        
 
     def getClassListFromGivenCommit(self, commit_hash, repo_path="repository"):
         repo = git.Repo(repo_path)
@@ -111,7 +110,14 @@ class LocalDAO:
     def dataCommitLinkYear(self, branch, year, rep="repository"):
         """Metodo che prende tutti i commit con relativa data in base all'anno e li inserisce in un dataframe che ritorna"""
         year = int(year)
-        return list(Repository(rep, only_in_branch= branch, since=datetime(year, 1, 1), to=datetime(year, 12, 31)).traverse_commits())
+        return list(
+            Repository(
+                rep,
+                only_in_branch=branch,
+                since=datetime(year, 1, 1),
+                to=datetime(year, 12, 31),
+            ).traverse_commits()
+        )
 
     def getCommit(self, hash: str, rep: str = "repository") -> Commit:
         repo = Repository(rep, single=hash)
@@ -126,7 +132,11 @@ class LocalDAO:
         raise ValueError(f"Commit with hash {hash} not found in repository {rep}")
 
     def getCommitsFromDate(self, date: datetime, yearToArrive, repo):
-        commits = list(Repository(repo, since=date, to=datetime(int(yearToArrive), 12, 31)).traverse_commits())
+        commits = list(
+            Repository(
+                repo, since=date, to=datetime(int(yearToArrive), 12, 31)
+            ).traverse_commits()
+        )
 
         if not commits:
             raise ValueError("No commits found in the specified date range.")
@@ -151,7 +161,7 @@ class LocalDAO:
             if start_commit_valid:
                 commits_in_range[commit.hash] = {
                     "hash": commit.hash,
-                    "date": commit.committer_date
+                    "date": commit.committer_date,
                 }
 
             if end_commit and commit.hash == end_commit:
@@ -162,7 +172,7 @@ class LocalDAO:
     def checkout_to(self, branch):
         try:
             # Esegui il checkout del branch
-            subprocess.check_call(["git", "checkout", branch], cwd= "repository")
+            subprocess.check_call(["git", "checkout", branch], cwd="repository")
             print(f"Checked out to branch: {branch}")
         except subprocess.CalledProcessError as e:
             # Se il branch non esiste, solleva un'eccezione manualmente
