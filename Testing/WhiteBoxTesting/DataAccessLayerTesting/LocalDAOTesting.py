@@ -147,7 +147,7 @@ class TestLocalDAO(unittest.TestCase):
         # Esegue il tearDown finale dell'intero ambiente
         shutil.rmtree("test_project", ignore_errors=True)
         # rimozione della directory repository
-        shutil.rmtree("repository",ignore_errors = True)
+        shutil.rmtree("repository", ignore_errors = True)
 
     def test_findJavaClass(self):
         local_dao = LocalDAO()

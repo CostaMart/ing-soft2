@@ -1,8 +1,6 @@
-import os
 import unittest
 from unittest.mock import patch, MagicMock
 import requests
-from model.DataAccessLayer.LocalDAO import LocalDAO
 from model.LocalRepoModel import LocalRepoModel
 
 

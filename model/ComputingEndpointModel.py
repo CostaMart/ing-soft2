@@ -10,6 +10,7 @@ class ComputingEndpointModel:
         if cls._instance is None:
             cls._instance = super(ComputingEndpointModel, cls).__new__(cls)
             cls.parent_conn = None
+            cls.process_pid = None
         return cls._instance
 
     def activateLocal(self):
@@ -18,7 +19,9 @@ class ComputingEndpointModel:
             self.parent_conn, self.child_conn = multiprocessing.Pipe()
             p = multiprocessing.Process(target=startEndpoint, args=(self.child_conn,))
             p.start()
-            print(f"Processo avviato con PID: {p.pid}")
+            self.process_pid = p.pid
+            # Assegna il PID del processo a una variabile di istanza
+            print(f"Processo avviato con PID: {self.process_pid}")
         except Exception as e:
             print(f"Errore durante l'attivazione del processo: {e}")
             raise

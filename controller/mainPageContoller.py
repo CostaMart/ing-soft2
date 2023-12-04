@@ -1,13 +1,12 @@
 from typing import Callable, List
 from icecream import ic
 from git import Repo
-from model.Domain import Repository
 import os
 from model.LocalRepoModel import LocalRepoModel
 from model.RepoModel import RepoModel
 import threading
 from customtkinter import CTkProgressBar
-import subprocess as sp
+
 
 
 class MainPageController:

@@ -1,12 +1,10 @@
 import unittest
-from datetime import datetime
 from unittest import mock
 from unittest.mock import MagicMock, patch
 from pydriller import Commit
 from controller.ProjectMetricsContoller import ProjectMetricsController
 from model import Domain
 from model.ComputingEndpointModel import ComputingEndpointModel
-from pydriller import Repository
 
 from model.LocalRepoModel import LocalRepoModel
 

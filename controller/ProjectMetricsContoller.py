@@ -1,10 +1,6 @@
-
-from typing import List
-
 from model.ComputingEndpointModel import ComputingEndpointModel
 from model.LocalRepoModel import LocalRepoModel
 from model import Domain
-from icecream import ic
 from pydriller import Commit
 from threading import Thread, Lock
 

@@ -1,20 +1,13 @@
 import unittest
-import multiprocessing
 import model.ComputingEndpointModel  as ce
 import backend.functionFactory as FunctionFactory
 import inspect
 import model.DataAccessLayer.DAORepo as dao
 import model.DataAccessLayer.LocalDAO as lao
-from unittest.mock import patch, Mock
 from unittest.mock import patch, MagicMock
-from unittest import TestCase, mock
-import requests
-import subprocess
 import datetime
-import model.repo_utils as ru
-from pydriller import Repository
 import model.Domain as dd
-import model.LocalRepoModel as lrm
+from model import LocalRepoModel as lrm
 import model.RepoModel as rm
 class TestOO(unittest.TestCase):
     ##### ComputingEndpointModel ######
@@ -361,8 +354,6 @@ class TestOO(unittest.TestCase):
     #     result = your_instance.dataCommitLinkYear(branch='Master', year='2022')
     #     self.assertGreater(len(result), 0)
 
-
-    
     #####  functionFactory  ######
     def setUp(self):
             self.factory = FunctionFactory.FunctionFactory()

@@ -1,8 +1,8 @@
 import os
 from typing import List
-from .DataAccessLayer.DAORepo import DAORepo
+from model.DataAccessLayer.DAORepo import DAORepo
 from icecream import ic
-from .DataAccessLayer.LocalDAO import LocalDAO
+from model.DataAccessLayer.LocalDAO import LocalDAO
 from pydriller import Commit
 import subprocess as sp
 

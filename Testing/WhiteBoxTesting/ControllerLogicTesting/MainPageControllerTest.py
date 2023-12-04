@@ -1,15 +1,10 @@
 import os
-import shutil
 import unittest
-from unittest.mock import MagicMock, patch, Mock, create_autospec
-from typing import List, Callable
+from unittest.mock import MagicMock, patch, Mock
 import requests
-from git import Repo
 import git
-from git import Reference
 
 from controller.mainPageContoller import MainPageController
-from model.LocalRepoModel import LocalRepoModel
 
 
 class TestMainPageController(unittest.TestCase):
