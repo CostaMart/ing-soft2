@@ -5,6 +5,7 @@ import model.repo_utils as ru
 from pydriller import Repository
 from pandas import DataFrame
 import model.spMetrics as sp
+from git import Repo
 class TestMetriche(unittest.TestCase):
 
     repository = "testingMetriche\\Prova-per-ing-soft"
@@ -35,6 +36,8 @@ class TestMetriche(unittest.TestCase):
         self.assertLessEqual(result, 0)  
         # Test with invalid folder
         result = pm.controlla_numero_revisioni_per_classe(self.classe, folder =self.invalidFolder)
+        self.assertLessEqual(result, 0)
+        result = pm.controlla_numero_revisioni_per_classe(self.invalidClasse, folder =self.invalidFolder)
         self.assertLessEqual(result, 0)
 
     def test_calcola_numero_bug_fix(self):
@@ -67,6 +70,8 @@ class TestMetriche(unittest.TestCase):
         # caso cartella cattiva
         result = pm.calcola_loc(self.classe, folder =self.invalidFolder)
         self.assertLessEqual(result, 0)
+        result = pm.calcola_loc(self.invalidClasse, folder =self.invalidFolder)
+        self.assertLessEqual(result, 0)
 
     def test_calcola_autori_distinti_per_file(self):
         # tutto buono
@@ -77,6 +82,8 @@ class TestMetriche(unittest.TestCase):
         self.assertLessEqual(result, 0)
         # caso cartella cattiva
         result = pm.calcola_autori_distinti_per_file(self.classe, folder =self.invalidFolder)
+        self.assertLessEqual(result, 0)
+        result = pm.calcola_autori_distinti_per_file(self.invalidClasse, folder =self.invalidFolder)
         self.assertLessEqual(result, 0)
 
     def test_calcola_settimane_file(self):
@@ -89,21 +96,18 @@ class TestMetriche(unittest.TestCase):
         # caso cartella cattiva
         result = pm.calcola_settimane_file(self.classe, folder =self.invalidFolder)
         self.assertLessEqual(result, 0)
+        result = pm.calcola_settimane_file(self.invalidClasse, folder =self.invalidFolder)
+        self.assertLessEqual(result, 0)
     
     ##### FINE TESTING PROCESS METRICS #####
     ##### INIZIO TESTING REPO UTILS ########
 
     def test_repo_to_use(self):
         result = ru.repo_to_use(self.repository)
-        self.assertIsInstance(result, Repository)
+        self.assertIsInstance(result, Repo)
         result = ru.repo_to_use(self.invalidFolder)
-        self.assertLess(result, 0)
+        self.assertIsNone(result)
 
-    def test_data_commit(self): 
-        result = ru.dataCommit(self.repository)
-        self.assertIsInstance(result, DataFrame)
-        result = ru.dataCommit(self.invalidFolder)
-        self.assertLess(result, 0)
 
     def test_data_commit_link(self):
         result = ru.dataCommitLink(Repository(self.repository))
@@ -149,12 +153,6 @@ class TestMetriche(unittest.TestCase):
         result = ru.get_commit_date("nessuno", self.invalidFolder)
         self.assertIsNone(result)
 
-    def test_extract_years_from_commits(self):
-        result = ru.extract_years_from_commits(self.repository)
-        self.assertIsInstance(result, list)
-        result = ru.extract_years_from_commits(self.invalidFolder)
-        self.assertLess(result, 0)
-
     ###### FINE TESTING REPO UTILS  ########
     ###### INIZIO TESTING SP-METRICS #######
     
@@ -169,8 +167,12 @@ class TestMetriche(unittest.TestCase):
         self.assertLess(result, 0)
         result = sp.generate_process_metrics(self.invalidClasse, 11, self.invalidFolder)
         self.assertLess(result, 0)
-
-    
+        result = sp.generate_process_metrics(self.invalidClasse, "qualcosanonBuono", self.repository)
+        self.assertLess(result, 0)
+        result = sp.generate_process_metrics(self.classe, "qualcosanonBuono", self.invalidFolder)
+        self.assertLess(result, 0)
+        result = sp.generate_process_metrics(self.invalidClasse, self.diction, self.invalidFolder)
+        self.assertLess(result, 0)
 
 
 if __name__ == '__main__':
