@@ -35,6 +35,7 @@ class TestLocalDAO(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        print("sto eseguendo TestLocalDAO")
         # Questo metodo verrà eseguito una sola volta prima di tutti i test
         # Configura l'ambiente di test
         cls.test_directory = "repository"

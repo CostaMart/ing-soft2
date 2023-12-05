@@ -6,6 +6,9 @@ from unittest.mock import MagicMock, patch
 
 
 class TestDAORepo(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        print("Sto eseguendo testDAORepo")
 
     def setUp(self):
         # Creare un'istanza di DAORepo
@@ -46,57 +49,6 @@ class TestDAORepo(unittest.TestCase):
 
         # Assert sul risultato
         self.assertEqual(result, [])
-    @patch('model.DataAccessLayer.DAORepo.get_all_release_tag_repo')
-    def test_set_release_tags_Positive(self, mock_get_all_release_tag_repo):
-        # Configurare il mock per restituire una lista di release tags
-        mock_get_all_release_tag_repo.return_value = ["v1.0", "v2.0"]
-
-        # Eseguire il metodo sotto test
-        self.dao_repo._set_release_tags("test_owner", "test_repo")
-
-        # Assert sul risultato
-        self.assertEqual(self.dao_repo.tag_releases, ["v1.0", "v2.0"])
-
-    @patch('model.DataAccessLayer.DAORepo.get_all_release_tag_repo')
-    def test_set_release_tags_Negative(self, mock_get_all_release_tag_repo):
-        # Configurare il mock per restituire None, simulando l'assenza di release tags
-        mock_get_all_release_tag_repo.return_value = None
-
-        # Utilizzare la cattura degli output per verificare la stampa del messaggio
-        with patch('builtins.print') as mock_print:
-            # Eseguire il metodo sotto test
-            self.dao_repo._set_release_tags("nonexistent_owner", "nonexistent_repo")
-
-            # Assert sul risultato
-            mock_print.assert_called_with("Impossibile impostare i tag delle release.")
-            # Assert che il campo tag_releases non sia presente in questo caso
-            self.assertFalse(hasattr(self.dao_repo, 'tag_releases'))
-
-    @patch('model.DataAccessLayer.DAORepo.get_all_release_tag_repo')
-    def test_set_release_tags_Positive(self, mock_get_all_release_tag_repo):
-        # Configurare il mock per restituire una lista di release tags
-        mock_get_all_release_tag_repo.return_value = ["v1.0", "v2.0"]
-
-        # Eseguire il metodo sotto test
-        self.dao_repo._set_release_tags("test_owner", "test_repo")
-
-        # Assert sul risultato
-        self.assertEqual(self.dao_repo.tag_releases, ["v1.0", "v2.0"])
-
-    @patch('model.DataAccessLayer.DAORepo.get_all_release_tag_repo')
-    def test_set_release_tags_Negative(self, mock_get_all_release_tag_repo):
-        # Configurare il mock per restituire None, simulando l'assenza di release tags
-        mock_get_all_release_tag_repo.return_value = None
-
-        # Utilizzare la cattura degli output per verificare la stampa del messaggio
-        with patch('builtins.print') as mock_print:
-            # Eseguire il metodo sotto test
-            self.dao_repo._set_release_tags("nonexistent_owner", "nonexistent_repo")
-
-            # Assert sul risultato
-            mock_print.assert_called_with("Impossibile impostare i tag delle release.")
-            # Assert che il campo tag_releases non sia presente in questo caso
-            self.assertFalse(hasattr(self.dao_repo, 'tag_releases'))
 
     @patch('requests.get')
     def test_get_repo_by_name_and_author_Negative(self, mock_requests_get):

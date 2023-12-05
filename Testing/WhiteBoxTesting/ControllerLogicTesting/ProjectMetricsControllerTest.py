@@ -10,6 +10,9 @@ from model.LocalRepoModel import LocalRepoModel
 
 
 class TestProjectMetricsController(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        print("sto eseguendo project metrics controller test")
 
     def setUp(self):
         # Create a mock for LocalRepoModel

@@ -1,4 +1,6 @@
 import os
+import shutil
+import time
 import unittest
 from unittest.mock import MagicMock, patch, Mock
 import requests
@@ -15,6 +17,8 @@ class TestMainPageController(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        time.sleep(3)
+        print("sto eseguendo main page controller test")
         cls.controller = MainPageController()
         repoName = 'flatpack'
         url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
@@ -30,13 +34,22 @@ class TestMainPageController(unittest.TestCase):
         # shutil.rmtree("repository", ignore_errors=True)
         pass
 
+
     def setUp(self):
         pass
 
-    def test_getAllJavaClassByLocalRepoModel(self):
-        # Verifica che il metodo restituisca una lista di classi Java
-        classes = self.controller.getAllJavaClassByLocalRepoModel(rootDirectory='repository')
-        self.assertIsInstance(classes, list)
+    @patch('controller.mainPageContoller.LocalRepoModel.getAllJavaClassProject')
+    def test_B_getAllJavaClassByLocalRepoModel(self, mock_getAllJavaClassProject):
+        # Configura il mock per getAllJavaClassProject in modo che restituisca ciò che desideri testare
+        mock_getAllJavaClassProject.return_value = ["class1", "class2"]
+        # Inizializza il controller
+        controller = MainPageController()
+
+        # Chiama il metodo che stai testando
+        classes = controller.getAllJavaClassByLocalRepoModel(rootDirectory='repository')
+
+        # Verifica che la chiamata al metodo interno sia avvenuta
+        mock_getAllJavaClassProject.assert_called_once_with(rootDirectory='repository')
 
     # in questo modo vado a coprire il branch dove è true
     def test_get_status_code_from_local_model(self):

@@ -7,9 +7,9 @@ from icecream import ic
 from datetime import datetime
 from git import Repo, InvalidGitRepositoryError
 
-setting = open("settings.json")
-settings = json.load(setting)
-remote_repo = settings['repo']
+# setting = open("settings.json")
+# settings = json.load(setting)
+# remote_repo = settings['repo']
 
 
 def check_repo(folder="repository"):
