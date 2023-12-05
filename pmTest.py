@@ -5,26 +5,103 @@ import model.repo_utils as ru
 from pydriller import Repository
 from pandas import DataFrame
 import model.spMetrics as sp
+import model.git_ck as ck
 from git import Repo
+import pandas as pd
+import subprocess
 class TestMetriche(unittest.TestCase):
 
-    repository = "testingMetriche\\Prova-per-ing-soft"
+    repository = "TestingMetriche\\Prova-per-ing-soft"
     repo_fuori = "testingMetriche"
     classe = "azz.java"
     invalidClasse = "104.java"
     invalidFolder = "104"
     file1 = "papa.txt"
     file2 = "angelone.txt"
-    commit = "615c5403d94b89eb6380b1832f31afd5caab995a"
+    commit = "b4e3ae581bb983d394e38606a08bb9f172d9f59b"
     diction = [('615c5403d94b89eb6380b1832f31afd5caab995a', '2023-11-06 16:18:49+01:00'),
  ('cbdd35d610093c131a1f7a03d1b6b4c5ff020bdc', '2023-11-06 16:25:13+01:00'),
  ('b4e3ae581bb983d394e38606a08bb9f172d9f59b', '2023-11-06 16:26:42+01:00')]
+    invalidCommit = "sonoInvalido"
+    repositoryCK = "testingMetriche\\ck\\Prova-per-ing-soft"
+    measure = "cbo"
+    measures =["cbo", "wmc", "dit", "noc", "rfc", "lcom"]
 
 
 
 
 
 
+
+    ######   INIZIO TESTING git_ck            ######
+    def test_v__ckmetrics_for_single_commit(self):
+        ck.ck_metrics_for_single_commit(self.commit, folder=self.repositoryCK)
+        file_name = self.commit + "class.csv"
+        output_dir = os.path.abspath("output")
+        file_path = os.path.join(output_dir, file_name)
+        if os.path.exists(file_path):
+            assert True
+        result = ck.ck_metrics_for_single_commit(self.invalidCommit,folder = self.repositoryCK)
+        self.assertLess(result, 0)
+        result = ck.ck_metrics_for_single_commit(self.invalidCommit, folder = self.invalidFolder)
+        self.assertLess(result, 0)
+        result = ck.ck_metrics_for_single_commit(self.commit,folder = self.repositoryCK)
+        self.assertLess(result, 0)
+
+
+
+    def test_w_commit_measure_avg(self):
+        current_directory = os.getcwd()
+        parent_directory = os.path.dirname(current_directory)
+        parent1 = os.path.dirname(parent_directory)
+        parent2 = os.path.dirname(parent1)
+        os.chdir(parent2)
+        result = ck.commit_measure_avg(self.measure, self.commit+"class.csv")
+        if(result == "nan"):
+            assert True
+        result = ck.commit_measure_avg("tizio", "caio")
+        self.assertLess(result, 0)
+        result = ck.commit_measure_avg(self.measure, "caio")
+        self.assertLess(result, 0)
+        result = ck.commit_measure_avg("tizio", self.commit+"class.csv")
+        self.assertIsNone(result)
+        
+    def test_x_analyze_commits_for_interval(self):
+        df_filtrato = pd.DataFrame(self.diction, columns=['Commit Hash', 'Data del Commit'])
+        df_filtrato['Data del Commit'] = pd.to_datetime(df_filtrato['Data del Commit'], utc=True)
+        result = ck.analyze_commits_for_interval(df_filtrato, self.repositoryCK, output="TESTCODECK")
+        self.assertIsInstance(result, DataFrame)
+        result = ck.analyze_commits_for_interval(df_filtrato, self.invalidFolder, output="TESTCODECK")
+        self.assertIsNone(result)
+        result = ck.analyze_commits_for_interval("qualcosaDiInvalido" ,self.invalidFolder, output="TESTCODECK")
+        self.assertIsNone(result)
+        result = ck.analyze_commits_for_interval("qualcosaDiInvalido" ,self.repositoryCK, output="TESTCODECK")
+        self.assertIsNone(result)
+
+    def test_y_commits_measure_interval(self):
+        df_filtrato = pd.DataFrame(self.diction, columns=['Commit Hash', 'Data del Commit'])
+        df_filtrato['Data del Commit'] = pd.to_datetime(df_filtrato['Data del Commit'], utc=True)
+        result = ck.commit_measure_interval(self.measures,df_filtrato, self.repositoryCK, output="TESTCODECK")
+        self.assertIsInstance(result, DataFrame)
+        current_directory = os.getcwd()
+        parent_directory = os.path.dirname(current_directory)
+        parent1 = os.path.dirname(parent_directory)
+        parent2 = os.path.dirname(parent1)
+        os.chdir(parent2)
+        result = ck.commit_measure_interval(self.measures,df_filtrato, self.invalidFolder, output="TESTCODECK")
+        self.assertIsNone(result)
+        result = ck.commit_measure_interval(self.measures,"qualcosaDiInvalido" ,self.invalidFolder, output="TESTCODECK")
+        self.assertIsNone(result)
+        result = ck.commit_measure_interval(self.measures,"qualcosaDiInvalido" ,self.repositoryCK, output="TESTCODECK")
+        self.assertIsNone(result)
+        result = ck.commit_measure_interval("tipo",df_filtrato, self.repositoryCK, output="TESTCODECK")
+        self.assertIsNone(result)
+        result = ck.commit_measure_interval("tipo",df_filtrato, self.invalidFolder, output="TESTCODECK")
+        self.assertIsNone(result)
+        result = ck.commit_measure_interval("tipo","qualcosaDiInvalido" ,self.invalidFolder, output="TESTCODECK")
+        self.assertIsNone(result)
+        result = ck.commit_measure_interval("tipo","qualcosaDiInvalido" ,self.repositoryCK, output="TESTCODECK")
+        self.assertIsNone(result)
     
     ######   INIZIO TESTING PROCESS METRICS   ######
     def test_controlla_numero_revisioni_per_classe(self):
@@ -173,6 +250,24 @@ class TestMetriche(unittest.TestCase):
         self.assertLess(result, 0)
         result = sp.generate_process_metrics(self.invalidClasse, self.diction, self.invalidFolder)
         self.assertLess(result, 0)
+
+    def test_sp_generate_metrics_ck(self):
+        result = sp.generate_metrics_ck(self.diction, self.repositoryCK, self.measures)
+        self.assertIsInstance(result, DataFrame)
+        result = sp.generate_metrics_ck("qualcosanonBuono", self.repositoryCK, self.measures)
+        self.assertLess(result, 0)
+        result = sp.generate_metrics_ck(self.diction, self.invalidFolder, self.measures)
+        self.assertLess(result, 0)
+        result = sp.generate_metrics_ck(11, self.invalidFolder, "niente")
+        self.assertLess(result, 0)
+        result = sp.generate_metrics_ck("qualcosanonBuono", self.repositoryCK, "niente")
+        self.assertLess(result, 0)
+        result = sp.generate_metrics_ck("qualcosanonBuono", self.invalidFolder, "niente")
+        self.assertLess(result, 0)
+        result = sp.generate_metrics_ck(self.diction, self.invalidFolder, "niente")
+        self.assertLess(result, 0)
+        result = sp.generate_metrics_ck(self.diction, self.repositoryCK, "niente")
+        self.assertIsInstance(result, DataFrame)
 
 
 if __name__ == '__main__':

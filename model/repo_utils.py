@@ -19,7 +19,7 @@ def check_repo(folder="repository"):
         if content is not None:
             return 0
     else:
-        clone_repo()
+        clone_repo(folder)
 
 
 def check_folder(folder="output"):

@@ -72,14 +72,25 @@ def generate_process_metrics(nome_classe, commits_dict, folder = "repository"):
 
 
 
-def generate_metrics_ck(commits_dict, folder = "repository", measures =["cbo", "wmc", "dit", "noc", "rfc", "lcom"]):
+def generate_metrics_ck(commits_dict, folder = "repository", measures =["cbo", "wmc", "dit", "noc", "rfc", "lcom"], output = None):
     """Genera le metriche ad oggetti , questo metodo prende la release da cui si vuole partire(opzionale), trova i commit e li inserisce in un dataframe"""
     """Poi li filtra dal commit dopo la release precedente, alla release scelta e ritorna il primo dataframe filtrato,"""
     """Una volta richiamato il metodo, se gli si passa il dataframe e i due hash per cui si vuole avere l'intervallo di analisi, filtra di nuovo il df e analizza"""
+    cartella = os.path.abspath(folder)
+    if( not os.path.exists(cartella)):
+        return -1
     latest_commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=os.path.abspath(folder), text=True).strip()
-    df_filtrato = pd.DataFrame(list(commits_dict.items()), columns=['Commit Hash', 'Data del Commit'])
-    df_filtrato['Data del Commit'] = df_filtrato['Data del Commit'].apply(lambda x: x['date'])
-    commit=ck.commit_measure_interval(measures, df_filtrato, folder)
+    if(isinstance(commits_dict, str ) or isinstance(commits_dict, int)):
+        return -1
+    
+    if(isinstance(commits_dict, dict )):
+        df_filtrato = pd.DataFrame(list(commits_dict.items()), columns=['Commit Hash', 'Data del Commit'])
+        df_filtrato['Data del Commit'] = df_filtrato['Data del Commit'].apply(lambda x: x['date'])
+    else:
+        df_filtrato = pd.DataFrame(commits_dict, columns=['Commit Hash', 'Data del Commit'])
+        df_filtrato['Data del Commit'] = pd.to_datetime(df_filtrato['Data del Commit'], utc=True)
+    
+    commit=ck.commit_measure_interval(measures, df_filtrato, folder, output= output)
     if(commit.empty): 
         print("Non ci sono commit disponibili")
         ru.checkout_commit(latest_commit_hash)
