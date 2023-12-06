@@ -24,13 +24,15 @@ if __name__ == "__main__":
     run_tests(test_paths_1)
 
     test_paths = [
-        "Testing/WhiteBoxTesting/DataAccessLayerTesting/LocalDAOTesting.py",
-        "Testing/WhiteBoxTesting/ControllerLogicTesting/MainPageControllerTest.py",
-        "Testing/WhiteBoxTesting/ModelTesting/LocalRepoModelTestingWhiteBox.py",
-        "Testing/WhiteBoxTesting/ModelTesting/RepoModelTest.py",
-        "Testing/WhiteBoxTesting/DataAccessLayerTesting/DAORepoTesting.py",
-        "Testing/WhiteBoxTesting/ModelTesting/ComputingEndpointModelTest.py",
-        "Testing/WhiteBoxTesting/ControllerLogicTesting/ProjectMetricsControllerTest.py",
+        "LocalDAOTesting.py",
+        "MainPageControllerTest.py",
+        "LocalRepoModelTestingWhiteBox.py",
+        "RepoModelTest.py",
+        "DAORepoTesting.py",
+        "ComputingEndpointModelTest.py",
+        "ProjectMetricsControllerTest.py",
+        "ooTest.py",
+        "pmTest.py"
     ]
 
     exit_code = run_tests(test_paths)

@@ -8,7 +8,6 @@ from unittest.mock import MagicMock, patch, Mock
 import git
 from pydriller import Commit, Repository
 from git import Repo
-from model import repo_utils
 from model.DataAccessLayer.DAORepo import DAORepo
 from model.DataAccessLayer.LocalDAO import LocalDAO
 from git import Blob
