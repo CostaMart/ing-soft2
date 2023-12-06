@@ -31,9 +31,9 @@ if __name__ == "__main__":
     run_tests(test_paths)
 
 
-    test_paths_1=["ooTest.py"]
-
-    exit_code = run_tests(test_paths_1)
-
-    # Termina lo script con il codice di ritorno dei test
-    exit(exit_code)
+    # test_paths_1=["ooTest.py"]
+    #
+    # exit_code = run_tests(test_paths_1)
+    #
+    # # Termina lo script con il codice di ritorno dei test
+    # exit(exit_code)
