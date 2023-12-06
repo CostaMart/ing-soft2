@@ -28,9 +28,8 @@ class TestMetriche(unittest.TestCase):
     measure = "cbo"
     measures =["cbo", "wmc", "dit", "noc", "rfc", "lcom"]
 
-    @classmethod
-    def setUpClass(cls):
-        controllaSeStaTutto()
+
+
 
 
 
@@ -271,58 +270,48 @@ class TestMetriche(unittest.TestCase):
         result = sp.generate_metrics_ck(self.diction, self.repositoryCK, "niente")
         self.assertIsInstance(result, DataFrame)
 
-
 def controllaSeStaTutto():
     nome_directory = 'TestingMetriche'
     cartella_prova_ing_soft = 'Prova-per-ing-soft'
     percorso_directory = os.path.join(os.getcwd(), nome_directory)
-
     if not os.path.exists(percorso_directory):
         os.makedirs(percorso_directory)
         print(f"La directory '{nome_directory}' è stata creata con successo.")
     else:
         print(f"La directory '{nome_directory}' esiste già.")
-
-    nome_directory2 = 'TestingMetriche' + os.sep + 'ck'
+    nome_directory2 = 'TestingMetriche\\ck'
     percorso_directory2 = os.path.join(os.getcwd(), nome_directory2)
-
     if not os.path.exists(percorso_directory2):
         os.makedirs(percorso_directory2)
         print(f"La directory '{nome_directory2}' è stata creata con successo.")
     else:
         print(f"La directory '{nome_directory2}' esiste già.")
-
     file_papa = 'papa.txt'
-    path_papa = os.path.join(percorso_directory, file_papa)
-
+    path_papa = percorso_directory + '\\' + file_papa
     file_angelone = 'angelone.txt'
-    path_angelone = os.path.join(percorso_directory, file_angelone)
-
+    path_angelone = percorso_directory+ '\\'+ file_angelone
     contenuto_papa = 'angelone'
     contenuto_angelone = "angelone\nil mio pap"
-
     if not os.path.exists(path_papa) and not os.path.exists(path_angelone):
         with open(path_papa, 'w') as file:
             file.write(contenuto_papa)
             print(f"Contenuto scritto in '{file_papa}': '{contenuto_papa}'")
-
         with open(path_angelone, 'w') as file:
             file.write(contenuto_angelone)
             print(f"Contenuto scritto in '{file_angelone}': '{contenuto_angelone}'")
     else:
         print(f"I file '{file_papa}' e '{file_angelone}' esistono già.")
-
     percorso_cartella_prova_ing_soft = os.path.join(percorso_directory, cartella_prova_ing_soft)
     percorso_cartella_prova_ck = os.path.join(percorso_directory2, cartella_prova_ing_soft)
-
     if not os.path.exists(percorso_cartella_prova_ck):
-        # Aggiungi qui la logica per clone_repo() su Linux
-        print(f"Clonare il repository in '{percorso_cartella_prova_ck}' su Linux")
+        ru.clone_repo(folder = percorso_cartella_prova_ck)
 
     if not os.path.exists(percorso_cartella_prova_ing_soft):
-        # Aggiungi qui la logica per clone_repo() su Linux
-        print(f"Clonare il repository in '{percorso_cartella_prova_ing_soft}' su Linux")
+        ru.clone_repo(percorso_cartella_prova_ing_soft)
+
+
 
 
 if __name__ == '__main__':
+    controllaSeStaTutto()
     unittest.main()
