@@ -1,6 +1,7 @@
 import os
 import random
 import string
+import time
 import unittest
 from datetime import datetime
 from unittest import mock
@@ -34,6 +35,7 @@ class TestLocalDAO(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        time.sleep(4)
         print("sto eseguendo TestLocalDAO")
         # Questo metodo verrà eseguito una sola volta prima di tutti i test
         # Configura l'ambiente di test
@@ -44,7 +46,7 @@ class TestLocalDAO(unittest.TestCase):
         # test di clone del repository
         local_dao = LocalDAO()
         daoRepo = DAORepo()
-        url_repo = daoRepo.getRepoList("java")[0].url
+        url_repo = "https://github.com/Appendium/flatpack"
         local_dao.cloneRepository(url_repo)
         cloned_files = os.listdir("repository")
         assert cloned_files, "La directory 'repository' non è vuota dopo il clone"

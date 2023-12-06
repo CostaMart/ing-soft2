@@ -1,42 +1,43 @@
+
 import subprocess
 
-def run_tests(test_paths):
-    for path in test_paths:
-        # Esegui i test uno alla volta
-        cmd = ["pytest", "-s", path, "--verbose", "--color=yes"]
-        result = subprocess.run(cmd, capture_output=True, text=True)
+def run_tests(path):
+    # Esegui il test corrente
+    cmd = ["pytest", "-s", path, "--verbose", "--color=yes"]
+    result = subprocess.run(cmd, capture_output=True, text=True)
 
-        # Stampa l'output dei test
-        print(result.stdout)
+    # Stampa l'output dei test
+    print(result.stdout)
 
-        # Se ci sono errori nei test, stampa l'output di errore
-        if result.returncode != 0:
-            print(result.stderr)
-            return result.returncode  # Termina immediatamente se un test fallisce
-
-    # Tutti i test sono stati eseguiti con successo
-    return 0
+    # Se ci sono errori nei test, stampa l'output di errore
+    if result.returncode != 0:
+        print(result.stderr)
+        return False  # Restituisci False se un test fallisce
+    else:
+        return True  # Restituisci True se il test ha successo
 
 if __name__ == "__main__":
-
-    test_paths_1=["ooTest.py"]
-
-    run_tests(test_paths_1)
-
-    test_paths = [
-        "LocalDAOTesting.py",
+    # Lista dei percorsi dei test da eseguire
+    test_paths_list = [
         "MainPageControllerTest.py",
+        "ooTest.py",
         "LocalRepoModelTestingWhiteBox.py",
         "RepoModelTest.py",
+        "LocalDAOTesting.py",
         "DAORepoTesting.py",
         "ComputingEndpointModelTest.py",
-        "ProjectMetricsControllerTest.py",
-        "ooTest.py",
-        "pmTest.py"
-    ]
+        "ProjectMetricsControllerTest.py"]
 
-    exit_code = run_tests(test_paths)
+    # Esegui i test uno alla volta per ciascuna lista di test
+    success = True
+    for test_path in test_paths_list:
+        if not run_tests(test_path):
+            success = False  # Imposta success a False se un test fallisce
 
-
-    # Termina lo script con il codice di ritorno dei test
-    exit(exit_code)
+    # Restituisci un codice di uscita appropriato
+    if success:
+        print("Tutti i test sono stati eseguiti con successo.")
+        exit(0)
+    else:
+        print("Almeno un test ha fallito.")
+        exit(1)

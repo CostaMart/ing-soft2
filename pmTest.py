@@ -29,10 +29,9 @@ class TestMetriche(unittest.TestCase):
     measures =["cbo", "wmc", "dit", "noc", "rfc", "lcom"]
 
 
-
-
-
-
+    @classmethod
+    def setUpClass(cls):
+        controllaSeStaTutto()
 
     ######   INIZIO TESTING git_ck            ######
     def test_v__ckmetrics_for_single_commit(self):
@@ -269,6 +268,8 @@ class TestMetriche(unittest.TestCase):
         self.assertLess(result, 0)
         result = sp.generate_metrics_ck(self.diction, self.repositoryCK, "niente")
         self.assertIsInstance(result, DataFrame)
+
+
 
 def controllaSeStaTutto():
     nome_directory = 'TestingMetriche'

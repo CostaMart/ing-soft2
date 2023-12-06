@@ -20,11 +20,7 @@ class TestMainPageController(unittest.TestCase):
         time.sleep(3)
         print("sto eseguendo main page controller test")
         cls.controller = MainPageController()
-        repoName = 'flatpack'
-        url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
-        response = requests.get(url)
-        risultati = response.json()["items"]
-        cls.repo_url = risultati[0]["html_url"]
+        cls.repo_url = "https://github.com/Appendium/flatpack"
         cls.test_directory = "repository"
         os.makedirs(cls.test_directory, exist_ok=True)
 
