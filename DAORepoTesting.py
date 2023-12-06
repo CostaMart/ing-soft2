@@ -14,6 +14,7 @@ class TestDAORepo(unittest.TestCase):
         # Creare un'istanza di DAORepo
         self.dao_repo = DAORepo()
 
+
     @patch('model.DataAccessLayer.DAORepo')
     def test_get_java_repo_list_for_author_and_repo_Negative(self, mock_get):
         # Test Case: Invalid author and repo_name
@@ -173,3 +174,6 @@ class TestDAORepo(unittest.TestCase):
         self.assertEqual(result[0].description, "desc1")
         self.assertEqual(result[1].name, "author_repo2")
         self.assertEqual(result[1].description, "desc2")
+
+    def test_fails(self):
+        self.assertEqual(1,2)
