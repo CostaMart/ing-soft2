@@ -3,11 +3,12 @@ name: Run Tests
 on:
   push:
     branches:
-      - main  # Modifica la branch principale se necessario
+      - main
+      - work-branch
 
 jobs:
   test:
-    runs-on: ubuntu-latest  # Puoi cambiare la piattaforma se necessario
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
