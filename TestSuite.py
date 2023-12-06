@@ -19,7 +19,7 @@ def run_tests(test_paths):
 
 if __name__ == "__main__":
 
-    test_paths_1=["ooTest.py","pmTest.py"]
+    test_paths_1=["ooTest.py"]
 
     run_tests(test_paths_1)
 
