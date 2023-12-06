@@ -23,7 +23,7 @@ class TestMetriche(unittest.TestCase):
  ('cbdd35d610093c131a1f7a03d1b6b4c5ff020bdc', '2023-11-06 16:25:13+01:00'),
  ('b4e3ae581bb983d394e38606a08bb9f172d9f59b', '2023-11-06 16:26:42+01:00')]
     invalidCommit = "sonoInvalido"
-    # repositoryCK = "testingMetriche\\ck\\Prova-per-ing-soft"
+    
     repositoryCK = os.path.join("testingMetriche", "ck", "Prova-per-ing-soft")
     measure = "cbo"
     measures =["cbo", "wmc", "dit", "noc", "rfc", "lcom"]
@@ -279,7 +279,7 @@ def controllaSeStaTutto():
         print(f"La directory '{nome_directory}' è stata creata con successo.")
     else:
         print(f"La directory '{nome_directory}' esiste già.")
-    nome_directory2 = 'TestingMetriche\\ck'
+    nome_directory2 = os.path.join('TestingMetriche','ck')
     percorso_directory2 = os.path.join(os.getcwd(), nome_directory2)
     if not os.path.exists(percorso_directory2):
         os.makedirs(percorso_directory2)
@@ -287,9 +287,9 @@ def controllaSeStaTutto():
     else:
         print(f"La directory '{nome_directory2}' esiste già.")
     file_papa = 'papa.txt'
-    path_papa = percorso_directory + '\\' + file_papa
+    path_papa = os.path.join(percorso_directory, file_papa)
     file_angelone = 'angelone.txt'
-    path_angelone = percorso_directory+ '\\'+ file_angelone
+    path_angelone = os.path.join(percorso_directory, file_angelone)
     contenuto_papa = 'angelone'
     contenuto_angelone = "angelone\nil mio pap"
     if not os.path.exists(path_papa) and not os.path.exists(path_angelone):
