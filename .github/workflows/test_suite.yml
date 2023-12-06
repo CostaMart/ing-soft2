@@ -26,4 +26,16 @@ jobs:
 
     - name: Run tests
       run: |
-        python TestSuite.py
+        if ! python TestSuite.py; then
+          echo "Test suite failed. Push is blocked."
+          exit 1
+        fi
+
+    - name: Push changes
+      if: success()
+      run: |
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
+        git add .
+        git commit -m "Test suite passed"
+        git push
