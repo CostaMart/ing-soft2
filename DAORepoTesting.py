@@ -174,6 +174,3 @@ class TestDAORepo(unittest.TestCase):
         self.assertEqual(result[0].description, "desc1")
         self.assertEqual(result[1].name, "author_repo2")
         self.assertEqual(result[1].description, "desc2")
-
-    def test_fails(self):
-        self.assertEqual(1,2)
