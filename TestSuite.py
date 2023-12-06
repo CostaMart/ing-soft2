@@ -26,7 +26,9 @@ if __name__ == "__main__":
         "LocalDAOTesting.py",
         "DAORepoTesting.py",
         "ComputingEndpointModelTest.py",
-        "ProjectMetricsControllerTest.py"]
+        "ProjectMetricsControllerTest.py",
+        "pmTest.py"
+    ]
 
     # Esegui i test uno alla volta per ciascuna lista di test
     success = True
