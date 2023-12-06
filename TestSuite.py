@@ -18,6 +18,11 @@ def run_tests(test_paths):
     return 0
 
 if __name__ == "__main__":
+
+    test_paths_1=["ooTest.py","pmTest.py"]
+
+    run_tests(test_paths_1)
+
     test_paths = [
         "Testing/WhiteBoxTesting/DataAccessLayerTesting/LocalDAOTesting.py",
         "Testing/WhiteBoxTesting/ControllerLogicTesting/MainPageControllerTest.py",
@@ -28,12 +33,8 @@ if __name__ == "__main__":
         "Testing/WhiteBoxTesting/ControllerLogicTesting/ProjectMetricsControllerTest.py",
     ]
 
-    run_tests(test_paths)
+    exit_code = run_tests(test_paths)
 
-
-    test_paths_1=["ooTest.py"]
-
-    exit_code = run_tests(test_paths_1)
 
     # Termina lo script con il codice di ritorno dei test
     exit(exit_code)
