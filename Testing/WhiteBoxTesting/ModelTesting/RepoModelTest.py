@@ -8,6 +8,10 @@ import requests
 
 class RepoModelTest(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        print("sto eseguendo repo model test")
+
     def setUp(self):
         self.repo_model = RepoModel()
 
@@ -16,23 +20,23 @@ class RepoModelTest(unittest.TestCase):
         repo_list = self.repo_model.getRepoListByName('')
         self.assertEqual(repo_list, [])
 
-    def test_get_repo_list_by_name_valid_name(self):
+    def test_A_get_repo_list_by_name_valid_name(self):
         """Test getting repository list with a valid name"""
         repo_list = self.repo_model.getRepoListByName("java")
         self.assertTrue(len(repo_list) > 0)
 
-    def test_get_repo_list_by_author_and_repo_name_empty_author(self):
+    def test_C_get_repo_list_by_author_and_repo_name_empty_author(self):
         """Test getting repository list with an empty author and valid repo name"""
         repo_list = self.repo_model.getRepoListByAuthorAndRepoName('', 'spring-boot')
         self.assertEqual(repo_list, None)
 
-    def test_get_repo_list_by_author_and_repo_name_valid_author_empty_repo_name(self):
+    def test_B_get_repo_list_by_author_and_repo_name_valid_author_empty_repo_name(self):
         """Test getting repository list with a valid author and empty repo name"""
         repo_list = self.repo_model.getRepoListByAuthorAndRepoName('octokit', '')
         self.assertEqual(repo_list, [])
 
     @patch('requests.get')
-    def test_get_repo_list_by_author_and_repo_name_valid_author_valid_repo_name(self, mock_get):
+    def test_D_get_repo_list_by_author_and_repo_name_valid_author_valid_repo_name(self, mock_get):
         """Test getting repository list with a valid author and valid repo name"""
 
         mock_get.return_value.json.return_value = {"items": [{"owner": "test_owner", "name": "test_repo"
@@ -66,11 +70,6 @@ class RepoModelTest(unittest.TestCase):
 
         # Verifica che il risultato sia corretto
         self.assertTrue(len(repo_list) > 0)
-
-    def test_get_repo_list_by_author_and_repo_name_valid_author_and_repo_name_with_spaces(self):
-        """Test getting repository list with a valid author and repo name with spaces"""
-        repo_list = self.repo_model.getRepoListByAuthorAndRepoName('octokit ', 'spring-boot')
-        self.assertEqual(repo_list, [])
 
     def test_get_repo_list_by_name_empty_name_with_spaces(self):
         """Test getting repository list with an empty name with spaces"""

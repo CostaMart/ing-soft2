@@ -11,7 +11,7 @@ import pandas as pd
 import subprocess
 class TestMetriche(unittest.TestCase):
 
-    repository = "TestingMetriche\\Prova-per-ing-soft"
+    repository = os.path.join("TestingMetriche","Prova-per-ing-soft")
     repo_fuori = "testingMetriche"
     classe = "azz.java"
     invalidClasse = "104.java"
@@ -23,7 +23,8 @@ class TestMetriche(unittest.TestCase):
  ('cbdd35d610093c131a1f7a03d1b6b4c5ff020bdc', '2023-11-06 16:25:13+01:00'),
  ('b4e3ae581bb983d394e38606a08bb9f172d9f59b', '2023-11-06 16:26:42+01:00')]
     invalidCommit = "sonoInvalido"
-    repositoryCK = "testingMetriche\\ck\\Prova-per-ing-soft"
+    # repositoryCK = "testingMetriche\\ck\\Prova-per-ing-soft"
+    repositoryCK = os.path.join("testingMetriche", "ck", "Prova-per-ing-soft")
     measure = "cbo"
     measures =["cbo", "wmc", "dit", "noc", "rfc", "lcom"]
 

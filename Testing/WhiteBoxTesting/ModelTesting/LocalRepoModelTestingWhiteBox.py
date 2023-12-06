@@ -1,3 +1,5 @@
+import os
+import shutil
 import unittest
 from unittest.mock import patch, MagicMock
 import requests
@@ -13,16 +15,21 @@ class TestLocalRepoModel(unittest.TestCase):
     @patch('model.DataAccessLayer.LocalDAO')
     @patch('model.LocalRepoModel.DAORepo')
     def setUpClass(self, mock_dao_repo, mock_local_dao):
+        print("sto eseguendo local repo model testing white box")
         self.local_repo_model = LocalRepoModel()
         self.local_repo_model.CRUD = mock_dao_repo
         self.local_repo_model.LocalDAO = mock_local_dao
-        # repoName = 'flatpack'
-        # url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
-        # response = requests.get(url)
-        # risultati = response.json()["items"]
-        # self.repo_url = risultati[0]["html_url"]
-        # self.test_directory = "repository"
-        # os.makedirs(self.test_directory, exist_ok=True)
+        repoName = 'flatpack'
+        url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
+        response = requests.get(url)
+        risultati = response.json()["items"]
+        self.repo_url = risultati[0]["html_url"]
+        self.test_directory = "repository"
+        os.makedirs(self.test_directory, exist_ok=True)
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree("repository", ignore_errors=True)
 
     def test_getRepoData(self):
         # Testa il caso in cui repoData è None

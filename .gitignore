@@ -8,3 +8,4 @@ output/
 .coverage
 htmlcov
 fake_repository
+.pytest_cache

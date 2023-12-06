@@ -1,0 +1,41 @@
+name: Run Test Suite
+
+on:
+  push:
+    branches:
+      - main
+      - work-branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.11.6
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  
+
+    - name: Run tests
+      run: |
+        if ! python TestSuite.py; then
+          echo "Test suite failed. Push is blocked."
+          exit 1
+        fi
+
+    - name: Push changes
+      if: success()
+      run: |
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
+        git add .
+        git commit -m "Test suite passed"
+        git push

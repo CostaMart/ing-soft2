@@ -16,6 +16,7 @@ class TestComputingEndpointModel(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        print("Sto eseguendo ComputingEndpointmodel test")
         # Create the ComputingEndpointModel object at the beginning of each test
         cls.model = ComputingEndpointModel()
         cls.model.activateLocal()
