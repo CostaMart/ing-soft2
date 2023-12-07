@@ -12,7 +12,7 @@ import subprocess
 class TestMetriche(unittest.TestCase):
 
     repository = os.path.join("TestingMetriche","Prova-per-ing-soft")
-    repo_fuori = "testingMetriche"
+    repo_fuori = "TestingMetriche"
     classe = "azz.java"
     invalidClasse = "104.java"
     invalidFolder = "104"
@@ -24,7 +24,7 @@ class TestMetriche(unittest.TestCase):
  ('b4e3ae581bb983d394e38606a08bb9f172d9f59b', '2023-11-06 16:26:42+01:00')]
     invalidCommit = "sonoInvalido"
     
-    repositoryCK = os.path.join("testingMetriche", "ck", "Prova-per-ing-soft")
+    repositoryCK = os.path.join("TestingMetriche", "ck", "Prova-per-ing-soft")
     measure = "cbo"
     measures =["cbo", "wmc", "dit", "noc", "rfc", "lcom"]
 
