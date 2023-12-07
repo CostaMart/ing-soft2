@@ -110,10 +110,11 @@ def delete_garbage(keep, output=None, folder="output"):
     if (output is None):
         output_dir = os.path.abspath(folder)
     else:
-        output_dir = os.path.abspath("output") + "\\" + str(output)
+        output_dir = os.path.join(os.path.abspath("output"), str(output))
     for filename in os.listdir(output_dir):
         if not keep in filename:
-            os.remove(output_dir + "\\" + filename)
+            file_to_remove = os.path.join(output_dir, filename)
+            os.remove(file_to_remove)
 
 
 def trova_file_classe(classe_filename, folder="repository"):

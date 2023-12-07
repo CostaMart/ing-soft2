@@ -36,7 +36,7 @@ def generate_process_metrics(nome_classe, commits_dict, folder = "repository"):
         
         if(flag is not True):
             ru.check_folder(folder="Giulio")
-            folderG = os.path.abspath("Giulio")+"\\"+"giulio.txt"
+            folderG = os.path.join(os.path.abspath("Giulio"), "giulio.txt")
             shutil.copy2(ru.trova_file_classe(nome_classe, folder), folderG )
             cc = 0
             flag = True
