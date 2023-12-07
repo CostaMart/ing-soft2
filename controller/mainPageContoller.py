@@ -1,47 +1,65 @@
 from typing import Callable, List
-from model.Domain import Repository
+from icecream import ic
+from git import Repo
 import os
 from model.LocalRepoModel import LocalRepoModel
 from model.RepoModel import RepoModel
 import threading
+from customtkinter import CTkProgressBar
+
 
 
 class MainPageController:
-   
     def __init__(self):
         super().__init__()
         self.process = None
         self.globalModel = LocalRepoModel()
         self.repoModel = RepoModel()
-    
+        self.update_in_progress = False
+        self.is_request_for_repos_running = False
+
     def getStatusCodeFromLocalModel(self):
         return self.globalModel.get_status_code()
 
     def getAllJavaClassByLocalRepoModel(self, rootDirectory):
         return self.globalModel.getAllJavaClassProject(rootDirectory=rootDirectory)
 
+    def requestRepoUpdate(
+        self,
+        callbackBefore: Callable[[], None] = None,
+        callbackAfter: Callable[[], None] = None,
+    ):
+        """Metodo che esegue l'aggiornamento del repository scaricato in locale"""
 
-    def requestRepoUpdate(self, callbackBefore : Callable[[], None] = None, callbackAfter : Callable[[], None] = None):
-        """ avvia una richiesta di update per i dati locali del repository, verrà eseguita su un thread apposito
-        è possibile registrare una callback sia prima che dopo l'update,
-        verranno eseguite nello stesso thread dell'update"""
         def toRun():
-            if callbackBefore != None:
+            # Imposta la variabile a True quando l'aggiornamento è in corso
+            self.update_in_progress = True
+
+            if callbackBefore is not None:
                 callbackBefore()
-                
-            self.globalModel.RepoDataUpdate()  
-            
-            if callbackAfter != None:
+
+            self.globalModel.RepoDataUpdate()
+
+            if callbackAfter is not None:
                 callbackAfter()
-        threading.Thread(target = toRun).start()
-            
-    def getRepoData(self):     
+
+            # variabile che tiene conto dell'aggiornamento del repository
+            self.update_in_progress = False
+
+        # Crea un thread e avvialo
+        thread = threading.Thread(target=toRun)
+        thread.start()
+
+    def getRepoData(self):
         return self.globalModel.getRepoData()
-    
-    def request_for_repos(self, query, callback : Callable[[List[Repository]], any]):
-        """ recupera una nuova lista di repository in maniera asincrona"""
+
+    def request_for_repos(self, query, callback: Callable[[List], any]):
+        """Recupera una nuova lista di repository in maniera asincrona"""
 
         def toRun():
+            # Imposta la variabile globale a True per indicare che è in esecuzione
+            self.is_request_for_repos_running = True
+
             author_query = None
             repo_name_query = None
 
@@ -55,7 +73,9 @@ class MainPageController:
 
             # Chiama i metodi del modello in base agli attributi estratti dalla query
             if author_query and repo_name_query:
-                repoList = self.repoModel.getRepoListByAuthorAndRepoName(author_query, repo_name_query)
+                repoList = self.repoModel.getRepoListByAuthorAndRepoName(
+                    author_query, repo_name_query
+                )
             elif author_query:
                 repoList = self.repoModel.getRepoListByAuthor(author_query)
             elif repo_name_query:
@@ -65,15 +85,55 @@ class MainPageController:
 
             callback(repoList)
 
-        threading.Thread(target= toRun).start()
-            
+            # Imposta la variabile globale a False per indicare che l'esecuzione è terminata
+            self.is_request_for_repos_running = False
+
+        # Crea un thread e avvialo
+        threading.Thread(target=toRun).start()
+
+    def is_request_for_repos_executing(self):
+        """Restituisce lo stato corrente dell'esecuzione di request_for_repos"""
+        return self.is_request_for_repos_running
+
     def get_selected_repo(self, url):
         self.globalModel.createLocalRepo(url)
         return True
-           
-    def checkRepo(self):
-            percorso_git = os.path.join("repository", ".git")
-            if os.path.exists(percorso_git) and os.path.isdir(percorso_git):
-                return True
+
+    def update_branches(self, loadBar: CTkProgressBar, repo=None):
+        """downloads branches for the local repository updating given progress bar in real-time"""
+        # se ci sono branch aggiuntivi li scarica tutti
+        if repo is None:
+            repo = Repo("repository")
+        branches = [
+            ref.name
+            for ref in repo.references
+            if "origin" in ref.name and "HEAD" not in ref.name
+        ]
+        print(branches)
+        # Verifica se l'elenco dei branch è vuoto prima di calcolare la lunghezza
+        if branches:
+            steplen = 1 / len(branches)
+
+            # non so perché nell'implementazione di questa roba la velocità di spostamento della barra viene divisa per 50
+            # quindi per farla avanzare di quanto vogliamo noi, moltiplico per 50
+            loadBar.configure(determinate_speed=steplen * 50)
+            loadBar.update()
+
+            for branch in branches:
+                self.globalModel.switch_branch(branch.split("/")[-1])
+                loadBar.step()
+
+            if "origin/main" in branches:
+                self.globalModel.switch_branch("main")
             else:
-                return False
+                self.globalModel.switch_branch("master")
+        else:
+            # quando non ci sono branch
+            print("Nessun branch disponibile")
+
+    def checkRepo(self):
+        percorso_git = os.path.join("repository", ".git")
+        if os.path.exists(percorso_git) and os.path.isdir(percorso_git):
+            return True
+        else:
+            return False

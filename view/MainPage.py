@@ -30,8 +30,10 @@ class MainPage(ctk.CTkFrame):
         self._initSearchBlock()
 
         # inizializza la lista a centro pagina
-        self.listBox = ListBox(self)
-        self.listBox.pack(padx=10, fill=ctk.X, expand=True)
+        self.centralbox = ctk.CTkFrame(self)
+        self.centralbox.pack(fill=ctk.BOTH, expand=True)
+        self.listBox = ListBox(self.centralbox)
+        self.listBox.pack(padx=10, pady= 40, fill=ctk.BOTH, expand=True)
 
         # inizializza il frame di status di git (barra in basso)
         self.gitStatusFrame = tk.Frame(self, height=15)
@@ -70,7 +72,7 @@ class MainPage(ctk.CTkFrame):
         searchBut = ctk.CTkButton(self, text="Search", command=self._start_request)
         searchBut.pack(pady=10)
 
-        self.sideB = SideButton(self.master, self.master.newPage, ProjectMetricsPage)
+        self.sideB = SideButton(self.master, self.onSideButtonPress, ProjectMetricsPage)
 
         # finalizza inizializzazione del modulo di centro pagina
 
@@ -106,6 +108,10 @@ class MainPage(ctk.CTkFrame):
         self._recoverRepoData()
 
     # ----------------------------- callbacks -----------------------------
+    def onSideButtonPress(self, param):
+        self.listBox.cleanList()
+        self.master.newPage(param)
+             
     def _updateRepoList(self, repolist: List[Repository]):
         """ medoto che esegue l'update della list, passato come callback alla funzione asincrona del controller,
         tramite generateCommand assegna ad ogni elemento della lista una callback per il download del repo assegnato"""
@@ -134,19 +140,29 @@ class MainPage(ctk.CTkFrame):
             self.loading = True
             self.sideB.place_forget()
             self.icon.pack()
-            self.icon.start()
+            self.icon.beginRotation()
             self.showMessage(f"now downloading: {str(value)}")
             self.controller.get_selected_repo(value)
+            
+            # setta la loadingBar
+            self.loadbar = ctk.CTkProgressBar(self.messageBox, orientation= "horizontal")
+            self.loadbar.set(0)
+            self.loadbar.update()
+            self.loadbar.pack(pady= 10)
+            self.controller.update_branches(self.loadbar)
+            
+            
             self.showMessage("download complete")
             time.sleep(2)
             self.icon.stop()
             self.icon.pack_forget()
             self.showMessage(" ")
             self._recoverRepoData()
+            
 
     def beforeRepoDataUpdate(self):
         self.icon.pack()
-        self.icon.start()
+        self.icon.beginRotation()
         self.showMessage("we are now analyzing this repo")
 
     def afterRepoDataUpdate(self):
@@ -156,13 +172,17 @@ class MainPage(ctk.CTkFrame):
         status_code = response.status_code
 
         body = response.body
-        if self.controller.getRepoData() is not None and status_code == 200:
+        if self.controller.getRepoData() is not None:
             self.sideB.place(y=10, relx=0.9)
             self.showMessage("done!")
             self.icon.stop()
             self.icon.pack_forget()
             time.sleep(4)
             self.showMessage("")
+            
+            if "loadbar" in self.__dict__:
+                self.loadbar.destroy()
+                
             self.loading = False
         else:
 
@@ -172,9 +192,16 @@ class MainPage(ctk.CTkFrame):
             elif "Not found" in str(body):
                 body = "Repo not found"
 
+            else:
+                body = "your repo dir is empty "
+                
             self.showMessage(f"{str(status_code)}: {str(body)}")
             self.icon.stop()
             self.icon.pack_forget()
             time.sleep(4)
             self.showMessage("")
+            
+            if "loadbar" in self.__dict__:
+                self.loadbar.destroy()
+                
             self.loading = False

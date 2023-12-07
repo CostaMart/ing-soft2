@@ -10,8 +10,6 @@ class RepoModel:
     def getRepoListByName(self, name):
         return self.CRUD.getRepoList(name)
 
-    def getRepoListByNameInJava(self, name):
-        return self.CRUD.getJavaRepoList(name)
 
     def getRepoListByAuthorAndRepoName(self, author, repo_name):
        return self.CRUD.getJavaRepoListForAuthorAndRepo(author, repo_name)

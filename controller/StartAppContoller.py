@@ -1,14 +1,13 @@
-
-
-import os
+from model.ComputingEndpointModel import ComputingEndpointModel
 import subprocess
-from model.DataAccessLayer.DAORepo import DAORepo
 from model.LocalRepoModel import LocalRepoModel
+
 
 class StartAppController:
 
     def __init__(self):
         self.localModel = LocalRepoModel()
+        self.ComputeEnd = ComputingEndpointModel()
         
         
     def isGitInstalled(self):
@@ -25,3 +24,18 @@ class StartAppController:
     def getLocalRepoData(self):
         return  self.localModel.repoData
 
+    def isComputeEndpointActive(self):
+        """ controlla se l'endpoint HTTP è attivo localmente """
+        return self.ComputeEnd.isActiveLocal()
+
+    def startComputationEndpoint(self):
+        "   attiva l'endpoint locale "
+        try: 
+            self.ComputeEnd.activateLocal()
+            return "local"
+        except subprocess.SubprocessError as e:
+            return "error"
+    
+    def closeSubProcess(self):
+        """ avvia la chiusura del sotto-processo mettendosi in attesa della sua termianzione """
+        self.ComputeEnd.destroy()
