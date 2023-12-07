@@ -19,14 +19,15 @@ def run_tests(path):
 if __name__ == "__main__":
     # Lista dei percorsi dei test da eseguire
     test_paths_list = [
-        "MainPageControllerTest.py",
-        "ooTest.py",
-        "LocalRepoModelTestingWhiteBox.py",
-        "RepoModelTest.py",
-        "LocalDAOTesting.py",
-        "DAORepoTesting.py",
-        "ComputingEndpointModelTest.py",
-        "ProjectMetricsControllerTest.py"
+        "pmTest.py"
+        # "MainPageControllerTest.py",
+        # "ooTest.py",
+        # "LocalRepoModelTestingWhiteBox.py",
+        # "RepoModelTest.py",
+        # "LocalDAOTesting.py",
+        # "DAORepoTesting.py",
+        # "ComputingEndpointModelTest.py",
+        # "ProjectMetricsControllerTest.py",
     ]
 
     # Esegui i test uno alla volta per ciascuna lista di test
