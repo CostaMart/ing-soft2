@@ -31,6 +31,7 @@ class TestMetriche(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        ru.check_folder("repository")
         ru.check_folder()
         controllaSeStaTutto()
 
@@ -315,6 +316,7 @@ def controllaSeStaTutto():
 
 
 if __name__ == '__main__':
+    ru.check_folder("repository")
     ru.check_folder()
     controllaSeStaTutto()
     unittest.main()
