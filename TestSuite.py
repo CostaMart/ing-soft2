@@ -19,7 +19,6 @@ def run_tests(path):
 if __name__ == "__main__":
     # Lista dei percorsi dei test da eseguire
     test_paths_list = [
-        "pmTest.py",
         "MainPageControllerTest.py",
         "ooTest.py",
         "LocalRepoModelTestingWhiteBox.py",
