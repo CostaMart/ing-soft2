@@ -19,11 +19,8 @@ class TestLocalRepoModel(unittest.TestCase):
         self.local_repo_model = LocalRepoModel()
         self.local_repo_model.CRUD = mock_dao_repo
         self.local_repo_model.LocalDAO = mock_local_dao
-        repoName = 'flatpack'
-        url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
-        response = requests.get(url)
-        risultati = response.json()["items"]
-        self.repo_url = risultati[0]["html_url"]
+        # repo di prova
+        self.repo_url = "https://github.com/Appendium/flatpack"
         self.test_directory = "repository"
         os.makedirs(self.test_directory, exist_ok=True)
 
