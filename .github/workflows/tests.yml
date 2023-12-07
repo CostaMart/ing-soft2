@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
@@ -24,4 +24,11 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run tests
-      run: python TestSuite.py
+      run: |
+        python TestSuite.py
+        if [ $? -eq 0 ]; then
+          echo "Tutti i test sono stati eseguiti con successo."
+        else
+          echo "Almeno un test ha fallito."
+          exit 1
+        fi
