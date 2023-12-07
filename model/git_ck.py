@@ -44,7 +44,7 @@ def commit_measure_avg(measure, commit_hash, output =None):
     """Questo metodo estrae la media della metrica desiderata dal commit"""
     current_directory = os.getcwd()
     
-    if(output is None or output is "TESTCODECK"):
+    if(output is None or output == "TESTCODECK"):
         dir = os.path.join(os.path.abspath("output"),commit_hash)
         if not os.path.exists(dir):
             return -1
