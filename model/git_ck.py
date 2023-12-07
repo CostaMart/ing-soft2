@@ -17,7 +17,7 @@ def ck_metrics_for_single_commit(commit_hash, output = None, folder = "repositor
         return -1
     ck_tool = os.path.abspath('ck.jar')
     if (output is not None and output != "TESTCODECK"):
-        output_dir = os.path.abspath("output") +"\\" +output
+        output_dir = os.path.join( os.path.abspath("output"),output)
         os.makedirs(output_dir, exist_ok=True)
     else:
         output_dir = os.path.abspath("output")
@@ -45,11 +45,11 @@ def commit_measure_avg(measure, commit_hash, output =None):
     current_directory = os.getcwd()
     
     if(output is None or output is "TESTCODECK"):
-        dir = os.path.abspath("output")+"\\"+commit_hash
+        dir = os.path.join(os.path.abspath("output"),commit_hash)
         if not os.path.exists(dir):
             return -1
     else:
-        dir = os.path.abspath("output")+"\\"+output+"\\"+commit_hash
+        dir = os.path.join(os.path.join(os.path.abspath("output"),output),commit_hash)
     df = pd.read_csv(dir)
     if measure not in df.columns:
         print(f"Metrica '{measure}' non trovata nel file CSV.")
