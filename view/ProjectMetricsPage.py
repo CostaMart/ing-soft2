@@ -59,11 +59,15 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         left_arrow = os.path.join("resources", "left-arrow.png")
 
         self.backButton = SideButton(
-            self, self.master.previousPage, side="left", imgpath=left_arrow
+            self, self.returnBack, side="left", imgpath=left_arrow
         )
         self.backButton.place(x=-150, y=80)
 
     # ----------------------------- UI METHODS -----------------------------
+    def returnBack(self):
+        subprocess.run(["git", "checkout", self.branchSelector.get()], cwd="repository")
+        self.master.previousPage
+
     def initTopFrames(self):
         """inizializza la parte superiore della GUI come il nome del repo e le informazioni generali"""
 
@@ -577,6 +581,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.start_updateStartCommitList(year=year)
 
     def start_updateStartCommitList(self, branch="any", year="no Value"):
+        subprocess.run(["git", "checkout", self.branchSelector.get()], cwd="repository")
         """esegue l'update della lista di commit di partenza dell'analisi"""
         me = self
 
@@ -645,18 +650,8 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.arriveCommitSelector.set(finalList[0])
             self.enableSelectorPanel()
 
-            if "main" in self.branchSelector._values:
-                back = "main"
-            else:
-                back = "master"
-            subprocess.run(["git", "checkout", f"{back}"], cwd="repository")
-
         self.controller.getCommiListFromDate(
             startCommit.committer_date,
             self.arriveYearSelector.get(),
-            callbackbefore=lambda: subprocess.run(
-                ["git", "checkout", f"{ic(self.branchSelector.get())}"],
-                cwd="repository",
-            ),
             callback=ic(_end_updateArriveCommitList),
         )
