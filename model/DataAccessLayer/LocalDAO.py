@@ -52,8 +52,9 @@ class LocalDAO:
             # clona il repo
             p = subprocess.call(["git", "clone", url, "repository"])
 
-        finally:
-            print("fail")
+        except Exception as e:
+            # Gestisci eccezioni in caso di fallimento del clone
+            print(f"Errore durante il clone del repository: {e}")
 
     def _class_exists_in_commit(self, commit, class_name):
         try:
@@ -138,13 +139,14 @@ class LocalDAO:
         )
 
         if not commits:
-            return -1
+            print("errore")
 
         return commits
 
     def getCommitInInterval(self, start_commit, end_commit, repo_path="repository"):
         # oggetto Repository
         repo = Repository(repo_path)
+        
 
         # Dizionario per salvare i commit nell'intervallo
         commits_in_range = {}
