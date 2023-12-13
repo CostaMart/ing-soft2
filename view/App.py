@@ -10,7 +10,7 @@ from icecream import ic
 class IngSoftApp(ctk.CTk):
     """rappresenta l'intera applicazione, gestisce la navigazione tra le pagine e l'accesso ai dati globali dell'applicazione"""
 
-    def __init__(self, gitv, endpointStatus):
+    def __init__(self, gitv, endpointStatus, run=True):
         super().__init__()
         self.edpointStatus = endpointStatus
         self.contoller = StartAppController()
@@ -53,7 +53,8 @@ class IngSoftApp(ctk.CTk):
             threading.Thread(target=closeThread).start()
 
         self.protocol("WM_DELETE_WINDOW", _on_closing)
-        self.mainloop()
+        if run:
+            self.mainloop()
 
     # ----------------------------- METODI PER LA GESTINE DELLA PAGINA E DEI DATI -----------------------------
 
@@ -116,7 +117,3 @@ class IngSoftApp(ctk.CTk):
 
     def exit_fullscreen(self, event=None):
         self.attributes("-fullscreen", False)
-
-    def on_closing(self):
-        # Aggiungi qui il codice per la chiusura della finestra o l'azione desiderata prima della chiusura
-        self.destroy()
