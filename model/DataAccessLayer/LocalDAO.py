@@ -52,9 +52,8 @@ class LocalDAO:
             # clona il repo
             p = subprocess.call(["git", "clone", url, "repository"])
 
-        except Exception as e:
-            # Gestisci eccezioni in caso di fallimento del clone
-            print(f"Errore durante il clone del repository: {e}")
+        finally:
+            print("fail")
 
     def _class_exists_in_commit(self, commit, class_name):
         try:
@@ -139,7 +138,7 @@ class LocalDAO:
         )
 
         if not commits:
-            raise ValueError("No commits found in the specified date range.")
+            print("nessun commit trovato")
 
         return commits
 
