@@ -332,7 +332,8 @@ class TestLocalDAO(unittest.TestCase):
         local_dao = LocalDAO()
 
         result = local_dao.getCommitsFromDate(datetime(2023, 1, 1), 2023, 'empty_repository')
-        self.assertLess(result, 0)
+
+        assert result is None, "La funzione non dovrebbe restituire alcun valore"
 
     @patch("model.DataAccessLayer.LocalDAO.Repository")
     def test_getCommitInInterval_valid_interval(self, mock_Repository):
