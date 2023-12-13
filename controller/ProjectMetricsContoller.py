@@ -38,7 +38,9 @@ class ProjectMetricsController:
             commitList = self.localModel.getCommiListByYear(branch, myYear)
             callback(commitList)
 
-        Thread(target=target).start()
+        t = Thread(target=target)
+        t.start()
+        return t
 
     def getYearList(self) -> dict[int, set[str]]:
         """ritorna la lista completa di tutti gli anni in cui è stato effettuato almeno un commit
@@ -59,9 +61,12 @@ class ProjectMetricsController:
             commitList = self.localModel.getCommiListFromDate(date, yearToArrive)
             callback(commitList)
 
-        Thread(target=target).start()
+        t = Thread(target=target)
+        t.start()
+        return t
 
     def getCommitsBetweenHashes(self, hash_start, hash_end):
+        """ritorna una lista contenente commi compresi tra i due hash"""
         return self.localModel.getCommitInInterval(hash_start, hash_end)
 
     def request_service(self, message, callback):
@@ -75,3 +80,4 @@ class ProjectMetricsController:
 
         t = Thread(target=toRun)
         t.start()
+        return t

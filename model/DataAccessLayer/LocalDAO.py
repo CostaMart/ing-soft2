@@ -30,10 +30,11 @@ class LocalDAO:
         """Ottieni le informazioni del repository dal sistema Git."""
 
         os.chdir("repository")
+        ic(os.getcwd())
         result = subprocess.check_output(["git", "remote", "show", "origin"]).decode(
             "utf-8"
         )
-        firstLine = result.split("\n")[1]
+        firstLine = ic(result.split("\n")[1])
         name = firstLine.split("/")[-2]
         repoName = firstLine.split("/")[-1]
         os.chdir("..")
@@ -146,7 +147,6 @@ class LocalDAO:
     def getCommitInInterval(self, start_commit, end_commit, repo_path="repository"):
         # oggetto Repository
         repo = Repository(repo_path)
-        
 
         # Dizionario per salvare i commit nell'intervallo
         commits_in_range = {}
