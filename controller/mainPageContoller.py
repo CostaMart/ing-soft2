@@ -8,7 +8,6 @@ import threading
 from customtkinter import CTkProgressBar
 
 
-
 class MainPageController:
     def __init__(self):
         super().__init__()
@@ -28,7 +27,7 @@ class MainPageController:
         self,
         callbackBefore: Callable[[], None] = None,
         callbackAfter: Callable[[], None] = None,
-    ):
+    ) -> threading.Thread:
         """Metodo che esegue l'aggiornamento del repository scaricato in locale"""
 
         def toRun():
@@ -49,6 +48,7 @@ class MainPageController:
         # Crea un thread e avvialo
         thread = threading.Thread(target=toRun)
         thread.start()
+        return thread
 
     def getRepoData(self):
         return self.globalModel.getRepoData()
@@ -89,7 +89,9 @@ class MainPageController:
             self.is_request_for_repos_running = False
 
         # Crea un thread e avvialo
-        threading.Thread(target=toRun).start()
+        t = threading.Thread(target=toRun)
+        t.start()
+        return t
 
     def is_request_for_repos_executing(self):
         """Restituisce lo stato corrente dell'esecuzione di request_for_repos"""

@@ -1,34 +1,27 @@
 import requests
 from icecream import ic
-from model.Domain import HttpResponse, Repository, MetadataRepository 
+from model.Domain import HttpResponse, Repository, MetadataRepository
 import os
-
 
 
 class DAORepo:
     def __init__(self):
         self.last_http_response = None
 
-
-
-
     def getRepoByNameeAuthor(self, repoOwner, repoName):
-        response = requests.get(f'https://api.github.com/repos/{repoOwner}/{repoName}')
+        response = requests.get(f"https://api.github.com/repos/{repoOwner}/{repoName}")
 
         self.last_http_response = HttpResponse(response.status_code, response.json())
-
         if response.status_code == 200:
             repository_data = response.json()
             repository = MetadataRepository(repository_data)
-
+            ic(repository)
             return repository
         else:
             return None
 
-
-
     def getRepoList(self, repoName):
-        if repoName == '' or repoName == ' ':
+        if repoName == "" or repoName == " ":
             return []
         # Solo i repository java
         url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
@@ -48,8 +41,6 @@ class DAORepo:
 
         return repositories
 
-
-
     def getJavaRepoList(self, repoName):
         url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
         response = requests.get(url)
@@ -67,8 +58,6 @@ class DAORepo:
 
         return repositories
 
-
-
     def get_all_release_tag_repo(self, owner, repo_name):
         """Metodo che ritorna tutte le  releases di uno specifico progetto"""
         url = f"https://api.github.com/repos/{owner}/{repo_name}/releases"
@@ -77,14 +66,14 @@ class DAORepo:
         if response.status_code == 200:
             releases = response.json()
             # Estrai solo i tag delle release dalla lista di release
-            
-            release_tags = [release['tag_name'] for release in releases]
+
+            release_tags = [release["tag_name"] for release in releases]
             return release_tags
         else:
-            print(f"Errore {response.status_code}: Impossibile ottenere le release del progetto.")
+            print(
+                f"Errore {response.status_code}: Impossibile ottenere le release del progetto."
+            )
             return None
-
-
 
     def getJavaRepoListForAuthorAndRepo(self, author, repo_name):
         # Se l'autore è specificato, cerca per il nome del repository all'interno dell'account dell'autore
@@ -113,22 +102,22 @@ class DAORepo:
             repositories.append(repository)
         return repositories
 
-
     def getRepoListByAuthor(self, author):
-        url = f"https://api.github.com/search/repositories?q=user:{author}+language:java"
+        url = (
+            f"https://api.github.com/search/repositories?q=user:{author}+language:java"
+        )
         response = requests.get(url)
         print("response: ")
         print(response)
         self.last_http_response = HttpResponse(response.status_code, response.json())
         repositories = []
         if response.status_code == 200:
-            risultati = response.json()['items']
+            risultati = response.json()["items"]
             for risultato in risultati:
-                name = risultato['name']
-                html_url = risultato['html_url']
-                description = risultato['description']
+                name = risultato["name"]
+                html_url = risultato["html_url"]
+                description = risultato["description"]
                 repository = Repository(name, html_url, description)
                 repositories.append(repository)
 
         return repositories
-
