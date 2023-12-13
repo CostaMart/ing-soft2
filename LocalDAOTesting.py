@@ -331,8 +331,8 @@ class TestLocalDAO(unittest.TestCase):
         # Eseguire il test
         local_dao = LocalDAO()
 
-        with self.assertRaises(ValueError):
-            local_dao.getCommitsFromDate(datetime(2023, 1, 1), 2023, 'empty_repository')
+        result = local_dao.getCommitsFromDate(datetime(2023, 1, 1), 2023, 'empty_repository')
+        self.assertLess(result, 0)
 
     @patch("model.DataAccessLayer.LocalDAO.Repository")
     def test_getCommitInInterval_valid_interval(self, mock_Repository):

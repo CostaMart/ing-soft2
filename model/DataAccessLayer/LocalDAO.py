@@ -138,7 +138,7 @@ class LocalDAO:
         )
 
         if not commits:
-            print("nessun commit trovato")
+            return -1
 
         return commits
 
