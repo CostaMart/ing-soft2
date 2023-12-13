@@ -34,8 +34,9 @@ class MainPageControllerIntegrationTest(unittest.TestCase):
     """integration testing basato su call sites"""
 
     # test integrazione con model per repo locali
-    def setUp(self) -> None:
-        ic("asterisco")
+    @classmethod
+    def setUpClass(self) -> None:
+        ic("ready")
         """setup repoModel"""
         self.globalModel = LocalRepoModel()
         directory_path = "repository"
@@ -47,7 +48,6 @@ class MainPageControllerIntegrationTest(unittest.TestCase):
             "https://github.com/CostaMart/Prova-per-ing-soft.git"
         )
         self.globalModel.RepoDataUpdate()
-        return super().setUp()
 
     def test_MPcontroller_LocalRepoModel_cls1(self):
         """testa tutti i call site di LocalRepo in MPcontoller"""
@@ -65,6 +65,7 @@ class MainPageControllerIntegrationTest(unittest.TestCase):
         t = controller.requestRepoUpdate(callbackAfter=None, callbackBefore=None)
         t: threading.Thread
         t.join()
+        # //// questo è da sistemare
         # self.assertIsNotNone(controller.globalModel.repoData)
 
     # test con classe per repo esterni
