@@ -8,10 +8,12 @@ from model.DataAccessLayer.LocalDAO import LocalDAO
 
 
 class LocalRepoModel:
-    """SINGLETON: modella le interazioni e il recupero dei dati locali 
+    """SINGLETON: modella le interazioni e il recupero dei dati locali
     (come il repo locale) necessari all app"""
+
     _instance = None
     repoData = None
+
     def __new__(cls):
         """Istanzia la classe"""
         if cls._instance is None:
@@ -29,18 +31,18 @@ class LocalRepoModel:
         self._CheckRepoDir()
         # Utilizzo del pattern DAO
         name, repoName = self.LocalDAO.getRepoInfoFromGit()
-        ic(name)
+
         if name is not None and repoName is not None:
-            ic(name)
             repodata = self.CRUD.getRepoByNameeAuthor(name, repoName)
             self.repoData = repodata
             if self.repoData is not None:
                 self.repoData.releases = self.CRUD.get_all_release_tag_repo(
-                    name, repoName)
+                    name, repoName
+                )
 
     def createLocalRepo(self, url):
         """A partire dall'URL fornito, installa localmente in una
-          directory 'repository' il repo cercato."""
+        directory 'repository' il repo cercato."""
         self.LocalDAO.cloneRepository(url)
 
     def _CheckRepoDir(self, directory_name="repository"):
@@ -63,7 +65,7 @@ class LocalRepoModel:
         return self.LocalDAO.findJavaClass(rootDirectory)
 
     def getCommitWithClassList(self, className):
-        """dato il nomoe di una classe recupera tutti i commit in cui questa è presente"""
+        """dato il nome di una classe recupera tutti i commit in cui questa è presente"""
         return self.LocalDAO.get_commits_with_class(className, "repository")
 
     def getYearList(self) -> dict[int, set[str]]:

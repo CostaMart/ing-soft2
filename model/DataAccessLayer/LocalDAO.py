@@ -8,11 +8,14 @@ import stat
 from icecream import ic
 import git
 from pydriller import Repository, Commit
-
+from model.repo_utils import get_commits, repo_to_use
+from git.repo.base import Repo
+import subprocess
 
 
 class LocalDAO:
     """Local DAO class"""
+
     def findJavaClass(self, directory):
         """Metodo che trova tutte le classi di un progetto java"""
         """ Questo metodo cerca tutti i file java in una cartella e ne
@@ -28,11 +31,11 @@ class LocalDAO:
     def getRepoInfoFromGit(self):
         """Ottieni le informazioni del repository dal sistema Git."""
         os.chdir("repository")
-        ic(os.getcwd())
+
         result = subprocess.check_output(["git", "remote", "show", "origin"]).decode(
             "utf-8"
         )
-        firstLine = ic(result.split("\n")[1])
+        firstLine = result.split("\n")[1]
         name = firstLine.split("/")[-2]
         repoName = firstLine.split("/")[-1]
         os.chdir("..")
@@ -40,9 +43,11 @@ class LocalDAO:
 
     def cloneRepository(self, url):
         """Clona il repository usando il comando 'git clone'."""
+
         def on_rm_error(func, path, exc_info):
             os.chmod(path, stat.S_IWRITE)
             os.unlink(path)
+
         shutil.rmtree("repository", onerror=on_rm_error)
         try:
             # clona il repo
@@ -61,7 +66,7 @@ class LocalDAO:
             return False
 
     def get_commits_with_class(self, class_name, repo_path):
-        """recupera nel repo specificato una lista dei commit in cui era 
+        """recupera nel repo specificato una lista dei commit in cui era
         presente la calsse dal nome passato come parametro"""
         repo = git.Repo(repo_path)
         commit_list = []
@@ -75,11 +80,10 @@ class LocalDAO:
         repo = Repository(folder)
         years = {}
         for commit in repo.traverse_commits():
-            print(commit)
             commit_date = commit.committer_date
             year = commit_date.year
             if year not in years.keys():
-                years[year] = set(ic(commit.branches))
+                years[year] = set(commit.branches)
             else:
                 branches = years[year]
                 branches.update(
@@ -93,6 +97,7 @@ class LocalDAO:
         repo = git.Repo(repo_path)
         commit = repo.commit(commit_hash)
         dict_file = set()
+
         albero_commit = commit.tree
         for blob in albero_commit.traverse():
             if isinstance(blob, git.Blob) and ".java" in blob.path:
@@ -101,7 +106,7 @@ class LocalDAO:
 
     def dataCommitLinkYear(self, branch, year, rep="repository"):
         """Metodo che prende tutti i commit con relativa data in base all'anno e
-          li inserisce in un dataframe che ritorna"""
+        li inserisce in un dataframe che ritorna"""
         year = int(year)
         return list(
             Repository(
