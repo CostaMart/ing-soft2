@@ -1,15 +1,14 @@
-import git
-import os
-import model.repo_utils as ru
-import pygit2
+"""Questo modulo si propone di calcolare le metriche di processo di una repo
+github, quindi implementa i metodi necessari"""
 import subprocess
 import datetime
-import math
-import pandas as pd
-import chardet
-import gc
 import difflib
-from icecream import ic
+import os
+import chardet
+import git
+import model.repo_utils as ru
+
+
 
 
 def controlla_numero_revisioni_per_classe(classe_filename, folder="repository"):
@@ -46,9 +45,9 @@ def calcola_numero_bug_fix(folder="repository"):
 
 
 def calcola_code_churn(file1, file2):
+    """Calcola il numero di modifiche tra due file e restituisce il risultato"""
     if file1 is None or file2 is None:
         return -1
-    """Calcola il numero di modifiche tra due file e restituisce il risultato"""
     with open(file1, "r", encoding="utf-8") as f1, open(
         file2, "r", encoding="utf-8"
     ) as f2:
@@ -110,7 +109,8 @@ def calcola_loc(classe_filename, folder="repository"):
 
 
 def calcola_autori_distinti_per_file(file_name, folder="repository"):
-    """Questo metodo calcola il numero di autori distinti per file e ne restituisce una lista di nomi"""
+    """Questo metodo calcola il numero di autori distinti per file e ne
+    restituisce una lista di nomi"""
     file_path = ru.trova_file_classe(file_name, folder)
     repository_path = os.path.abspath(folder)
     if file_path is None or file_path == -1 or not os.path.exists(repository_path):

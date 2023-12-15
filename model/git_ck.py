@@ -1,16 +1,20 @@
+""" Questo modulo si propone di calcolare metriche di progetto tramite 
+il jar ck
+"""
+
 import subprocess
 import os
-from git import Repo 
-import model.repo_utils as ru
 import pandas as pd
-from multiprocessing import Pool
 from pandas import DataFrame
+import model.repo_utils as ru
+
 
 
 def ck_metrics_for_single_commit(commit_hash, output = None, folder = "repository"):
     """Questo metodo estrae le metriche del commit scelto
     Utilizzato per fare analisi su commit singoli
-    Utilizzato per fare analisi su commit in maniera iterativa per le richieste di metriche per intervallo"""
+    Utilizzato per fare analisi su commit in maniera iterativa
+    per le richieste di metriche per intervallo"""
     partenza = os.getcwd()
     repo_to_analyze = os.path.abspath(folder)
     if not os.path.exists(repo_to_analyze):
@@ -27,24 +31,23 @@ def ck_metrics_for_single_commit(commit_hash, output = None, folder = "repositor
         os.chdir(repo_to_analyze)
         try:
             subprocess.check_call(['git', 'checkout', '-f', commit_hash])
-        except subprocess.CalledProcessError as e:
+        except subprocess.CalledProcessError:
             return -1
 
         os.chdir(os.path.dirname(ck_tool))
-        subprocess.call(['java', '-jar', 'ck.jar', repo_to_analyze, 'true', '0', 'false', f"{output_dir}/{commit_hash}"])
+        subprocess.call(['java', '-jar', 'ck.jar', repo_to_analyze, 'true', '0',
+                        'false', f"{output_dir}/{commit_hash}"])
         if(output is not None and output != "TESTCODECK"):
             ru.delete_garbage("class", output)
             os.chdir(partenza)
     # Non ritorna nulla ma crea il file csv con metriche per il commit richiesto
-    
 
 
 
-def commit_measure_avg(measure, commit_hash, output =None): 
+def commit_measure_avg(measure, commit_hash, output =None):
     """Questo metodo estrae la media della metrica desiderata dal commit"""
     current_directory = os.getcwd()
-    
-    if(output is None or output == "TESTCODECK"):
+    if output is None or output == "TESTCODECK":
         dir = os.path.join(os.path.abspath("output"),commit_hash)
         if not os.path.exists(dir):
             return -1
@@ -54,10 +57,8 @@ def commit_measure_avg(measure, commit_hash, output =None):
     if measure not in df.columns:
         print(f"Metrica '{measure}' non trovata nel file CSV.")
         return None
-
     # Calcola la media della metrica specificata
     mean_value = df[measure].mean()
-
     return mean_value
 
 
@@ -67,16 +68,15 @@ def analyze_commits_for_interval(df, folder = "repository", output = None):
     commits = df
     if not isinstance(commits, DataFrame):
         return None
-    if(commits.empty):
+    if commits.empty:
         return pd.DataFrame()
     if not os.path.exists(os.path.abspath(folder)):
         return None
     if not commits.empty:  # Controlla se il DataFrame non è vuoto
-        commit_messages = commits.iloc[:, 0] 
+        commit_messages = commits.iloc[:, 0]
         for commit_message in commit_messages:
-
             ck_metrics_for_single_commit(commit_message, folder = folder, output= output)
-        if(output != "TESTCODECK"):
+        if output != "TESTCODECK":
             ru.delete_garbage("class")
         return commits
     else:
@@ -85,17 +85,17 @@ def analyze_commits_for_interval(df, folder = "repository", output = None):
 
 
 def commit_measure_interval(measures, df, folder = "repository", output = None):
-    """ Questo metodo calcola le metriche per l'intervallo e fa la media delle metriche richieste per ogni commit"""
+    """ Questo metodo calcola le metriche per l'intervallo e fa la 
+    media delle metriche richieste per ogni commit"""
     commit = analyze_commits_for_interval(df, folder, output)
-    if(commit is None ):
+    if commit is None:
         return None
-    if(commit.empty):
+    if commit.empty:
         return pd.DataFrame
     commit['Commit Hash'] = commit['Commit Hash'] + 'class.csv'
     result_data = []
     path = os.path.abspath("output")
     element_names = os.listdir(path)
-    
     for name in element_names:
         metric_averages = {}
         for measure in measures:
@@ -104,11 +104,3 @@ def commit_measure_interval(measures, df, folder = "repository", output = None):
     result_df = pd.DataFrame(result_data)
     result = commit.merge(result_df, on ="Commit Hash")
     return result
-
-
-
-
-
-
-
-
