@@ -65,8 +65,9 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
 
     # ----------------------------- UI METHODS -----------------------------
     def returnBack(self):
-        subprocess.run(["git", "checkout", self.branchSelector.get()], cwd="repository")
-        self.master.previousPage
+        self.master.previousPage()
+        start = "main" if "main" in self.branchSelector._values else "master"
+        subprocess.run(["git", "checkout", start], cwd="repository")
 
     def initTopFrames(self):
         """inizializza la parte superiore della GUI come il nome del repo e le informazioni generali"""
