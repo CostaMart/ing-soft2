@@ -1,18 +1,20 @@
+"""E' solo un modo per risparmiare tempo con i loc del df"""
 import pandas as pd
-import matplotlib.pyplot as plt
-from icecream import ic
 
 
-######### INIZIO METODI PER METRICHE DI PROCESSO QUINDI DA USARE IL DATFRAME RESTITUITO DA generate_process_metrics in spMetrics ###########
+######### INIZIO METODI PER METRICHE DI PROCESSO QUINDI DA USARE IL DATFRAME
+#  RESTITUITO DA generate_process_metrics in spMetrics ###########
 
 
 def revision_number(df):
-    """Genera e restituisce un grafico a barre con il numero totale di autori per data del commit"""
+    """Genera e restituisce un grafico a barre con il numero totale di autori
+    per data del commit"""
     return df["Numero di Revisioni"].tolist(), df["Data del Commit"].tolist()
 
 
 def loc_number(df):
-    """Genera e restituisce un grafico a linee LOC con l'indice basato sulla data del commit"""
+    """Genera e restituisce un grafico a linee LOC con l'indice basato sulla
+      data del commit"""
     return (
         df["Linee di Codice"].tolist(),
         df["Linee vuote"].tolist(),
@@ -22,7 +24,8 @@ def loc_number(df):
 
 
 def authors(df):
-    """Genera e restituisce un grafico a barre con il numero totale di autori per ogni data del commit"""
+    """Genera e restituisce un grafico a barre con il numero totale di
+      autori per ogni data del commit"""
     authors_count = pd.DataFrame(columns=["Data del Commit", "Numero di Autori"])
     for date, group in df.groupby("Data del Commit"):
         authors_count = pd.concat(
@@ -45,11 +48,11 @@ def authors(df):
 
 
 def perAuthorContribution(df: pd.DataFrame) -> dict[str, int]:
+    """Genera il contributo per autore"""
     contributors = {}
     for index, row in df.iterrows():
         authors = row["Autori Distinti"]
         authors: set
-
         for author in authors:
             if author == "":
                 continue
@@ -63,25 +66,30 @@ def perAuthorContribution(df: pd.DataFrame) -> dict[str, int]:
 
 
 def weeks(df):
-    """Genera e restituisce un grafico a barre con il numero di settimane del file per data del commit"""
+    """Genera e restituisce un grafico a barre con il numero di settimane 
+    del file per data del commit"""
     return df["Settimane file"].tolist(), df["Data del Commit"].tolist()
 
 
 def codeC(df):
-    """Genera e restituisce un grafico a barre con il numero di codechurn per  data del commit"""
+    """Genera e restituisce un grafico a barre con il numero di codechurn
+      per  data del commit"""
 
     return df["Code churn"].tolist(), df["Data del Commit"].tolist()
 
 
 def bugfix(df):
-    """Genera e restituisce un grafico a barre con il numero di bugfix per data del commit"""
+    """Genera e restituisce un grafico a barre con il numero di bugfix 
+    per data del commit"""
     return df["Bugfix commit"].tolist(), df["Data del Commit"].tolist()
 
 
-######### FINE METODI PER METRICHE DI PROCESSO QUINDI DA USARE IL DATFRAME RESTITUITO DA generate_process_metrics #####################
+######### FINE METODI PER METRICHE DI PROCESSO QUINDI DA USARE IL DATFRAME
+#  RESTITUITO DA generate_process_metrics #####################
 
 
-######### INIZIO METODI PER METRICHE DI PROGETTO QUINDI DA USARE IL DATFRAME RESTITUITO DA generate_metrics_ck in spMetrics ###########
+######### INIZIO METODI PER METRICHE DI PROGETTO QUINDI DA USARE IL DATFRAME
+#  RESTITUITO DA generate_metrics_ck in spMetrics ###########
 
 
 def wmc(df):
@@ -101,7 +109,6 @@ def dit(df):
 
 def noc(df):
     """Genera e restituisce un grafico a linee con il valore di noc per data del commit"""
-
     return df["noc"].tolist(), df["Data del Commit"].tolist()
 
 
@@ -115,4 +122,5 @@ def lcom(df):
     return df["lcom"].tolist(), df["Data del Commit"].tolist()
 
 
-######### FINE METODI PER METRICHE DI PROGETTO QUINDI DA USARE IL DATFRAME RESTITUITO DA generate_metrics_ck #################
+######### FINE METODI PER METRICHE DI PROGETTO QUINDI DA USARE IL
+# DATFRAME RESTITUITO DA generate_metrics_ck #################

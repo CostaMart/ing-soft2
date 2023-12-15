@@ -1,12 +1,15 @@
+"""ComputingEndpointModel per la gestione dei processi"""
+
 import multiprocessing
-from icecream import ic
 from backend.start_endpoint import startEndpoint  # Importa il target del processo
 
 
 class ComputingEndpointModel:
+    """Istanze statiche della classe"""
     _instance = None
 
     def __new__(cls):
+        """Crea nuova classe"""
         if cls._instance is None:
             cls._instance = super(ComputingEndpointModel, cls).__new__(cls)
             cls.parent_conn = None
@@ -31,7 +34,6 @@ class ComputingEndpointModel:
         try:
             self.parent_conn.send({"fun": "ping", "num1": 1, "num2": 2})
             result = self.parent_conn.recv()
-
             return result == 3
             # Restituisce True se la risposta è quella attesa
         except Exception as e:
@@ -54,9 +56,9 @@ class ComputingEndpointModel:
             print(f"Errore durante la ricezione del messaggio dal processo: {e}")
 
     def destroy(self) -> bool:
+        """Distrugge il thread"""
         self.parent_conn.send({"fun": "destroy"})
         message = self.parent_conn.recv()
-
         print(message)
         if message == "destroy request ok":
             self.child_conn.close()

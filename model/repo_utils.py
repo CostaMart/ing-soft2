@@ -1,11 +1,16 @@
+"""
+Questo è un modulo di utilità per la gestione dei repository.
+Contiene funzioni utili per la manipolazione delle repository.
+"""
+
 import os
-import pandas as pd
 import json
-from pydriller import Repository
 import subprocess
-from icecream import ic
 from datetime import datetime
+import pandas as pd
+from pydriller import Repository
 from git import Repo, InvalidGitRepositoryError
+
 
 setting = open("settings.json")
 settings = json.load(setting)
@@ -44,7 +49,6 @@ def repo_to_use(folder="repository"):
     if not os.path.exists(folder):
         return None
     repo_path = os.path.abspath(folder)
-
     try:
         repo = Repo(repo_path)
         return repo
@@ -58,12 +62,12 @@ def get_commits(repository):
 
 
 def dataCommit(folder="repository"):
-    """Metodo che prende tutti i commit con relativa data e li inserisce in un dataframe che ritorna"""
+    """Metodo che prende tutti i commit con relativa data e li 
+    inserisce in un dataframe che ritorna"""
     commit_data = []
     repo = repo_to_use(folder)
     if repo == -1:
         return -1
-    
     for commit in get_commits(repo):
         commit_hash = commit.hash
         commit_date = commit.committer_date
@@ -72,11 +76,11 @@ def dataCommit(folder="repository"):
 
 
 def dataCommitLink(rep):
-    """Metodo che prende tutti i commit con relativa data e li inserisce in un dataframe che ritorna"""
+    """Metodo che prende tutti i commit con relativa 
+    data e li inserisce in un dataframe che ritorna"""
     commit_data = []
     if not isinstance(rep, Repository):
         return -1
-
     for commit in get_commits(rep):
         commit_hash = commit.hash
         commit_date = commit.committer_date
@@ -85,17 +89,15 @@ def dataCommitLink(rep):
 
 
 def dataCommitLinkYear(rep, year):
-    """Metodo che prende tutti i commit con relativa data in base all'anno e li inserisce in un dataframe che ritorna"""
+    """Metodo che prende tutti i commit con relativa data in
+      base all'anno e li inserisce in un dataframe che ritorna"""
     if not isinstance(rep, Repository):
         return -1
-
     if not isinstance(year, int):
         return -1
-
     current_year = datetime.now().year
     if year > current_year:
         return -1
-
     commit_data = []
     for commit in get_commits(rep):
         commit_hash = commit.hash
@@ -107,7 +109,7 @@ def dataCommitLinkYear(rep, year):
 
 def delete_garbage(keep, output=None, folder="output"):
     """Elimina i file non utilizzabili creati con le metriche della classe"""
-    if (output is None):
+    if output is None:
         output_dir = os.path.abspath(folder)
     else:
         output_dir = os.path.join(os.path.abspath("output"), str(output))
@@ -118,7 +120,8 @@ def delete_garbage(keep, output=None, folder="output"):
 
 
 def trova_file_classe(classe_filename, folder="repository"):
-    """ Questo metodo trova una classe in una repository e ne ritorna il path assoluto """
+    """ Questo metodo trova una classe in una repository
+      e ne ritorna il path assoluto """
     repository_path = os.path.abspath(folder)
     if not os.path.exists(repository_path):
         return -1
@@ -129,7 +132,8 @@ def trova_file_classe(classe_filename, folder="repository"):
 
 
 def cerca_file_java(cartella_name):
-    """ Questo metodo cerca tutti i file java in una cartella e ne restituisce una lista di nomi di file """
+    """ Questo metodo cerca tutti i file java in una cartella e ne
+      restituisce una lista di nomi di file """
     risultati = []
     cartella = os.path.abspath(cartella_name)
     if not os.path.exists(cartella_name):
@@ -138,7 +142,6 @@ def cerca_file_java(cartella_name):
         for file in files:
             if file.endswith(".java"):
                 risultati.append(file)
-
     return risultati
 
 
@@ -148,7 +151,8 @@ def get_commit_date(commit_hash, folder="repository"):
         cartella = os.path.abspath(folder)
         if not os.path.exists(cartella):
             return None
-        result = subprocess.run(['git', 'show', '--format=%aI', '-s', commit_hash], cwd=os.path.abspath(folder),
+        result = subprocess.run(['git', 'show', '--format=%aI', '-s', commit_hash],
+                                cwd=os.path.abspath(folder),
                                 capture_output=True, text=True, check=True)
         commit_date = result.stdout.strip()
         return commit_date
@@ -166,13 +170,12 @@ def checkout_commit(commit_hash, folder="repository"):
 
 
 def extract_years_from_commits(folder="repository"):
+    """Questo metodo estrae gli anni disponibili dai commit delle repo """
     cartella = os.path.abspath(folder)
     if not os.path.exists(cartella):
         return -1
     repo = repo_to_use(folder)
-
     years = set()
-
     for commit in get_commits(repo):
         commit_date = commit.committer_date
         year = commit_date.year
