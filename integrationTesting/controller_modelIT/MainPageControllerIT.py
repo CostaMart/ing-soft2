@@ -9,7 +9,7 @@ from icecream import ic
 
 directory_corrente = os.path.abspath(os.path.dirname(__file__))
 
-divided = ic(directory_corrente.split(os.sep))
+divided = directory_corrente.split(os.sep)
 final = []
 
 for division in divided:
@@ -18,7 +18,7 @@ for division in divided:
     final.append(division)
 final.append("ing-soft2")
 final_dir = os.sep.join(final)
-ic(final_dir)
+
 sys.path.append(final_dir)
 
 
@@ -36,11 +36,10 @@ class MainPageControllerIntegrationTest(unittest.TestCase):
     # test integrazione con model per repo locali
     @classmethod
     def setUpClass(self) -> None:
-        ic("ready")
         """setup repoModel"""
         self.globalModel = LocalRepoModel()
         directory_path = "repository"
-        ic(directory_path)
+
         if not os.path.exists(directory_path) or not os.path.isdir(directory_path):
             os.mkdir(directory_path)
 
@@ -55,7 +54,6 @@ class MainPageControllerIntegrationTest(unittest.TestCase):
         controller = MainPageController()
         controller.globalModel = self.globalModel
         code = controller.getStatusCodeFromLocalModel()
-        ic(code.status_code)
 
         self.assertIsNotNone(code)
 

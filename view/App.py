@@ -20,8 +20,8 @@ class IngSoftApp(ctk.CTk):
         ctk.set_appearance_mode("dark")
         self.title("Ing_soft")
 
-        height = ic(self.winfo_screenheight())
-        width = ic(self.winfo_screenwidth())
+        height = self.winfo_screenheight()
+        width = self.winfo_screenwidth()
         self.geometry(f"{width}x{height}")
 
         self.minsize(800, 600)

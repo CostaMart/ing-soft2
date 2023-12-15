@@ -31,10 +31,8 @@ class LocalRepoModel:
 
         # Utilizzo del pattern DAO
         name, repoName = self.LocalDAO.getRepoInfoFromGit()
-        ic(name)
 
         if name is not None and repoName is not None:
-            ic(name)
             repodata = self.CRUD.getRepoByNameeAuthor(name, repoName)
             self.repoData = repodata
 
@@ -66,7 +64,7 @@ class LocalRepoModel:
         return self.LocalDAO.findJavaClass(rootDirectory)
 
     def getCommitWithClassList(self, className):
-        """dato il nomoe di una classe recupera tutti i commit in cui questa è presente"""
+        """dato il nome di una classe recupera tutti i commit in cui questa è presente"""
         return self.LocalDAO.get_commits_with_class(className, "repository")
 
     def getYearList(self) -> dict[int, set[str]]:

@@ -6,6 +6,7 @@ from model.Domain import HttpResponse, Repository, MetadataRepository
 
 class DAORepo:
     """Dichiarazione classe"""
+
     def __init__(self):
         """Inizializzazione"""
         self.last_http_response = None
@@ -14,12 +15,11 @@ class DAORepo:
         """Ritorna Repo dall'autore"""
         response = requests.get(f"https://api.github.com/repos/{repoOwner}/{repoName}")
         self.last_http_response = HttpResponse(response.status_code, response.json())
-        ic(response.content)
 
         if response.status_code == 200:
             repository_data = response.json()
             repository = MetadataRepository(repository_data)
-            ic(repository)
+
             return repository
         else:
             return None
@@ -78,8 +78,8 @@ class DAORepo:
 
     def getJavaRepoListForAuthorAndRepo(self, author, repo_name):
         """Se l'autore è specificato, cerca per il nome del repository all'interno
-         dell'account dell'autore"""
-        url=f"https://api.github.com/search/repositories?q=user:{author}+repo:{repo_name}+language:java"
+        dell'account dell'autore"""
+        url = f"https://api.github.com/search/repositories?q=user:{author}+repo:{repo_name}+language:java"
         response = requests.get(url)
         self.last_http_response = HttpResponse(response.status_code, response.json())
         # Verifica se la risposta contiene dati JSON

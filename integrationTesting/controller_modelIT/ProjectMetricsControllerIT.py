@@ -9,7 +9,7 @@ from icecream import ic
 
 directory_corrente = os.path.abspath(os.path.dirname(__file__))
 
-divided = ic(directory_corrente.split(os.sep))
+divided = directory_corrente.split(os.sep)
 final = []
 
 for division in divided:
@@ -18,7 +18,7 @@ for division in divided:
     final.append(division)
 final.append("ing-soft2")
 final_dir = os.sep.join(final)
-ic(final_dir)
+
 sys.path.append(final_dir)
 
 
@@ -35,11 +35,10 @@ from multiprocessing.connection import Connection
 class ProjectControllerIntegrationTest(unittest.TestCase):
     @classmethod
     def setUpClass(self) -> None:
-        ic("ready")
         """setup repoModel"""
         self.globalModel = LocalRepoModel()
         directory_path = "repository"
-        ic(directory_path)
+
         if not os.path.exists(directory_path) or not os.path.isdir(directory_path):
             os.mkdir(directory_path)
 
@@ -183,7 +182,7 @@ class ProjectControllerIntegrationTest(unittest.TestCase):
 
         def toRun(message):
             nonlocal result
-            result = ic(message)
+            result = message
 
         controller = ProjectMetricsController()
         controller.computingEndPointModel = self.comp

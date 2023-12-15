@@ -8,7 +8,7 @@ import git
 import pandas as pd
 from pydriller import Repository, Commit
 from model.repo_utils import get_commits, repo_to_use
-from git import Repo
+from git.repo.base import Repo
 import subprocess
 
 
@@ -30,11 +30,11 @@ class LocalDAO:
         """Ottieni le informazioni del repository dal sistema Git."""
 
         os.chdir("repository")
-        ic(os.getcwd())
+
         result = subprocess.check_output(["git", "remote", "show", "origin"]).decode(
             "utf-8"
         )
-        firstLine = ic(result.split("\n")[1])
+        firstLine = result.split("\n")[1]
         name = firstLine.split("/")[-2]
         repoName = firstLine.split("/")[-1]
         os.chdir("..")
@@ -82,12 +82,11 @@ class LocalDAO:
         years = {}
 
         for commit in repo.traverse_commits():
-            print(commit)
             commit_date = commit.committer_date
             year = commit_date.year
 
             if year not in years.keys():
-                years[year] = set(ic(commit.branches))
+                years[year] = set(commit.branches)
             else:
                 branches = years[year]
                 branches.update(
@@ -101,6 +100,7 @@ class LocalDAO:
         repo = git.Repo(repo_path)
         commit = repo.commit(commit_hash)
         dict_file = set()
+
         albero_commit = commit.tree
         for blob in albero_commit.traverse():
             if isinstance(blob, git.Blob) and ".java" in blob.path:
