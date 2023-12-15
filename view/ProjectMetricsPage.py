@@ -1,35 +1,31 @@
+"""Modulo che gestisce la pagina delle metriche"""
 import os.path
 import subprocess
 from typing import List
-import customtkinter as ctk
-from view.widgets.SideButton import SideButton
-from controller.ProjectMetricsContoller import ProjectMetricsController
 import tkinter as tk
+import customtkinter as ctk
 from icecream import ic
 from pydriller import Commit
-import tkinter as tk
+from view.widgets.SideButton import SideButton
+from controller.ProjectMetricsContoller import ProjectMetricsController
 from .widgets.GraficiSP.GraphFactory import GraphFactory
 from .widgets.LoadingIcon import RotatingIcon
 
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
     """view rappresentante la pagina delle metriche"""
-
     def __init__(self, master, debug=False):
         super().__init__(master=master)
         self.grid_frame = (
             None  # Aggiungi una variabile per tenere traccia del frame della griglia
         )
         ctk.set_appearance_mode("dark")
-
         self.mode = tk.StringVar()
         self.commitList = []
         self.panelCreated = False
-
         self.controller = ProjectMetricsController()
         self.repoData = self.controller.getLocalRepoData()
         self.master = master
-
         font = ctk.CTkFont(size=40)
         self.topFrame = ctk.CTkFrame(self, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.topFrame.pack(fill="x", expand=True)
@@ -41,23 +37,17 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             fg_color="#1d1e1e",
         )
         self.repoName.pack()
-
         # inizializza primo pannello
         self.initTopFrames()
         self.externalProjectFrame.pack(pady=12)
-
         # inizializza il pannello laterale
         self.initTopRightFrame()
-
         # inizializza lista di anni del repo in memoria
         self.yearBranchDict = ic(self.controller.getYearList())
         self.yearList = list(self.yearBranchDict.keys())
-
         # inizializza il pannello di selezione dei commit
         self.computationPanel()
-
         left_arrow = os.path.join("resources", "left-arrow.png")
-
         self.backButton = SideButton(
             self, self.returnBack, side="left", imgpath=left_arrow
         )
@@ -65,32 +55,29 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
 
     # ----------------------------- UI METHODS -----------------------------
     def returnBack(self):
+        """Ritorna indietro"""
         self.master.previousPage()
         start = "main" if "main" in self.branchSelector._values else "master"
         subprocess.run(["git", "checkout", start], cwd="repository")
 
     def initTopFrames(self):
-        """inizializza la parte superiore della GUI come il nome del repo e le informazioni generali"""
-
+        """inizializza la parte superiore della GUI come il nome del 
+        repo e le informazioni generali"""
         my_font = ctk.CTkFont(weight="bold", size=16)
         my_font_big = ctk.CTkFont(weight="bold", size=20)
-
         self.externalProjectFrame = ctk.CTkFrame(self)
         self.label = ctk.CTkLabel(
             self.externalProjectFrame, text="Repo general info", font=my_font_big
         )
         self.label.pack(anchor="w")
-
         self.internalFrame = ctk.CTkFrame(
             self.externalProjectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
         )
         self.internalFrame.pack(side=ctk.LEFT, fill="y", expand=True)
-
         self.projectFrame = ctk.CTkFrame(
             self.internalFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
         )
         self.projectFrame.pack(padx=10)
-
         self.subFrame1 = ctk.CTkFrame(
             self.projectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
         )
@@ -99,7 +86,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.label.pack(side=ctk.LEFT)
         self.label = ctk.CTkLabel(self.subFrame1, text=f"{self.repoData.git_url}")
         self.label.pack()
-
         self.subFrame2 = ctk.CTkFrame(
             self.projectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
         )
@@ -108,14 +94,11 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.subFrame2, text=f"project license: ", font=my_font
         )
         self.label.pack(side=ctk.LEFT)
-
         license = "None"
         if self.repoData.license != None:
             license = self.repoData.license["name"]
-
         self.label = ctk.CTkLabel(self.subFrame2, text=f"{license}")
         self.label.pack()
-
         self.subFrame3 = ctk.CTkFrame(
             self.projectFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
         )
@@ -138,6 +121,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.label.pack()
 
     def initTopRightFrame(self):
+        """Inizializza il pannello laterale con i vari selettori"""
         self.topRightFrame = ctk.CTkFrame(self, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.topRightFrame.pack()
         self.modeSelector = ctk.CTkSegmentedButton(
@@ -175,17 +159,15 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         rotating.beginRotation()
 
     def start_dataRequest(self):
-        """Viene chiamata la classe ComputationEndpoint per iniziare l'analisi delle metriche"""
-        """gli vengono passate le funzioni per calcolare le metriche e i parametri necessari per eseguire l'analisi"""
-        """utilizzo i metodi del controller per passargli le funzioni che deve eseguire come messaggi"""
-
+        """Viene chiamata la classe ComputationEndpoint per iniziare l'analisi delle metriche
+        gli vengono passate le funzioni per calcolare le metriche e i parametri necessari per 
+        eseguire l'analisi utilizzo i metodi del controller per passargli le funzioni
+        che deve eseguire come messaggi"""
         # prende il nome della classe dal selettore
         class_name = self.classSelector.get()
-
         # lista di commit dall'inizio alla fine dell'analisi
         start_commit_hash = self.startCommitSelector.get()
         arrive_commit_hash = self.arriveCommitSelector.get()
-
         commit_list = self.controller.getCommitsBetweenHashes(
             start_commit_hash, arrive_commit_hash
         )
@@ -199,7 +181,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
                 },
                 callback=self.finalize_data_request,
             )
-
             self.loadingFrame()
             self.disableSelectorPanel()
         else:
@@ -209,17 +190,13 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
 
     def finalize_data_request(self, process_dict):
         """utilizzata come call back da start data request per aggiornare la view"""
-
         if self.panelCreated:
             self.graphFrame.destroy()
             self.panelCreated = False
-
         self.graphFrame = ctk.CTkFrame(self, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.graphFrame.pack(pady=30)
         self.panelCreated = True
-
         graphFactory = GraphFactory()
-
         # Grafico Loc
         locFrame = ctk.CTkFrame(self.graphFrame)
         locFrame.grid(column=0, row=0, padx=10, pady=20)
@@ -228,9 +205,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         )
         toolbar.pack()
         loc.pack()
-        # bottoneAmoroso2= ctk.CTkButton(locFrame, command= loc.zoom_in, text= "bottoncino simpatichino +")
-        # bottoneAmoroso2.pack()
-
         # Grafico revisioni
         revisionFrame = ctk.CTkFrame(self.graphFrame)
         revisionFrame.grid(column=1, row=0, padx=10, pady=20)
@@ -238,7 +212,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             master=revisionFrame, graph="revisions", process_dict=process_dict
         )
         revision.pack()
-
         # Grafico bugfix
         bugFrame = ctk.CTkFrame(self.graphFrame)
         bugFrame.grid(column=0, row=1, padx=10, pady=20)
@@ -246,7 +219,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             master=bugFrame, graph="bugfix", process_dict=process_dict
         )
         churn.pack()
-
         # Grafico code churn
         churnFrame = ctk.CTkFrame(self.graphFrame)
         churnFrame.grid(column=1, row=1, padx=10, pady=20)
@@ -254,7 +226,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             master=churnFrame, graph="churn", process_dict=process_dict
         )
         churn.pack()
-
         # Grafico weeks
         weeksFrame = ctk.CTkFrame(self.graphFrame)
         weeksFrame.grid(column=0, row=2, padx=10, pady=20)
@@ -262,7 +233,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             master=weeksFrame, graph="weeks", process_dict=process_dict
         )
         weeks.pack()
-
         # Grafico authors
         authorsFrame = ctk.CTkFrame(self.graphFrame)
         authorsFrame.grid(column=1, row=2, padx=10, pady=20)
@@ -270,7 +240,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             master=authorsFrame, graph="authors", process_dict=process_dict
         )
         author.pack()
-
         # grafico contributi
         contributionsFrame = ctk.CTkFrame(self.graphFrame)
         contributionsFrame.grid(column=0, row=3, padx=10, pady=20)
@@ -278,19 +247,17 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             master=contributionsFrame, graph="contributions", process_dict=process_dict
         )
         contributions.pack()
-
         self.enableSelectorPanel()
         self.messageFrame.forget()
 
     def start_CKdataRequest(self):
-        """Viene chiamata la classe ComputationEndpoint per iniziare l'analisi delle metriche"""
-        """gli vengono passate le funzioni per calcolare le metriche e i parametri necessari per eseguire l'analisi"""
-        """utilizzo i metodi del controller per passargli le funzioni che deve eseguire come messaggi"""
-
+        """Viene chiamata la classe ComputationEndpoint per iniziare l'analisi delle metriche
+        gli vengono passate le funzioni per calcolare le metriche e i parametri necessari 
+        per eseguire l'analisi utilizzo i metodi del controller per passargli le funzioni
+        che deve eseguire come messaggi"""
         # lista di commit dall'inizio alla fine dell'analisi
         start_commit_hash = self.startCommitSelector.get()
         arrive_commit_hash = self.arriveCommitSelector.get()
-
         commit_list = self.controller.getCommitsBetweenHashes(
             start_commit_hash, arrive_commit_hash
         )
@@ -300,25 +267,21 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
                 {"fun": "generate_metricsCK", "commits_dict": commit_list},
                 callback=self.finalize_CDdata_request,
             )
-
             self.loadingFrame()
             self.disableSelectorPanel()
         else:
             print(
                 "La lista di commit è vuota o non valida. Impossibile avviare l'analisi."
             )
-
     def finalize_CDdata_request(self, process_dict):
+        """Finalizza la richiesta"""
         if self.panelCreated:
             self.graphFrame.destroy()
             self.panelCreated = False
-
         graphFactory = GraphFactory()
-
         self.graphFrame = ctk.CTkFrame(self, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.graphFrame.pack(pady=30)
         self.panelCreated = True
-
         # Grafico Cbo
         cboFrame = ctk.CTkFrame(self.graphFrame)
         cboFrame.grid(column=0, row=0, padx=10, pady=20)
@@ -334,7 +297,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             master=rfcFrame, graph="rfc", process_dict=process_dict
         )
         rfc.pack()
-
         # Grafico wmc
         wmcFrame = ctk.CTkFrame(self.graphFrame)
         wmcFrame.grid(column=0, row=1, padx=10, pady=20)
@@ -342,7 +304,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             master=wmcFrame, graph="wmc", process_dict=process_dict
         )
         wmc.pack()
-
         # Grafico noc
         nocFrame = ctk.CTkFrame(self.graphFrame)
         nocFrame.grid(column=1, row=1, padx=10, pady=20)
@@ -350,7 +311,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             master=nocFrame, graph="noc", process_dict=process_dict
         )
         noc.pack()
-
         # Grafico dit
         ditFrame = ctk.CTkFrame(self.graphFrame)
         ditFrame.grid(column=0, row=2, padx=10, pady=20)
@@ -358,7 +318,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             master=ditFrame, graph="dit", process_dict=process_dict
         )
         dit.pack()
-
         # Grafico lcom
         lcomFrame = ctk.CTkFrame(self.graphFrame)
         lcomFrame.grid(column=1, row=2, padx=10, pady=20)
@@ -366,28 +325,24 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             master=lcomFrame, graph="lcom", process_dict=process_dict
         )
         lcom.pack()
-
         self.enableSelectorPanel()
         self.messageFrame.forget()
 
-    # ----------------------------- le seguenti funzioni controllano gli update del blocco di selezione per l'analisi dei commit  -----------------------------
+    # ----------------------------- le seguenti funzioni controllano gli update del blocco di
+    # selezione per l'analisi dei commit  -----------------------------
     def computationPanel(self):
         """inizializza il pannello centrale con le sue componenti"""
-
         self.lowerFrame = ctk.CTkFrame(self, bg_color="#1d1e1e", fg_color="#1d1e1e")
         self.lowerFrame.pack(fill="x", expand=True)
-
         self.lowerFrameLabel = ctk.CTkLabel(
             self.lowerFrame,
             text="""select where to start and where to finish your analysis \n keep in mind: long therm analysis will require more time""",
         )
         self.lowerFrameLabel.pack(pady=20)
-
         self.optionFrame = ctk.CTkFrame(
             self.lowerFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
         )
         self.optionFrame.pack()
-
         # selettori di inizio analisi
         startYearSelectorSubFrame = ctk.CTkFrame(
             self.optionFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
@@ -400,7 +355,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             fg_color="#1d1e1e",
         )
         startLabel.pack(side=ctk.TOP)
-
         # selettore anno
         yearbox = ctk.CTkFrame(
             startYearSelectorSubFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
@@ -421,7 +375,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             dynamic_resizing=False,
         )
         self.startYearSelector.pack()
-
         # selettore di branch
         branchBox = ctk.CTkFrame(
             startYearSelectorSubFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
@@ -446,7 +399,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             dynamic_resizing=False,
         )
         self.branchSelector.pack()
-
         # selettore di commit iniziale
         startCommitBox = ctk.CTkFrame(
             startYearSelectorSubFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
@@ -468,7 +420,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         )
         self.startCommitSelector.pack()
         self.startCommitSelector.configure(state="disabled")
-
         # selettore di classe
         classBox = ctk.CTkFrame(
             self.optionFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
@@ -486,7 +437,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         )
         self.classSelector.pack()
         self.classSelector.configure(state="disabled")
-
         # selettori di arrivo
         arriveYearSelectorSubFrame = ctk.CTkFrame(
             self.optionFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
@@ -499,7 +449,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             fg_color="#1d1e1e",
         )
         arriveLabel.pack(padx=5, side=ctk.TOP)
-
         # selettore anno di arrivo
         arriveBox = ctk.CTkFrame(
             arriveYearSelectorSubFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
@@ -520,7 +469,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             command=self.start_updateArriveCommitList,
         )
         self.arriveYearSelector.pack(padx=5, side=ctk.LEFT)
-
         # selettore commit di arrivo
         arriveCommitBox = ctk.CTkFrame(
             arriveYearSelectorSubFrame, bg_color="#1d1e1e", fg_color="#1d1e1e"
@@ -538,15 +486,12 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             arriveCommitBox, values=["arrive commit"], dynamic_resizing=False
         )
         self.arriveCommitSelector.pack(padx=5, side=ctk.LEFT)
-
         # bottone di start dell'analisi affidata ad un altro processo
         self.start_button = ctk.CTkButton(
             self.lowerFrame, text="Start Analysis", command=self.startRequest
         )
         self.start_button.pack(anchor="s", pady=10)
-
         # configurazione iniziale selettori
-
         self.start_updateStartCommitList(self.yearList[0])
 
     def disableSelectorPanel(self):
@@ -572,6 +517,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
     # -----------------------------update start commit list-----------------------------
 
     def update_branchList(self, year):
+        """Aggiorna la lista dei branch"""
         values = [
             ic(branch)
             for branch in self.yearBranchDict[int(year)]
@@ -582,20 +528,18 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.start_updateStartCommitList(year=year)
 
     def start_updateStartCommitList(self, branch="any", year="no Value"):
+        """Inizia a aggiornare la lista dei commit"""
         subprocess.run(["git", "checkout", self.branchSelector.get()], cwd="repository")
         """esegue l'update della lista di commit di partenza dell'analisi"""
         me = self
-
         if year == "no Value":
             year = self.startYearSelector.get()
-
         def _end_updateStartCommitList(commitList):
             commitHashes = [commit.hash for commit in commitList]
             me.startCommitSelector.configure(values=commitHashes)
             me.startCommitSelector.update()
             me.startCommitSelector.set(commitHashes[0])
             me.updateClassList(commitHashes[0])
-
         self.disableSelectorPanel()
         self.controller.updateCommitsListByYear(
             year, self.branchSelector.get(), callback=_end_updateStartCommitList
@@ -604,7 +548,6 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
     # -----------------------------update lista classi-----------------------------
     def updateClassList(self, hash):
         """esegue l'update della lista delle classi"""
-
         self.disableSelectorPanel()
         newList = self.controller.getClassesList(hash)
         if len(newList) == 0:
@@ -615,9 +558,9 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
 
     # -----------------------------update anno di arrivo-----------------------------
     def start_updateArriveYearList(self, startingYear):
+        """Inizia ad aggiornare la lista degli anni di arrivo"""
         self.disableSelectorPanel()
         years = self.yearList
-
         def _end_updateArriveYearList(arriveYears=0):
             startingYear = int(self.startYearSelector.get())
             newYearList = [str(year) for year in years if year >= startingYear]
@@ -625,32 +568,26 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.arriveYearSelector.update()
             self.arriveYearSelector.set(newYearList[0])
             self.start_updateArriveCommitList(self.classSelector.get())
-
         self.controller.updateRepoYearList(callback=_end_updateArriveYearList)
 
     # -----------------------------update commit di arrivo -----------------------------
     def start_updateArriveCommitList(self, className):
         """esegue l'update della lista di commit di arrivo dell'analisi"""
-
         self.disableSelectorPanel()
         className = self.classSelector.get()
         startCommit = self.controller.getCommitByhash(self.startCommitSelector.get())
-
         def _end_updateArriveCommitList(commitList: List[Commit]):
             finalList = [
                 commit.hash
                 for commit in commitList
                 if className in self.controller.getClassesList(commit.hash)
             ]
-
             if len(finalList) == 0:
                 finalList = ["select a class"]
-
             self.arriveCommitSelector.configure(values=finalList)
             self.arriveCommitSelector.update()
             self.arriveCommitSelector.set(finalList[0])
             self.enableSelectorPanel()
-
         self.controller.getCommiListFromDate(
             startCommit.committer_date,
             self.arriveYearSelector.get(),
