@@ -15,7 +15,6 @@ class DAORepo:
         """Ritorna Repo dall'autore"""
         response = requests.get(f"https://api.github.com/repos/{repoOwner}/{repoName}")
         self.last_http_response = HttpResponse(response.status_code, response.json())
-
         if response.status_code == 200:
             repository_data = response.json()
             repository = MetadataRepository(repository_data)

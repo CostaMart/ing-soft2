@@ -14,6 +14,7 @@ from .widgets.LoadingIcon import RotatingIcon
 
 class ProjectMetricsPage(ctk.CTkScrollableFrame):
     """view rappresentante la pagina delle metriche"""
+
     def __init__(self, master, debug=False):
         super().__init__(master=master)
         self.grid_frame = (
@@ -61,7 +62,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         subprocess.run(["git", "checkout", start], cwd="repository")
 
     def initTopFrames(self):
-        """inizializza la parte superiore della GUI come il nome del 
+        """inizializza la parte superiore della GUI come il nome del
         repo e le informazioni generali"""
         my_font = ctk.CTkFont(weight="bold", size=16)
         my_font_big = ctk.CTkFont(weight="bold", size=20)
@@ -160,7 +161,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
 
     def start_dataRequest(self):
         """Viene chiamata la classe ComputationEndpoint per iniziare l'analisi delle metriche
-        gli vengono passate le funzioni per calcolare le metriche e i parametri necessari per 
+        gli vengono passate le funzioni per calcolare le metriche e i parametri necessari per
         eseguire l'analisi utilizzo i metodi del controller per passargli le funzioni
         che deve eseguire come messaggi"""
         # prende il nome della classe dal selettore
@@ -252,7 +253,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
 
     def start_CKdataRequest(self):
         """Viene chiamata la classe ComputationEndpoint per iniziare l'analisi delle metriche
-        gli vengono passate le funzioni per calcolare le metriche e i parametri necessari 
+        gli vengono passate le funzioni per calcolare le metriche e i parametri necessari
         per eseguire l'analisi utilizzo i metodi del controller per passargli le funzioni
         che deve eseguire come messaggi"""
         # lista di commit dall'inizio alla fine dell'analisi
@@ -273,6 +274,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             print(
                 "La lista di commit è vuota o non valida. Impossibile avviare l'analisi."
             )
+
     def finalize_CDdata_request(self, process_dict):
         """Finalizza la richiesta"""
         if self.panelCreated:
@@ -534,12 +536,14 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         me = self
         if year == "no Value":
             year = self.startYearSelector.get()
+
         def _end_updateStartCommitList(commitList):
             commitHashes = [commit.hash for commit in commitList]
             me.startCommitSelector.configure(values=commitHashes)
             me.startCommitSelector.update()
             me.startCommitSelector.set(commitHashes[0])
             me.updateClassList(commitHashes[0])
+
         self.disableSelectorPanel()
         self.controller.updateCommitsListByYear(
             year, self.branchSelector.get(), callback=_end_updateStartCommitList
@@ -561,6 +565,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         """Inizia ad aggiornare la lista degli anni di arrivo"""
         self.disableSelectorPanel()
         years = self.yearList
+
         def _end_updateArriveYearList(arriveYears=0):
             startingYear = int(self.startYearSelector.get())
             newYearList = [str(year) for year in years if year >= startingYear]
@@ -568,6 +573,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.arriveYearSelector.update()
             self.arriveYearSelector.set(newYearList[0])
             self.start_updateArriveCommitList(self.classSelector.get())
+
         self.controller.updateRepoYearList(callback=_end_updateArriveYearList)
 
     # -----------------------------update commit di arrivo -----------------------------
@@ -576,6 +582,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
         self.disableSelectorPanel()
         className = self.classSelector.get()
         startCommit = self.controller.getCommitByhash(self.startCommitSelector.get())
+
         def _end_updateArriveCommitList(commitList: List[Commit]):
             finalList = [
                 commit.hash
@@ -588,6 +595,7 @@ class ProjectMetricsPage(ctk.CTkScrollableFrame):
             self.arriveCommitSelector.update()
             self.arriveCommitSelector.set(finalList[0])
             self.enableSelectorPanel()
+
         self.controller.getCommiListFromDate(
             startCommit.committer_date,
             self.arriveYearSelector.get(),
