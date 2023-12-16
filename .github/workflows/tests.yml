@@ -14,14 +14,25 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: 3.11.6
 
-    - name: Install dependencies
+    - name: Create and activate virtual environment
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+
+    - name: Upgrade pip and install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+
+    - name: Install pip-tools
+      run: python -m pip install pip-tools
+
+    - name: Generate requirements.txt
+      run: pip-compile requirements.in
 
     - name: Run tests
       run: |
