@@ -2,7 +2,6 @@
 import time
 import threading
 import customtkinter as ctk
-from icecream import ic
 from controller.StartAppContoller import StartAppController
 from view.MainPage import MainPage
 
@@ -20,7 +19,6 @@ class IngSoftApp(ctk.CTk):
         self.stop = False
         ctk.set_appearance_mode("dark")
         self.title("Ing_soft")
-
         height = self.winfo_screenheight()
         width = self.winfo_screenwidth()
         height = self.winfo_screenheight()
@@ -33,7 +31,6 @@ class IngSoftApp(ctk.CTk):
         newPage = MainPage(self, gitv=gitv)
         self.pageStack.append(newPage)
         newPage.place(relwidth=1, relheight=1, rely=0, relx=0)
-
         def _on_closing():
             """inizia il processo di chiusura in un thread apposito"""
             self.after(100, self._suicide)

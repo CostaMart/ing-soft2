@@ -1,14 +1,15 @@
+"""Controller delle metriche"""
+from threading import Thread, Lock
+from pydriller import Commit
 from model.ComputingEndpointModel import ComputingEndpointModel
 from model.LocalRepoModel import LocalRepoModel
 from model import Domain
-from pydriller import Commit
-from threading import Thread, Lock
-
-
 class ProjectMetricsController:
+    """Classe Project Metrics Controller"""
     my_lock = Lock()
 
     def __init__(self):
+        """Inizializzazione """
         self.localModel = LocalRepoModel()
         self.computingEndPointModel = ComputingEndpointModel()
 
@@ -19,10 +20,10 @@ class ProjectMetricsController:
     def getClassesList(self, commitHash) -> set[str]:
         """ritorna un set contenente il nome delle classi presenti in un commit"""
         files = self.localModel.getClassListFromGivenCommit(commitHash)
-
         return files
 
     def getCommitWithClassList(self, className):
+        """Prendi il commit con la lista di classi"""
         return self.localModel.getCommitWithClassList(className=className)
 
     def updateRepoYearList(self, callback):
@@ -33,11 +34,9 @@ class ProjectMetricsController:
         """recupera una lista di tutti i commit avvenuti in un dato anno e la passa
         come parametro a callback"""
         myYear = year
-
         def target():
             commitList = self.localModel.getCommiListByYear(branch, myYear)
             callback(commitList)
-
         t = Thread(target=target)
         t.start()
         return t
@@ -56,11 +55,9 @@ class ProjectMetricsController:
         giorno di yearToArrive. La lista recuperata viene passata alla callback"""
         if callbackbefore is not None:
             callbackbefore()
-
         def target():
             commitList = self.localModel.getCommiListFromDate(date, yearToArrive)
             callback(commitList)
-
         t = Thread(target=target)
         t.start()
         return t
@@ -72,12 +69,10 @@ class ProjectMetricsController:
     def request_service(self, message, callback):
         """avvia una richiesta asincrona alla componente di calcolo, il risultato viene passato come
         parametro alla callback impostata"""
-
         def toRun():
             self.computingEndPointModel.sendMessageToEndpoint(message)
             result = self.computingEndPointModel.receiveMessageFromEndpoint()
             callback(result)
-
         t = Thread(target=toRun)
         t.start()
         return t
