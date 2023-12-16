@@ -30,7 +30,6 @@ class DAORepo:
         # Solo i repository java
         url = f"https://api.github.com/search/repositories?q={repoName}+language:java"
         response = requests.get(url)
-        print(response.status_code)
         self.last_http_response = HttpResponse(response.status_code, response.json())
         risultati = response.json()["items"]
         # Crea una lista di oggetti di tipo Repository
