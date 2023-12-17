@@ -18,7 +18,7 @@ from github and analyze it.
 
 
 
-## Object Oriented programs Metrics whit CK tool 
+## Object Oriented programs Metrics with CK tool 
 
 @manual{aniche-ck,
   title={Java code metrics calculator (CK)},
@@ -102,3 +102,9 @@ Usage of each field: How often each local field was used inside each method, loc
 
 Method invocations: All directly invoked methods, variations are local invocations and indirect local invocations.
 
+### How to run App
+
+For run the application download repository and run the following command in the terminal:
+
+Bash/Zsh:
+python3 start_app.py
