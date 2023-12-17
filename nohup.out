@@ -20,3 +20,13 @@ Fontconfig error: Cannot load default config file: No such file: (null)
 [10179:10179:1216/180617.871996:ERROR:browser_main_loop.cc(276)] Gdk: gdk_monitor_get_scale_factor: assertion 'GDK_IS_MONITOR (monitor)' failed
 [10179:10179:1216/180617.880195:ERROR:browser_main_loop.cc(276)] Gdk: gdk_monitor_get_scale_factor: assertion 'GDK_IS_MONITOR (monitor)' failed
 [10179:10179:1216/180617.886531:ERROR:browser_main_loop.cc(276)] Gdk: gdk_monitor_get_scale_factor: assertion 'GDK_IS_MONITOR (monitor)' failed
+[10179:10179:1216/194419.155768:ERROR:zygote_communication_linux.cc(290)] Failed to send GetTerminationStatus message to zygote
+[10179:10208:1216/194419.167674:ERROR:connection_factory_impl.cc(471)] ConnectionHandler failed with net error: -2
+[10179:10179:1216/194419.168259:ERROR:network_service_instance_impl.cc(601)] Network service crashed, restarting service.
+[10179:10179:1216/194419.195838:ERROR:zygote_communication_linux.cc(290)] Failed to send GetTerminationStatus message to zygote
+[10179:10179:1216/194419.220345:ERROR:zygote_communication_linux.cc(290)] Failed to send GetTerminationStatus message to zygote
+[10179:10179:1216/194419.224629:ERROR:zygote_communication_linux.cc(290)] Failed to send GetTerminationStatus message to zygote
+[10179:10179:1216/194419.227893:ERROR:zygote_communication_linux.cc(290)] Failed to send GetTerminationStatus message to zygote
+[10179:10179:1216/194419.243675:ERROR:gpu_process_host.cc(986)] GPU process launch failed: error_code=1002
+[10179:10179:1216/194419.244746:ERROR:gpu_process_host.cc(986)] GPU process launch failed: error_code=1002
+[10179:10179:1216/194419.245669:ERROR:gpu_process_host.cc(986)] GPU process launch failed: error_code=1002
