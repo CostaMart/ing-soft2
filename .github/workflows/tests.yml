@@ -34,6 +34,9 @@ jobs:
     - name: Generate requirements.txt
       run: pip-compile requirements.in
 
+    - name: Generate static analysis report
+      run: python static_analysis.py
+
     - name: Run tests
       run: |
         python TestSuite.py

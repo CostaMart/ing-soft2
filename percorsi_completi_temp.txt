@@ -1,0 +1,10 @@
+/home/angelo/Scrivania/Progetto ingegneria/ing-soft2/.git/refs/heads/main
+/home/angelo/Scrivania/Progetto ingegneria/ing-soft2/.git/refs/remotes/origin/main
+/home/angelo/Scrivania/Progetto ingegneria/ing-soft2/.git/logs/refs/remotes/origin/main
+/home/angelo/Scrivania/Progetto ingegneria/ing-soft2/.git/logs/refs/heads/main
+/home/angelo/Scrivania/Progetto ingegneria/ing-soft2/TestingMetriche/ck/Prova-per-ing-soft/.git/refs/heads/main
+/home/angelo/Scrivania/Progetto ingegneria/ing-soft2/TestingMetriche/ck/Prova-per-ing-soft/.git/logs/refs/heads/main
+/home/angelo/Scrivania/Progetto ingegneria/ing-soft2/TestingMetriche/Prova-per-ing-soft/.git/refs/heads/main
+/home/angelo/Scrivania/Progetto ingegneria/ing-soft2/TestingMetriche/Prova-per-ing-soft/.git/refs/remotes/origin/main
+/home/angelo/Scrivania/Progetto ingegneria/ing-soft2/TestingMetriche/Prova-per-ing-soft/.git/logs/refs/remotes/origin/main
+/home/angelo/Scrivania/Progetto ingegneria/ing-soft2/TestingMetriche/Prova-per-ing-soft/.git/logs/refs/heads/main
