@@ -6,10 +6,12 @@ from git import Repo
 from customtkinter import CTkProgressBar
 from model.LocalRepoModel import LocalRepoModel
 from model.RepoModel import RepoModel
+from icecream import ic
 
 
 class MainPageController:
     """Classe MainPageController"""
+
     def __init__(self):
         """Inizializzatore della classe"""
         super().__init__()
@@ -33,6 +35,7 @@ class MainPageController:
         callbackAfter: Callable[[], None] = None,
     ) -> threading.Thread:
         """Metodo che esegue l'aggiornamento del repository scaricato in locale"""
+
         def toRun():
             """Imposta la variabile a True quando l'aggiornamento è in corso"""
             self.update_in_progress = True
@@ -43,6 +46,7 @@ class MainPageController:
                 callbackAfter()
             # variabile che tiene conto dell'aggiornamento del repository
             self.update_in_progress = False
+
         # Crea un thread e avvialo
         thread = threading.Thread(target=toRun)
         thread.start()
@@ -54,6 +58,7 @@ class MainPageController:
 
     def request_for_repos(self, query, callback: Callable[[List], any]):
         """Recupera una nuova lista di repository in maniera asincrona"""
+
         def toRun():
             """Imposta la variabile globale a True per indicare che è in esecuzione"""
             self.is_request_for_repos_running = True
@@ -80,6 +85,7 @@ class MainPageController:
             callback(repoList)
             # Imposta la variabile globale a False per indicare che l'esecuzione è terminata
             self.is_request_for_repos_running = False
+
         # Crea un thread e avvialo
         t = threading.Thread(target=toRun)
         t.start()
@@ -104,6 +110,7 @@ class MainPageController:
             for ref in repo.references
             if "origin" in ref.name and "HEAD" not in ref.name
         ]
+        ic(repo.references)
         print(branches)
         # Verifica se l'elenco dei branch è vuoto prima di calcolare la lunghezza
         if branches:

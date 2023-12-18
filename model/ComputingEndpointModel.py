@@ -6,6 +6,7 @@ from backend.start_endpoint import startEndpoint  # Importa il target del proces
 
 class ComputingEndpointModel:
     """Istanze statiche della classe"""
+
     _instance = None
 
     def __new__(cls):
@@ -20,11 +21,14 @@ class ComputingEndpointModel:
         """Richiede l'attivazione del servizio locale."""
         try:
             self.parent_conn, self.child_conn = multiprocessing.Pipe()
-            p = multiprocessing.Process(target=startEndpoint, args=(self.child_conn,))
-            p.start()
-            self.process_pid = p.pid
+            self.p = multiprocessing.Process(
+                target=startEndpoint, args=(self.child_conn,)
+            )
+            self.p.start()
+            self.process_pid = self.p.pid
             # Assegna il PID del processo a una variabile di istanza
             print(f"Processo avviato con PID: {self.process_pid}")
+            return self.p
         except Exception as e:
             print(f"Errore durante l'attivazione del processo: {e}")
             raise
@@ -58,7 +62,9 @@ class ComputingEndpointModel:
     def destroy(self) -> bool:
         """Distrugge il thread"""
         self.parent_conn.send({"fun": "destroy"})
+
         message = self.parent_conn.recv()
+        self.p.join()
         print(message)
         if message == "destroy request ok":
             self.child_conn.close()

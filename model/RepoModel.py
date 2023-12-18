@@ -5,9 +5,10 @@ from model.DataAccessLayer.DAORepo import DAORepo
 class RepoModel:
     """Classe che recupera i repository utilizzando il layer
     di accesso ai dati"""
+
     def __init__(self):
         """Inizializzazione"""
-        self.CRUD= DAORepo()
+        self.CRUD = DAORepo()
 
     def getRepoListByName(self, name):
         """Trova i nomi delle repo"""
@@ -20,4 +21,3 @@ class RepoModel:
     def getRepoListByAuthor(self, author):
         """Restituisce la lista di repo per autore"""
         return self.CRUD.getRepoListByAuthor(author)
-    
