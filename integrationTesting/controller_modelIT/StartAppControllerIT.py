@@ -23,7 +23,7 @@ sys.path.append(final_dir)
 
 
 from controller.StartAppContoller import StartAppController
-from unittest.mock import patch, Mock
+from unittest.mock import MagicMock, patch, Mock
 import tkinter as tk
 from model.LocalRepoModel import LocalRepoModel
 from model.ComputingEndpointModel import ComputingEndpointModel
@@ -67,20 +67,29 @@ class StartAppControllerIT(unittest.TestCase):
         self.comp.parent_conn = myConnectionDriver()
 
     # da qui testing per l'integrazione con localRepoModel
+    @patch("requests.get")
+    def test_localRepoModel_cls1(self, get: Mock):
+        class responseDriver:
+            status_code = 200
 
-    def test_localRepoModel_cls1(self):
-        return
+            def json(self):
+                return MagicMock()
+
+        get.return_value = responseDriver()
+        controller = StartAppController()
+        self.assertIsNone(controller.RepoData())
+
         # dovrebbe testare repodataupdate ma continua a tornare errore 404
 
     # da qui test per compute endpoint
-    def test_computeEndpoint_cls1(self):
+    def test_computeEndpoint_cls2(self):
         controller = StartAppController()
         # chiamata sotto test
         value = controller.isComputeEndpointActive()
         self.assertIsNotNone(value)
         return
 
-    def test_computeEndpoint_cls2(self):
+    def test_computeEndpoint_cls3(self):
         mock = Mock(return_value=3)
         mockProcess = Mock()
         mockProcessStart = Mock()
@@ -96,7 +105,7 @@ class StartAppControllerIT(unittest.TestCase):
             self.assertEqual(active, "local")
             return
 
-    def test_computeEndpoint_cls3(self):
+    def test_computeEndpoint_cls4(self):
         mock = Mock()
 
         with patch("model.ComputingEndpointModel.ComputingEndpointModel.destroy", mock):

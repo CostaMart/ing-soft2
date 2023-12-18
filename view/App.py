@@ -8,9 +8,11 @@ from view.MainPage import MainPage
 
 class IngSoftApp(ctk.CTk):
     """rappresenta l'intera applicazione, gestisce la navigazione tra
-      le pagine e l'accesso ai dati globali dell'applicazione"""
+    le pagine e l'accesso ai dati globali dell'applicazione"""
+
     def __init__(self, gitv, endpointStatus, run=True):
         """Inizializza l'interfaccia grafica"""
+
         super().__init__()
         self.edpointStatus = endpointStatus
         self.contoller = StartAppController()
@@ -31,12 +33,13 @@ class IngSoftApp(ctk.CTk):
         newPage = MainPage(self, gitv=gitv)
         self.pageStack.append(newPage)
         newPage.place(relwidth=1, relheight=1, rely=0, relx=0)
+
         def _on_closing():
             """inizia il processo di chiusura in un thread apposito"""
             self.after(100, self._suicide)
 
             def closeThread():
-                """attendi che tutti i thread abbiano concluso il proprio lavoro, dopodichè 
+                """attendi che tutti i thread abbiano concluso il proprio lavoro, dopodichè
                 richiedi la chiusura del mainthread settando stop a true
                 ps. solo il main thread può gestire se stesso"""
                 self.contoller.closeSubProcess()
@@ -47,7 +50,9 @@ class IngSoftApp(ctk.CTk):
                     ):
                         thread.join()
                 self.stop = True
+
             threading.Thread(target=closeThread).start()
+
         self.protocol("WM_DELETE_WINDOW", _on_closing)
         if run:
             self.mainloop()
@@ -64,7 +69,7 @@ class IngSoftApp(ctk.CTk):
 
     def previousPage(self):
         """ "ritorna alla pagina precedente contenuta nel page stack, utilizza
-         un'animazione di sliding"""
+        un'animazione di sliding"""
         page = self.pageStack[-2]
         page.place(relwidth=1, relheight=1, rely=0, relx=1)
         self._previousPageAnimation(self.pageStack[-1], page, 0)
@@ -72,8 +77,8 @@ class IngSoftApp(ctk.CTk):
         old.destroy()
 
     def newPage(self, newPage):
-        """passa la schermata ad una nuova pagina, ossia quella passata come parametro 
-        (è necessario passare il costruttore della pagina come funzione, 
+        """passa la schermata ad una nuova pagina, ossia quella passata come parametro
+        (è necessario passare il costruttore della pagina come funzione,
         ossia senza parentesi tonde)"""
         page = newPage(self)
         page.place(relwidth=1, relheight=1, rely=0, relx=1)

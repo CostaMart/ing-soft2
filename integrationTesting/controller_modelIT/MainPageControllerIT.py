@@ -57,14 +57,16 @@ class MainPageControllerIntegrationTest(unittest.TestCase):
 
         self.assertIsNotNone(code)
 
-    def test_MPcontroller_LocalRepoModel_cls2(self):
+    @patch("requests.get")
+    def test_MPcontroller_LocalRepoModel_cls2(self, get: Mock):
+        get.return_value = 200
         controller = MainPageController()
 
         t = controller.requestRepoUpdate(callbackAfter=None, callbackBefore=None)
         t: threading.Thread
         t.join()
         # //// questo è da sistemare
-        # self.assertIsNotNone(controller.globalModel.repoData)
+        get.assert_called()
 
     # test con classe per repo esterni
 
