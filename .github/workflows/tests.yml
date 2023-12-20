@@ -55,5 +55,3 @@ jobs:
           exit 1
         fi
 
-    - name: Push to main
-      run: git push origin main
