@@ -35,16 +35,14 @@ jobs:
       run: pip-compile requirements.in
 
     - name: Run static analysis
-      id: analysis
       run: |
-        echo "::set-output name=score::$(python static_analysis.py)"
+        echo "score=$(python static_analysis.py)" >> $GITHUB_ENV
 
     - name: Check static analysis score
       run: |
-        if (( $(echo "${{ steps.analysis.outputs.score }} < 6.0" | bc -l) )); then
+        if (( $(echo "${{ env.score }} < 6.0" | bc -l) )); then
           echo "::warning::La valutazione della static analysis è inferiore a 6."
         fi
-
     - name: Run tests
       run: |
         python TestSuite.py
