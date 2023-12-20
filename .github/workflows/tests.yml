@@ -35,8 +35,16 @@ jobs:
       run: pip-compile requirements.in
 
     - name: Generate static analysis report
-      run: python static_analysis.py
+      id: static_analysis
+      run: |
+        python static_analysis.py
+        echo "analysis_score=$?" >> $GITHUB_ENV
 
+    - name: Check static analysis score
+      run: |
+        if [ ${{ env.analysis_score }} -lt 5 ]; then
+          echo "::warning::La valutazione della static analysis è inferiore a 5."
+        fi
     - name: Run tests
       run: |
         python TestSuite.py
@@ -46,3 +54,6 @@ jobs:
           echo "Almeno un test ha fallito."
           exit 1
         fi
+
+    - name: Push to main
+      run: git push origin main
