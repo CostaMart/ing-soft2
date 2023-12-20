@@ -43,4 +43,3 @@ if __name__ == "__main__":
     else:
         print("Almeno un test ha fallito.")
         exit(1)
-else: pass
