@@ -42,8 +42,8 @@ jobs:
 
     - name: Check static analysis score
       run: |
-        if [ ${{ env.analysis_score }} -lt 5 ]; then
-          echo "::warning::La valutazione della static analysis è inferiore a 5."
+        if [ ${{ env.analysis_score }} -lt 6 ]; then
+          echo "::warning::La valutazione della static analysis è inferiore a 6."
         fi
     - name: Run tests
       run: |
