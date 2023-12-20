@@ -68,8 +68,6 @@ class TestMetriche(unittest.TestCase):
         result = ck.commit_measure_avg("tizio", self.commit+"class.csv")
         self.assertIsNone(result)
 
-    def test_fallito(self):
-        self.assertEquals(1,2)
     def test_x_analyze_commits_for_interval(self):
         df_filtrato = pd.DataFrame(self.diction, columns=['Commit Hash', 'Data del Commit'])
         df_filtrato['Data del Commit'] = pd.to_datetime(df_filtrato['Data del Commit'], utc=True)
