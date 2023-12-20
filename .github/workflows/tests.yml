@@ -34,9 +34,15 @@ jobs:
     - name: Generate requirements.txt
       run: pip-compile requirements.in
 
-    - name: Generate static analysis report
-      run: python static_analysis.py
+    - name: Run static analysis
+      run: |
+        echo "score=$(python static_analysis.py)" >> $GITHUB_ENV
 
+    - name: Check static analysis score
+      run: |
+        if (( $(echo "${{ env.score }} < 6.0" | bc -l) )); then
+          echo "::warning::La valutazione della static analysis è inferiore a 6."
+        fi
     - name: Run tests
       run: |
         python TestSuite.py
@@ -46,3 +52,4 @@ jobs:
           echo "Almeno un test ha fallito."
           exit 1
         fi
+

@@ -12,7 +12,7 @@ model/spMetrics
 view/App
 backend/presentation_layer/compute
 view/widgets/GraficiSP/GraphFactory
-view/widgets/listbox
+view/widgets/ListBox
 view/MainPage
 view/widgets/Plot
 view/ProjectMetricsPage
